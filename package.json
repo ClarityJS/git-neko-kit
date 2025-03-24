@@ -1,0 +1,66 @@
+{
+  "name": "git-neko-kit",
+  "version": "0.0.1",
+  "description": "Github, Gitee, GitCode API封装库",
+  "author": "wuliya",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ClarityJS/git-neko-kit.git"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && cpy package.json README.md LICENSE .env dist/",
+    "build:cli": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "dev": "cross-env RUNTIME=development tsx src/index.ts",
+    "dev:test": "cross-env RUNTIME=development tsx test/index.ts"
+  },
+  "keywords": [
+    "git",
+    "github",
+    "gitee",
+    "gitcode"
+  ],
+  "license": "GNU AGPL-3.0",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "chalk": "^5.4.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "log4js": "^6.9.1",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^4.0.0",
+    "@types/cli-progress": "^3.11.6",
+    "@types/express": "^5.0.1",
+    "@types/express-fileupload": "^1.5.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.13.13",
+    "cpy-cli": "^5.0.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "globals": "^16.0.0",
+    "neostandard": "^0.12.1",
+    "tsc-alias": "^1.8.11",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  },
+  "files": [
+    "dist/*",
+    "package.json",
+    ".env"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "packageManager": "pnpm@9.13.2"
+}
