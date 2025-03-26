@@ -1,5 +1,5 @@
 {
-  "name": "GitToolkit",
+  "name": "git-neko-kit",
   "version": "1.0.0",
   "description": "Github, Gitee, GitCode API封装库",
   "author": "wuliya",
@@ -9,6 +9,10 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ClarityJS/GitToolkit.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json && cpy package.json README.md LICENSE .env dist/",
