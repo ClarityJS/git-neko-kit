@@ -1,0 +1,69 @@
+name: 更新 resource_list.json 
+
+on:
+  push:
+    branches:
+      - "main" 
+    paths:
+      - "resources/**"
+  workflow_dispatch:  
+
+permissions:
+  contents: write
+
+jobs:
+  update_resource_list:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库代码
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 更新 resource_list.json 文件
+        run: node tools/update_resource_list.js
+
+      - name: 提交并推送更改
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: "更新 resource_list.json"
+          branch: "main"
+  
+  update_resource:
+    runs-on: ubuntu-latest
+    needs: update_resource_list
+    steps:
+      - name: 检出当前仓库代码
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: meme-generator-node
+
+      - name: 检出资源仓库代码
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          repository: "ClarityJS/meme-data"
+          token: ${{ secrets.TOKEN }}
+          path: meme-data
+
+      - name: 复制资源文件
+        run: |
+          mkdir -p meme-data/resources/
+          rsync -av --delete meme-generator-node/resources/ meme-data/resources/
+      - name: 检查更改
+        run: |
+          cd meme-data
+          git diff --stat
+
+      - name: 提交并推送更改
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          message: "更新资源文件"
+          branch: "main"
+          repository: "ClarityJS/meme-data"
+          directory: meme-data
