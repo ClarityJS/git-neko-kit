@@ -51,9 +51,7 @@
   },
   "files": [
     "dist/*",
-    "LICENSE",
     "package.json",
-    "README.md",
     ".env"
   ],
   "exports": {
