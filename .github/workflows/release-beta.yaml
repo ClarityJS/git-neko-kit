@@ -135,7 +135,7 @@ jobs:
 
             你可以通过以下命令安装该版本：
             ```
-            pnpm install meme-generator-node@${{ needs.beta-version.outputs.beta_version }}
+            pnpm install GitToolki@${{ needs.beta-version.outputs.beta_version }}
             ```
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
