@@ -1,5 +1,15 @@
 # 变更日志
 
+## [1.1.1](https://github.com/ClarityJS/git-neko-kit/compare/v1.1.0...v1.1.1) (2025-03-26)
+
+### ♻️ 重构
+
+* **typescript:** 重构类型定义和全局变量声明 ([768eb01](https://github.com/ClarityJS/git-neko-kit/commit/768eb01adf2491d618437229f626f3e46161c976))
+
+### 🏗️ 构建系统
+
+* 更新项目构建和部署流程 ([5310bbb](https://github.com/ClarityJS/git-neko-kit/commit/5310bbbfddef075828bf9b03f43fda8af79f3794))
+
 ## 1.1.0 (2025-03-26)
 
 ### ✨ 新功能
