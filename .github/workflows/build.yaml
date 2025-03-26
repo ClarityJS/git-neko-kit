@@ -30,7 +30,7 @@ jobs:
           pnpm build:cli
           mkdir -p ${{ runner.temp }}/temp/dist
           cp -r dist/* ${{ runner.temp }}/temp/dist/
-          cp -r package.json env ${{ runner.temp }}/temp/
+          cp -r package.json .env ${{ runner.temp }}/temp/
 
       - name: 获取主分支的最新提交消息
         id: commit-message

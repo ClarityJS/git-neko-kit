@@ -27,10 +27,6 @@
     "types": [
       "node"
     ],
-    "typeRoots": [
-      "./node_modules/@types",
-      "./src/global.d.ts"
-    ]
   },
   "tsc-alias": { // tsc-alias 插件的配置
     "resolveFullPaths": true, // 解析完整路径
@@ -38,6 +34,7 @@
   },
   "include": [ // 指定编译器应该包含的文件或目录
     "src/**/*.ts",
+    "src/env.d.ts",
     "eslint.config.mjs"
   ],
 }

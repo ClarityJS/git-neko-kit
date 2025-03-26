@@ -77,5 +77,4 @@ class Logger {
 
   chalk = chalk
 }
-global.logger = new Logger()
 export const logger = new Logger()
