@@ -1,5 +1,11 @@
 # 变更日志
 
+## [1.1.3](https://github.com/ClarityJS/git-neko-kit/compare/v1.1.2...v1.1.3) (2025-03-27)
+
+### 🔄 持续集成
+
+* **workflow:** 更新构建和发布流程 ([d7fb9d0](https://github.com/ClarityJS/git-neko-kit/commit/d7fb9d0886162fadd860afa961db490bbe4d715a))
+
 ## [1.1.2](https://github.com/ClarityJS/git-neko-kit/compare/v1.1.1...v1.1.2) (2025-03-27)
 
 ### ♻️ 重构
