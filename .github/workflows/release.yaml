@@ -64,7 +64,7 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: build
 
       - name: 获取变更内容
         id: extract_changelog
@@ -77,10 +77,6 @@ jobs:
           echo "$CHANGELOG" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
             - name: 检出代码
-
-      - uses: actions/checkout@v4
-        with:
-          ref: build
       
       - name: 构建产物
         run: |
