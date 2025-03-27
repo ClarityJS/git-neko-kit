@@ -1,5 +1,15 @@
 # 变更日志
 
+## [1.1.2](https://github.com/ClarityJS/git-neko-kit/compare/v1.1.1...v1.1.2) (2025-03-27)
+
+### ♻️ 重构
+
+* **github:** 重构 GitHub App 相关代码 ([0078611](https://github.com/ClarityJS/git-neko-kit/commit/0078611b6063f6a712df4f7edbc67790d3a9a35a))
+
+### 🔄 持续集成
+
+* **release:** 更新 GitHub Actions 工作流 ([8d87e72](https://github.com/ClarityJS/git-neko-kit/commit/8d87e72abc2f781226e3f5c7b4288aa37bd4cc3c))
+
 ## [1.1.1](https://github.com/ClarityJS/git-neko-kit/compare/v1.1.0...v1.1.1) (2025-03-26)
 
 ### ♻️ 重构
