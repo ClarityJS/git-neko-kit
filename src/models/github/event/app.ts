@@ -8,7 +8,7 @@ export class App {
   private ApiUrl: string
   private jwtToken: string
   private APP_ID: string
-  private APP_SECRET: string
+  private Private_Key: string
   private Client_ID: string
   private Client_Secret: string
   private state_id: string
@@ -16,7 +16,7 @@ export class App {
     this.get = options.get.bind(options)
     this.post = options.post.bind(options)
     this.APP_ID = options.APP_ID
-    this.APP_SECRET = options.APP_SECRET
+    this.Private_Key = options.Private_Key
     this.Client_ID = options.Client_ID
     this.Client_Secret = options.Client_Secret
     this.ApiUrl = options.ApiUrl

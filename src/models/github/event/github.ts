@@ -23,7 +23,7 @@ export class GitHub {
   public ApiUrl: string = ApiBaseUrl(type)
   public jwtToken: string
   public APP_ID: string
-  public APP_SECRET: string
+  public Private_Key: string
   public Client_ID: string
   public Client_Secret: string
   private state_id: string
@@ -33,7 +33,7 @@ export class GitHub {
     this.BaseUrl = BaseUrl(type)
     this.ApiUrl = ApiBaseUrl(type)
     this.APP_ID = options.APP_ID
-    this.APP_SECRET = options.APP_SECRET
+    this.Private_Key = options.Private_Key
     this.Client_ID = options.Client_ID
     this.Client_Secret = options.Client_Secret
     this.state_id = this.create_state()
@@ -72,17 +72,17 @@ export class GitHub {
    * 生成 JWT
    * @param options 生成 JWT 所需的参数
    * @param options.APP_ID GitHub App ID
-   * @param options.APP_SECRET 私钥内容
+   * @param options.Private_Key 私钥内容
    * @returns 返回生成的 JWT
    */
   private generate_jwt (): string {
-    const privateKey = this.APP_SECRET
+    const Private_Key = this.Private_Key
     const payload = {
       exp: Math.floor(Date.now() / 1000) + (10 * 60),
       iat: Math.floor(Date.now() / 1000),
       iss: this.APP_ID
     }
-    return jwt.sign(payload, privateKey, { algorithm: 'RS256' })
+    return jwt.sign(payload, Private_Key, { algorithm: 'RS256' })
   }
 
   /**
