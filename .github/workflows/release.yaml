@@ -47,7 +47,7 @@ jobs:
           pnpm build
           pnpm pkg delete devDependencies
           mkdir -p ${{ runner.temp }}/temp/
-          cp -r package.json CHANGELOG.md README.md LICENSE resources config lib ${{ runner.temp }}/temp/
+          cp -r package.json README.md CHANGELOG.md .env dist ${{ runner.temp }}/temp/
       
       - name: 构建文件
         run: |

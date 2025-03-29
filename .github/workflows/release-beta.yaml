@@ -110,15 +110,18 @@ jobs:
       - name: 构建
         run: |
           pnpm build
-          mkdir -p ${{ runner.temp }}/temp/dist
-          cp -r dist/* ${{ runner.temp }}/temp/dist/
-          cp -r package.json README.md CHANGELOG.md .env config/* ${{ runner.temp }}/temp/
+          pnpm pkg delete devDependencies
+          mkdir -p ${{ runner.temp }}/temp/
+          cp -r dist/* ${{ runner.temp }}/temp/
+          cp -r package.json README.md CHANGELOG.md .env dist ${{ runner.temp }}/temp/
       
       - name: 构建文件
         run: |
-          mv .git ${{ runner.temp }}/temp/.git
-          cd ${{ runner.temp }}/temp/
-          pnpm pkg delete devDependencies
+          if [ "$(git ls-files | wc -l)" -gt 0 ]; then
+            git rm -rf .
+          fi
+          cp -r ${{ runner.temp }}/temp/* ./
+          rm -rf node_modules pnpm-lock.yaml
       
       - name: 获取主分支的最新提交消息
         id: commit-message

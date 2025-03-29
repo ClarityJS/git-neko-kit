@@ -35,6 +35,6 @@
   "include": [ // 指定编译器应该包含的文件或目录
     "src/**/*.ts",
     "src/env.d.ts",
-    "eslint.config.mjs"
+    "eslint.config.js"
   ],
 }

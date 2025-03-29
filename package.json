@@ -16,6 +16,7 @@
     "start": "node dist/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "test": "cross-env RUNTIME=development tsx src/test/index.ts",
     "dev": "cross-env RUNTIME=development tsx src/index.ts",
     "dev:test": "cross-env RUNTIME=development tsx test/index.ts"
   },
@@ -32,15 +33,16 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "hosted-git-info": "^8.0.2",
     "jsonwebtoken": "^9.0.2",
     "log4js": "^6.9.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "^4.0.0",
     "@types/cli-progress": "^3.11.6",
     "@types/express": "^5.0.1",
     "@types/express-fileupload": "^1.5.1",
+    "@types/hosted-git-info": "^3.0.5",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.13.13",
     "cpy-cli": "^5.0.0",
@@ -54,7 +56,9 @@
   "files": [
     "dist/*",
     "package.json",
-    ".env"
+    ".env",
+    "README.md",
+    "CHANGELOG.md"
   ],
   "exports": {
     ".": {

@@ -18,33 +18,11 @@ if (!islog4jsLog) {
           type: 'pattern',
           pattern: `%[[${pkg.name}]%[[%d{hh:mm:ss.SSS}][%4.4p]%] %m`
         }
-      },
-      dailyFile: {
-        type: 'dateFile',
-        filename: `${os.homedir()}/${pkg.name}/logs/logger`,
-        pattern: 'yyyy-MM-dd.log',
-        alwaysIncludePattern: true,
-        keepFileExt: true,
-        layout: {
-          type: 'pattern',
-          pattern: `%[[${pkg.name}]%[[%d{hh:mm:ss.SSS}][%4.4p]%] %m`
-        }
-      },
-      errorFile: {
-        type: 'file',
-        filename: `${os.homedir()}/${pkg.name}/logs/error.log`,
-        maxLogSize: 10485760,
-        backups: 3,
-        compress: true,
-        layout: {
-          type: 'pattern',
-          pattern: `%[[${pkg.name}]%[[%d{hh:mm:ss.SSS}][%4.4p]%] %m`
-        }
       }
     },
     categories: {
-      default: { appenders: ['console', 'dailyFile'], level: logLevel },
-      error: { appenders: ['console', 'errorFile'], level: 'error' }
+      default: { appenders: ['console'], level: logLevel },
+      error: { appenders: ['console'], level: 'error' }
     }
   })
   islog4jsLog = true

@@ -1,33 +1,37 @@
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const require = createRequire(import.meta.url);
+
 const globals = require('globals');
 const tseslint = require('typescript-eslint');
 const tsParser = require('@typescript-eslint/parser');
 const simpleImportSort = require('eslint-plugin-simple-import-sort');
-const stylistic = require('@stylistic/eslint-plugin');
-const path = require('node:path');
+const neostandard = require('neostandard')
 
-const tsconfigRootDir = path.resolve(__dirname);
-
-module.exports = tseslint.config(
+export default tseslint.config(
+  ...neostandard(),
   {
-    ignores: ['eslint.config.cjs'],
+    ignores: ['eslint.config.js'],
   },
   tseslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
   {
     languageOptions: {
-      ecmaVersion: 'latest',
+      ecmaVersion: 2022,
+      sourceType: "module",
       parser: tsParser,
       parserOptions: {
         project: './tsconfig.json',
-        tsconfigRootDir: tsconfigRootDir,
+        tsconfigRootDir: path.resolve(fileURLToPath(import.meta.url).replace(/\\/g, '/'), '../'),
       },
       globals: { ...globals.node },
     },
     plugins: {
-      'simple-import-sort': simpleImportSort,
-      '@stylistic': stylistic
+      'simple-import-sort': simpleImportSort
     },
-    files: ['src/**/*.ts', 'eslint.config.cjs'],
+    files: ['src/**/*.ts', 'eslint.config.js'],
     rules: {
       '@typescript-eslint/no-explicit-any': 0,
       '@typescript-eslint/no-unsafe-assignment': 0,
@@ -63,7 +67,6 @@ module.exports = tseslint.config(
         },
       ],
       'arrow-body-style': 'off',
-      '@stylistic/indent': [1, 2, { SwitchCase: 1 }],
       'space-before-function-paren': 1,
       semi: [2, 'never'],
       'no-trailing-spaces': 1,
