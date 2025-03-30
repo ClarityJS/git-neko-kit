@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.0.3](https://github.com/ClarityJS/git-neko-kit/compare/v0.0.2...v0.0.3) (2025-03-30)
+
+
+### 🎡 持续集成
+
+* **release:** 更新环境变量引用并简化工作流 ([3baf753](https://github.com/ClarityJS/git-neko-kit/commit/3baf7538ec1d4b6492b44304690ebd7626db08ac))
+
 ## [0.0.2](https://github.com/ClarityJS/git-neko-kit/compare/v0.0.1...v0.0.2) (2025-03-30)
 
 
