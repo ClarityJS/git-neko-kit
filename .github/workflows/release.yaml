@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       releases_created: ${{ steps.release-please.outputs.releases_created }}
+      package_name: ${{ steps.build-package.PACKAGE_NAME }}
+
     steps:
       - name: 运行 release-please-action
         id: release-please
@@ -43,12 +45,21 @@ jobs:
             - args: [--no-frozen-lockfile]
 
       - name: 构建
+        id: build-package
         run: |
           pnpm build
           pnpm pkg delete devDependencies
-          mkdir -p temp
-          cp -r package.json README.md CHANGELOG.md .env dist temp/
-          cd temp
+          mkdir -p ${{ runner.temp }}/temp/
+          cp -r package.json README.md CHANGELOG.md .env dist ${{ runner.temp }}/temp/
+          PACKAGE_NAME=$(pnpm pkg get name | tr -d '"')
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
+          echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.package_name }}
+          path: ${{ runner.temp }}/temp/
       
       - name: 获取主分支的最新提交消息
         id: commit-message
@@ -60,6 +71,12 @@ jobs:
     needs: [release, build]
     if: needs.release.outputs.releases_created == 'true'
     steps:
+      - name: 导入构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.package_name }}
+          path: ./
+
       - name: 发布到 NPM
         uses: JS-DevTools/npm-publish@v3
         with:
@@ -67,3 +84,5 @@ jobs:
           registry: https://registry.npmjs.org/
           access: public
           provenance: true
+
+          
