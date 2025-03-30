@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.0.2](https://github.com/ClarityJS/git-neko-kit/compare/v0.0.1...v0.0.2) (2025-03-30)
+
+
+### 🎡 持续集成
+
+* 移除 release 工作流中的代码提交步骤 ([6a721f7](https://github.com/ClarityJS/git-neko-kit/commit/6a721f7a18d4ea790dfd784827db94a45f3eec42))
+
 ## [1.1.2](https://github.com/ClarityJS/git-neko-kit/compare/v1.1.1...v1.1.2) (2025-03-27)
 
 ### ♻️ 重构
