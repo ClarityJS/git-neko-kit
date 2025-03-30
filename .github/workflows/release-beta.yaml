@@ -113,7 +113,12 @@ jobs:
           pnpm pkg delete devDependencies
           mkdir -p ${{ runner.temp }}/temp/
           cp -r package.json README.md CHANGELOG.md .env dist ${{ runner.temp }}/temp/
-          echo "BUILD_PATH=${{ runner.temp }}/temp/" >> $GITHUB_ENV
+
+      - name: 上传构建文件
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ needs.beta-version.outputs.package_name }}
+          path: ${{ runner.temp }}/temp/
       
       - name: 获取主分支的最新提交消息
         id: commit-message
@@ -130,9 +135,10 @@ jobs:
           version: 9.13.2
       
       - name: 导入构建文件
-        run: |
-          BUILD_PATH="${{ needs.build.outputs.BUILD_PATH }}"
-          cp -r $BUILD_PATH/* .
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.beta-version.outputs.package_name }}
+          path: ./
 
       - name: 发布预览版
         run: |
