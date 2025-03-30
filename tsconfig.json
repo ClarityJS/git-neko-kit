@@ -25,7 +25,7 @@
     "inlineSourceMap": false, /* 将源码映射文件内联到输出文件中 */
     "alwaysStrict": true,
     "types": [
-      "node"
+      "@types/node",
     ],
   },
   "tsc-alias": { // tsc-alias 插件的配置
@@ -34,7 +34,12 @@
   },
   "include": [ // 指定编译器应该包含的文件或目录
     "src/**/*.ts",
-    "src/env.d.ts",
-    "eslint.config.js"
+    "eslint.config.js",
+    "tsconfig.json",
   ],
+  "exclude": [
+    "node_modules", 
+    "dist",
+    "test",
+  ]
 }

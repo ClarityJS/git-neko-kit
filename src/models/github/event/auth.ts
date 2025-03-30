@@ -47,8 +47,6 @@ export class Auth {
       client_id: this.Client_ID,
       client_secret: this.options.Client_Secret,
       code
-    }, {
-      Accept: 'application/json'
     })
     return req
   }

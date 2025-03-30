@@ -13,7 +13,7 @@ const neostandard = require('neostandard')
 export default tseslint.config(
   ...neostandard(),
   {
-    ignores: ['eslint.config.js'],
+    ignores: ['eslint.config.js', 'tsup.config.ts', 'dist', 'test'],
   },
   tseslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
@@ -23,7 +23,7 @@ export default tseslint.config(
       sourceType: "module",
       parser: tsParser,
       parserOptions: {
-        project: './tsconfig.json',
+        project: 'tsconfig.json',
         tsconfigRootDir: path.resolve(fileURLToPath(import.meta.url).replace(/\\/g, '/'), '../'),
       },
       globals: { ...globals.node },
@@ -31,7 +31,7 @@ export default tseslint.config(
     plugins: {
       'simple-import-sort': simpleImportSort
     },
-    files: ['src/**/*.ts', 'eslint.config.js'],
+    files: ['src/**/*.ts', 'eslint.config.js', '"tsup.config.ts"'],
     rules: {
       '@typescript-eslint/no-explicit-any': 0,
       '@typescript-eslint/no-unsafe-assignment': 0,

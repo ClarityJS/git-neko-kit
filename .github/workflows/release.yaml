@@ -50,7 +50,7 @@ jobs:
           pnpm build
           pnpm pkg delete devDependencies
           mkdir -p ${{ runner.temp }}/temp/
-          cp -r package.json README.md CHANGELOG.md .env dist ${{ runner.temp }}/temp/
+          cp -r package.json README.md CHANGELOG.md dist ${{ runner.temp }}/temp/
           PACKAGE_NAME=$(pnpm pkg get name | tr -d '"')
           echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
           echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_OUTPUT
