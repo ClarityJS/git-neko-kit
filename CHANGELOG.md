@@ -1,5 +1,23 @@
 # 变更日志
 
+## [0.0.2](https://github.com/ClarityJS/git-neko-kit/compare/v0.0.1...v0.0.2) (2025-03-30)
+
+
+### ⚡️ 性能优化
+
+* 初始化项目 ([5f77e9a](https://github.com/ClarityJS/git-neko-kit/commit/5f77e9a65c0b723ec6adfa177108ed7f9fb6c582))
+
+
+### ♻️ 代码重构
+
+* **common:** 移除日志模块 ([5d2aaf3](https://github.com/ClarityJS/git-neko-kit/commit/5d2aaf3d53ff36c33719b2f8201de6c5155ed457))
+* **eslint:** 重构 ESLint 配置并更新相关设置 ([5852292](https://github.com/ClarityJS/git-neko-kit/commit/58522925393e0d36897c584bc0fdac8dc197a8fd))
+
+
+### 🎡 持续集成
+
+* 移除 release 工作流中的代码提交步骤 ([7b4ef60](https://github.com/ClarityJS/git-neko-kit/commit/7b4ef60411850b2e013a561e17c9746ff31bfc4c))
+
 ## [1.1.2](https://github.com/ClarityJS/git-neko-kit/compare/v1.1.1...v1.1.2) (2025-03-27)
 
 ### ♻️ 重构
