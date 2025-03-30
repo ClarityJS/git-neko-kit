@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       releases_created: ${{ steps.release-please.outputs.releases_created }}
-      package_name: ${{ steps.build-package.PACKAGE_NAME }}
 
     steps:
       - name: 运行 release-please-action
@@ -30,6 +29,8 @@ jobs:
     needs: release
     if: needs.release.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
+    outputs:
+      package_name: ${{ steps.build-package.outputs.PACKAGE_NAME }} 
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
