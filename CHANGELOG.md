@@ -1,5 +1,22 @@
 # 变更日志
 
+## [0.0.2](https://github.com/ClarityJS/git-neko-kit/compare/v0.0.1...v0.0.2) (2025-03-31)
+
+
+### ♻️ 代码重构
+
+* **github:** 重构 Github App 授权流程 ([9549690](https://github.com/ClarityJS/git-neko-kit/commit/95496904b50bd97c5abddad1da8977632eed90cc))
+* **github:** 重构 Github App 授权流程 ([f6d47ab](https://github.com/ClarityJS/git-neko-kit/commit/f6d47ab4b8bf073fbf2975b058f9038ba2b675cb))
+* 重构项目并优化代码 ([6689ab1](https://github.com/ClarityJS/git-neko-kit/commit/6689ab1e962f8623c16a1cfb4006008bc0220f12))
+
+
+### 🎡 持续集成
+
+* **release-beta:** 优化构建文件传输方式 ([f64fa0a](https://github.com/ClarityJS/git-neko-kit/commit/f64fa0a20bfdaa84fa8dd832d6de82f598023741))
+* **release:** 更新环境变量引用并简化工作流 ([45c7b92](https://github.com/ClarityJS/git-neko-kit/commit/45c7b92d04ea2c5e007fc48b2e19350c0833d5cd))
+* **workflow:** 优化构建和发布流程 ([a2304c1](https://github.com/ClarityJS/git-neko-kit/commit/a2304c1af2a0aa2001926cdaeb0f03d035ad181c))
+* 移除 release 工作流中的代码提交步骤 ([566b3fb](https://github.com/ClarityJS/git-neko-kit/commit/566b3fb8fda9a50853b6c316f9172c91b3da174e))
+
 ## [1.1.2](https://github.com/ClarityJS/git-neko-kit/compare/v1.1.1...v1.1.2) (2025-03-27)
 
 ### ♻️ 重构
