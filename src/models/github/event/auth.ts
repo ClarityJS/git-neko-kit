@@ -5,7 +5,6 @@ export class Auth {
   private post: GitHub['post']
   private BaseUrl: string
   private ApiUrl: string
-  private state_id: string
   private Client_ID: string
   private jwtToken: string
   constructor (private options: GitHub, jwtToken: string) {
@@ -14,22 +13,21 @@ export class Auth {
     this.ApiUrl = options.ApiUrl
     this.BaseUrl = options.BaseUrl
     this.Client_ID = options.Client_ID
-    this.state_id = options.getStateId()
     this.jwtToken = jwtToken
   }
 
   /**
    * 生成Github App 授权链接
+   * @param state_id 随机生成的 state_id，用于验证授权请求的状态，可选，默认不使用
    * @returns 返回授权链接对象
-   * @returns state_id 随机生成的字符串，用于验证
    * @returns auth_link 授权链接，用于跳转 Github 授权页
    */
-  public create_auth_link (): { state_id: string, auth_link: string } {
-    const state_id = this.state_id
-    return {
-      state_id,
-      auth_link: `${this.BaseUrl}/login/oauth/authorize?client_id=${this.Client_ID}&state=${state_id}`
-    }
+  public create_auth_link (state_id?: string): string {
+    const authLink = state_id
+      ? `${this.BaseUrl}/login/oauth/authorize?client_id=${this.Client_ID}&state=${state_id}`
+      : `${this.BaseUrl}/login/oauth/authorize?client_id=${this.Client_ID}`
+
+    return authLink
   }
 
   /**

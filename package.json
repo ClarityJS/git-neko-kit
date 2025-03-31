@@ -28,9 +28,7 @@
   "dependencies": {
     "axios": "^1.8.4",
     "git-url-parse": "^16.0.1",
-    "jsonwebtoken": "^9.0.2",
-    "log4js": "^6.9.1",
-    "uuid": "^11.1.0"
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@types/git-url-parse": "^9.0.3",
