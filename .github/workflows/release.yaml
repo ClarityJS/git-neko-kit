@@ -76,6 +76,7 @@ jobs:
         with:
           name: ${{ needs.build.outputs.package_name }}
           path: ./
+          flatten: true
 
       - name: 发布到 NPM
         uses: JS-DevTools/npm-publish@v3
