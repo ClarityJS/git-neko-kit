@@ -11,7 +11,6 @@ export class App {
   private Private_Key: string
   private Client_ID: string
   private Client_Secret: string
-  private state_id: string
   constructor (private options: GitHub, jwtToken: string) {
     this.get = options.get.bind(options)
     this.post = options.post.bind(options)
@@ -22,7 +21,6 @@ export class App {
     this.ApiUrl = options.ApiUrl
     this.BaseUrl = options.BaseUrl
     this.jwtToken = jwtToken
-    this.state_id = options.getStateId()
   }
 
   /**

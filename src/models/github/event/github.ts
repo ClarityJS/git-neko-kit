@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken'
-import { v4 as uuidv4 } from 'uuid'
 
-import { ApiBaseUrl, BaseUrl } from '@/models/base/base'
+import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
 import Request from '@/models/base/request'
 import { App } from '@/models/github/event/app'
 import { Auth } from '@/models/github/event/auth'
@@ -26,7 +25,6 @@ export class GitHub {
   public Private_Key: string
   public Client_ID: string
   public Client_Secret: string
-  private state_id: string
   private currentRequestConfig: { url: string, token: string }
 
   constructor (options: GitHubAuthType) {
@@ -36,7 +34,6 @@ export class GitHub {
     this.Private_Key = options.Private_Key
     this.Client_ID = options.Client_ID
     this.Client_Secret = options.Client_Secret
-    this.state_id = this.create_state()
     this.jwtToken = this.generate_jwt()
     this.repo = new Repo(this, this.jwtToken)
     this.auth = new Auth(this, this.jwtToken)
@@ -61,14 +58,6 @@ export class GitHub {
   }
 
   /**
-   * 获取当前随机生成的字符串 state_id
-   * @returns 返回当前的 state_id
-   */
-  public getStateId () {
-    return this.state_id
-  }
-
-  /**
    * 生成 JWT
    * @param options 生成 JWT 所需的参数
    * @param options.APP_ID GitHub App ID
@@ -83,15 +72,6 @@ export class GitHub {
       iss: this.APP_ID
     }
     return jwt.sign(payload, Private_Key, { algorithm: 'RS256' })
-  }
-
-  /**
-   * 创建唯一的state_id
-   * @returns 返回生成的 state_id
-   */
-  private create_state (): string {
-    const state_id = uuidv4().replace(/-/g, '')
-    return state_id
   }
 
   /**
