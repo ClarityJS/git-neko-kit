@@ -77,6 +77,9 @@ jobs:
           name: ${{ needs.build.outputs.package_name }}
           path: ./
 
+      - name: 测试
+        run: ls
+
       - name: 发布到 NPM
         uses: JS-DevTools/npm-publish@v3
         with:
