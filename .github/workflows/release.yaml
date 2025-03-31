@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       releases_created: ${{ steps.release-please.outputs.releases_created }}
-      package_name: ${{ steps.build-package.PACKAGE_NAME }}
 
     steps:
       - name: 运行 release-please-action
@@ -27,6 +26,8 @@ jobs:
           manifest-file: .release-please-manifest.json
 
   build:
+    outputs:
+      package_name: ${{ steps.build-package.outputs.package_name }}
     needs: release
     if: needs.release.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
