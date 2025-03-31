@@ -1,6 +1,6 @@
 {
   "name": "git-neko-kit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Github, Gitee, GitCode API封装库",
   "author": "wuliya",
   "main": "./dist/index.js",
