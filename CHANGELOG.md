@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.0.3](https://github.com/ClarityJS/git-neko-kit/compare/v0.0.2...v0.0.3) (2025-03-31)
+
+
+### 🎡 持续集成
+
+* 调整 release 工作流中的输出定义位置 ([0f9ffcb](https://github.com/ClarityJS/git-neko-kit/commit/0f9ffcb03393613ae12fadbab2d4e9dd2012ae74))
+
 ## [0.0.2](https://github.com/ClarityJS/git-neko-kit/compare/v0.0.1...v0.0.2) (2025-03-31)
 
 
