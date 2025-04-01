@@ -1,14 +1,21 @@
-export interface RepoParam {
-  /** 仓库拥有者 */
+export interface RepoOwnerParamType {
+  /** 仓库的拥有者 */
   owner: string;
-  /** 仓库名称 */
+}
+export interface RepoNameParamType {
+  /** 仓库的名称 */
   repo: string;
 }
-export interface RepoUrlParam {
+
+/** 仓库信息响应类型 */
+export interface RepoBaseParamType extends RepoOwnerParamType, RepoNameParamType { }
+export interface RepoUrlParamType {
   /** 仓库地址 */
   url: string;
 }
-export type RepoParamType = RepoParam | RepoUrlParam
+
+/** 仓库信息请求参数 */
+export type RepoInfoParamType = RepoBaseParamType | RepoUrlParamType
 
 /** 拥有者信息 */
 interface Owner {
