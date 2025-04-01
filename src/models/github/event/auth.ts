@@ -64,6 +64,7 @@ export class Auth {
    * @returns 返回 token
    */
   public async refresh_token (refresh_token: string): Promise<GithubOauthRefreshTokenResponseType> {
+    if (!refresh_token.startsWith('ghr_')) throw new Error('refresh_token 格式错误')
     this.options.setRequestConfig(
       {
         url: this.BaseUrl
@@ -87,11 +88,26 @@ export class Auth {
 
   /**
    * 获取 token 的状态
-   * 暂时没写
    * @param token token Github Apps 生成的用户的token，也就是 `get_token_by_code` 生成的 token
    * @returns 返回 token 的状态
+   * @returns status token 的状态码，200 为有效，404,422均为无效
    */
   public async check_token_status (token: string) {
-
+    this.options.setRequestConfig(
+      {
+        url: this.ApiUrl
+      })
+    try {
+      let status, msg
+      const req = await this.post(`/applications/${this.Client_ID}/token`, {
+        client_id: this.Client_ID,
+        access_token: token
+      })
+      status = req.status
+      msg = status === 200 ? 'token 有效' : 'token 无效'
+      return { status, msg }
+    } catch (error) {
+      throw new Error(`Token 状态检查请求失败: ${error instanceof Error ? error.message : '未知错误'}`)
+    }
   }
 }
