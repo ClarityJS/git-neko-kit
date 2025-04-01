@@ -1,4 +1,5 @@
 import { GitHub } from '@/models/github/event/github'
+import type { GithubOauthRefreshTokenResponseType, GithubOauthTokenResponseType } from '@/types'
 
 export class Auth {
   private get: GitHub['get']
@@ -23,11 +24,13 @@ export class Auth {
    * @returns auth_link 授权链接，用于跳转 Github 授权页
    */
   public create_auth_link (state_id?: string): string {
-    const authLink = state_id
-      ? `${this.BaseUrl}/login/oauth/authorize?client_id=${this.Client_ID}&state=${state_id}`
-      : `${this.BaseUrl}/login/oauth/authorize?client_id=${this.Client_ID}`
+    const url = new URL('/login/oauth/authorize', this.BaseUrl)
+    url.search = new URLSearchParams({
+      client_id: this.Client_ID,
+      ...(state_id && { state: state_id })
+    }).toString()
 
-    return authLink
+    return url.toString()
   }
 
   /**
@@ -35,18 +38,24 @@ export class Auth {
    * @param code Github 返回的 code
    * @returns 返回 token
    */
-  public async get_token_by_code (code: string) {
+  public async get_token_by_code (code: string): Promise<GithubOauthTokenResponseType> {
     this.options.setRequestConfig(
       {
         url: this.BaseUrl
       })
-
-    const req = await this.post('login/oauth/access_token', {
-      client_id: this.Client_ID,
-      client_secret: this.options.Client_Secret,
-      code
-    })
-    return req
+    try {
+      const req = await this.post('login/oauth/access_token', {
+        client_id: this.Client_ID,
+        client_secret: this.options.Client_Secret,
+        code
+      }, { Accept: 'application/json' })
+      if (req.error) {
+        throw new Error('获取 token 失败', req.error)
+      }
+      return req
+    } catch (error) {
+      throw new Error(`Token 获取请求失败: ${error instanceof Error ? error.message : '未知错误'}`)
+    }
   }
 
   /**
@@ -54,20 +63,26 @@ export class Auth {
    * @param refresh_token Github 返回的 refresh_token
    * @returns 返回 token
    */
-  public async refresh_token (refresh_token: string) {
+  public async refresh_token (refresh_token: string): Promise<GithubOauthRefreshTokenResponseType> {
     this.options.setRequestConfig(
       {
         url: this.BaseUrl
       })
+    try {
+      const req = await this.post('login/oauth/access_token', {
+        client_id: this.Client_ID,
+        client_secret: this.options.Client_Secret,
+        grant_type: 'refresh_token',
+        refresh_token
+      }, { Accept: 'application/json' })
 
-    const req = await this.post('login/oauth/access_token', {
-      client_id: this.Client_ID,
-      client_secret: this.options.Client_Secret,
-      grant_type: 'refresh_token',
-      refresh_token
-    })
-
-    return req
+      if (req.error) {
+        throw new Error('获取 token 失败', req.error)
+      }
+      return req
+    } catch (error) {
+      throw new Error(`Token 刷新请求失败: ${error instanceof Error ? error.message : '未知错误'}`)
+    }
   }
 
   /**

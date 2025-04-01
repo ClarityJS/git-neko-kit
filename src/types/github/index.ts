@@ -1,3 +1,3 @@
 export { GitHubAppInfoType } from '@/types/github/app'
-export { RepoInfoType, RepoParamType } from '@/types/github/repo'
-export { GitHubAuthType } from '@/types/github/token'
+export { GitHubAuthType, GithubOauthRefreshTokenResponseType, GithubOauthTokenResponseType } from '@/types/github/auth'
+export { RepoInfoResponseType, RepoParamType } from '@/types/github/repo'

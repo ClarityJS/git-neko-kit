@@ -67,7 +67,7 @@ interface Owner {
 }
 
 /** * 仓库信息 */
-export interface RepoInfoType {
+export interface RepoInfoResponseType {
   /** * 仓库的唯一 ID */
   id: number;
   /** * 仓库的节点 ID */

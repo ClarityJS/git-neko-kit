@@ -1,7 +1,7 @@
 import GitUrlParse from 'git-url-parse'
 
 import { GitHub } from '@/models/github/event/github'
-import type { RepoInfoType, RepoParamType } from '@/types'
+import type { RepoInfoResponseType, RepoParamType } from '@/types'
 
 export class Repo {
   private get: GitHub['get']
@@ -25,7 +25,7 @@ export class Repo {
    * @param param options.url 仓库地址
    * @returns
    */
-  async info (options: RepoParamType): Promise<RepoInfoType | Error > {
+  async info (options: RepoParamType): Promise<RepoInfoResponseType> {
     // 解析仓库地址
     let owner, repo
     if ('url' in options) {
@@ -36,7 +36,7 @@ export class Repo {
       owner = options.owner
       repo = options.repo
     } else {
-      return new Error('参数错误')
+      throw new Error('参数错误')
     }
     const req = await this.get(`/repos/${owner}/${repo}`)
     return req

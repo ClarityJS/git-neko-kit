@@ -34,10 +34,11 @@ export class Install {
    */
   public async create_install_link (state_id?: string): Promise<string> {
     const APP_Name = await this.app.get_name()
-    const install_link = state_id
-      ? `${this.BaseUrl}/apps/${APP_Name}/installations/new?state=${state_id}`
-      : `${this.BaseUrl}/apps/${APP_Name}/installations/new`
-    return install_link
+    const url = new URL(`apps/${APP_Name}/installations/new`, this.BaseUrl)
+    url.search = new URLSearchParams({
+      ...(state_id && { state: state_id })
+    }).toString()
+    return url.toString()
   }
 
   /**
@@ -49,9 +50,10 @@ export class Install {
   */
   public async create_config_install_link (state_id?: string): Promise<string> {
     const APP_Name = await this.app.get_name()
-    const config_install_link = state_id
-      ? `${this.BaseUrl}/apps/${APP_Name}/installations/new?state=${state_id}`
-      : `${this.BaseUrl}/apps/${APP_Name}/installations/new`
-    return config_install_link
+    const url = new URL(`apps/${APP_Name}/installations/new`, this.BaseUrl)
+    url.search = new URLSearchParams({
+      ...(state_id && { state: state_id })
+    }).toString()
+    return url.toString()
   }
 }
