@@ -10,22 +10,12 @@ export interface RepoUrlParam {
 }
 export type RepoParamType = RepoParam | RepoUrlParam
 
-/** * 仓库许可证信息 */
-interface License {
-  /** * 许可证的键，例如 'mit' */
-  key: string;
-  /** * 许可证的名称，例如 'MIT License' */
-  name: string;
-  /** * 许可证的 SPDX ID，例如 'MIT' */
-  spdx_id: string;
-  /** * 许可证的 URL 地址 */
-  url: string;
-  /** * 许可证的节点 ID */
-  node_id: string;
-}
-
-/** * 仓库拥有者信息 */
+/** 拥有者信息 */
 interface Owner {
+  /** * 仓库的拥有者 */
+  name: string | null;
+  /** * 仓库的拥有者的邮箱 */
+  email: string | null;
   /** * 拥有者的 GitHub 用户名 */
   login: string;
   /** * 拥有者的 GitHub 用户 ID */
@@ -35,7 +25,7 @@ interface Owner {
   /** * 拥有者的头像 URL */
   avatar_url: string;
   /** * 拥有者的 Gravatar ID */
-  gravatar_id: string;
+  gravatar_id: string | null;
   /** * 拥有者的 GitHub API URL */
   url: string;
   /** * 拥有者的 GitHub 主页 URL */
@@ -64,7 +54,119 @@ interface Owner {
   user_view_type: string;
   /** * 是否是站点管理员 */
   site_admin: boolean;
+  /** * 用户标星时间 */
+  starred_at?: string;
 }
+
+/** 许可证信息 */
+interface License {
+  /** * 许可证的键，例如 'mit' */
+  key: string;
+  /** * 许可证的名称，例如 'MIT License' */
+  name: string;
+  /** * 许可证的 SPDX ID，例如 'MIT' */
+  spdx_id: string;
+  /** * 许可证的 URL 地址 */
+  url: string | null;
+  /** * 许可证的 HTML URL */
+  html_url?: string;
+  /** * 许可证的节点 ID */
+  node_id: string;
+}
+
+/** 仓库行为准则 */
+interface CodeOfConduct {
+  /** * 行为准则的键 */
+  key: string;
+  /** * 行为准则的名称 */
+  name: string;
+  /** * 行为准则的 URL */
+  url: string;
+  /** * 行为准则的主体 */
+  body?: string;
+  /** * 行为准则的 HTML URL */
+  html_url: string | null;
+}
+
+/** 仓库高级安全状态 */
+interface SecurityAnalysisAdvancedSecurity {
+  /** * 高级安全状态 */
+  status: string;
+}
+
+/** Dependabot 安全更新状态 */
+interface SecurityAnalysisDependabotSecurityUpdates {
+  /** * Dependabot 安全更新状态 */
+  status: string;
+}
+
+/** 秘钥扫描状态 */
+interface SecurityAnalysisSecretScanning {
+  /** * 秘钥扫描状态 */
+  status: string;
+}
+
+/** 秘钥扫描推送保护状态 */
+interface SecurityAnalysisSecretScanningPushProtection {
+  /** * 秘钥扫描推送保护状态 */
+  status: string;
+}
+
+/** 仓库安全和分析设置 */
+interface SecurityAndAnalysis {
+  /** * 高级安全设置 */
+  advanced_security?: SecurityAnalysisAdvancedSecurity;
+  /** * Dependabot 安全更新设置 */
+  dependabot_security_updates?: SecurityAnalysisDependabotSecurityUpdates;
+  /** * 秘钥扫描设置 */
+  secret_scanning?: SecurityAnalysisSecretScanning;
+  /** * 秘钥扫描推送保护设置 */
+  secret_scanning_push_protection?: SecurityAnalysisSecretScanningPushProtection;
+}
+
+/** 仓库的权限信息 */
+interface Permissions {
+  /** * 管理员权限 */
+  admin: boolean;
+  /** * 推送权限 */
+  push: boolean;
+  /** * 拉取权限 */
+  pull: boolean;
+  /** * 维护权限 */
+  maintain?: boolean;
+  /** * 分类权限 */
+  triage?: boolean;
+}
+
+/**
+ * 合并提交标题的格式选项
+ * - PR_TITLE: 使用 Pull Request 标题作为合并提交标题
+ * - MERGE_MESSAGE: 使用默认的合并消息格式作为标题
+ */
+export type MergeCommitTitle = 'PR_TITLE' | 'MERGE_MESSAGE'
+
+/**
+ * 合并提交消息的格式选项
+ * - PR_BODY: 使用 Pull Request 正文作为合并提交消息
+ * - PR_TITLE: 使用 Pull Request 标题作为合并提交消息
+ * - BLANK: 留空合并提交消息
+ */
+export type MergeCommitMessage = 'PR_BODY' | 'PR_TITLE' | 'BLANK'
+
+/**
+ * Squash 合并提交标题的格式选项
+ * - PR_TITLE: 使用 Pull Request 标题作为 Squash 合并提交标题
+ * - COMMIT_OR_PR_TITLE: 使用提交信息或 Pull Request 标题作为标题
+ */
+export type SquashMergeCommitTitle = 'PR_TITLE' | 'COMMIT_OR_PR_TITLE'
+
+/**
+ * Squash 合并提交消息的格式选项
+ * - PR_BODY: 使用 Pull Request 正文作为 Squash 合并提交消息
+ * - COMMIT_MESSAGES: 使用所有提交信息作为 Squash 合并提交消息
+ * - BLANK: 留空 Squash 合并提交消息
+ */
+export type SquashMergeCommitMessage = 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK'
 
 /** * 仓库信息 */
 export interface RepoInfoResponseType {
@@ -83,7 +185,7 @@ export interface RepoInfoResponseType {
   /** * 仓库的 HTML 页面 URL */
   html_url: string;
   /** * 仓库的描述信息 */
-  description: string;
+  description: string | null;
   /** * 仓库是否是 fork 仓库 */
   fork: boolean;
   /** * 仓库的 API URL */
@@ -174,8 +276,8 @@ export interface RepoInfoResponseType {
   clone_url: string;
   /** * 仓库的 SVN URL */
   svn_url: string;
-  /** * 仓库的主页 URL，若无则为空字符串 */
-  homepage: string;
+  /** * 仓库的主页 URL，若无则为 null */
+  homepage: string | null;
   /** * 仓库的大小（单位：KB） */
   size: number;
   /** * 仓库的 Stargazer 数量 */
@@ -183,7 +285,7 @@ export interface RepoInfoResponseType {
   /** * 仓库的 Watcher 数量 */
   watchers_count: number;
   /** * 仓库的主编程语言 */
-  language: string;
+  language: string | null;
   /** * 是否开启 issue 功能 */
   has_issues: boolean;
   /** * 是否开启项目功能 */
@@ -207,7 +309,7 @@ export interface RepoInfoResponseType {
   /** * 开放的 issue 数量 */
   open_issues_count: number;
   /** * 仓库的许可证信息 */
-  license: License;
+  license: License | null;
   /** * 是否允许 fork 仓库 */
   allow_forking: boolean;
   /** * 是否是模板仓库 */
@@ -232,4 +334,42 @@ export interface RepoInfoResponseType {
   network_count: number;
   /** * 仓库的订阅者数量 */
   subscribers_count: number;
+  /** * 仓库的组织信息，如果属于组织的话 */
+  organization?: Owner | null;
+  /** * 模板仓库信息，如果是从模板创建的话 */
+  template_repository: RepoInfoResponseType | null;
+  /** * 父仓库信息，如果是 fork 的话 */
+  parent: RepoInfoResponseType | null;
+  /** * 源仓库信息，如果是 fork 的话 */
+  source: RepoInfoResponseType | null;
+  /** * 是否允许 rebase 合并 */
+  allow_rebase_merge?: boolean;
+  /** * 是否允许 squash 合并 */
+  allow_squash_merge?: boolean;
+  /** * 是否允许自动合并 */
+  allow_auto_merge?: boolean;
+  /** * 合并后是否删除分支 */
+  delete_branch_on_merge?: boolean;
+  /** * 是否允许合并提交 */
+  allow_merge_commit?: boolean;
+  /** * 是否允许更新分支 */
+  allow_update_branch?: boolean;
+  /** * 是否允许匿名 Git 访问 */
+  anonymous_access_enabled?: boolean;
+  /** * squash 合并提交标题的格式 */
+  squash_merge_commit_title?: SquashMergeCommitTitle;
+  /** * squash 合并提交消息的格式 */
+  squash_merge_commit_message?: SquashMergeCommitMessage;
+  /** * 合并提交标题的格式 */
+  merge_commit_title?: MergeCommitTitle;
+  /** * 合并提交消息的格式 */
+  merge_commit_message?: MergeCommitMessage;
+  /** * 行为准则信息 */
+  code_of_conduct?: CodeOfConduct | null;
+  /** * 安全和分析设置 */
+  security_and_analysis?: SecurityAndAnalysis | null;
+  /** * 权限设置 */
+  permissions?: Permissions;
+  /** * 自定义属性 */
+  custom_properties?: Record<string, any>;
 }

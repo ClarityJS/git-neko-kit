@@ -1,7 +1,7 @@
 import GitUrlParse from 'git-url-parse'
 
 import { GitHub } from '@/models/github/event/github'
-import type { RepoInfoResponseType, RepoParamType } from '@/types'
+import type { OrgReoParmsType, OrgRepoListType, RepoInfoResponseType, RepoParamType } from '@/types'
 
 export class Repo {
   private get: GitHub['get']
@@ -18,11 +18,40 @@ export class Repo {
   }
 
   /**
+   * 获取组织仓库列表
+   * @param options 组织仓库列表参数
+   * @param options.org 组织名称
+   * @param options.type 类型，可选all， public， private， forks， sources， member， 默认为 all
+   * @param options.sort 排序方式，可选created， updated， pushed， full_name， 默认为 full_name
+   * @param options.direction 排序方式，可选asc， desc， 默认为 desc
+   * @param options.per_page 每页数量，默认为 30
+   * @param options.page 页码，默认为 1
+   * @return 返回仓库列表信息
+s
+   */
+  public async get_org_repos_list (options: OrgReoParmsType): Promise<OrgRepoListType> {
+    try {
+      const req = await this.get(`/orgs/${options.org}/repos`, {
+        org: options.org,
+        type: options.type ?? 'all',
+        sort: options.sort ?? 'created',
+        direction: options.direction ?? 'desc',
+        per_page: options.per_page ?? 30,
+        page: options.page ?? 1
+      })
+      return req
+    } catch (error) {
+      throw new Error(`获取组织仓库列表失败: : ${error instanceof Error ? error.message : '未知错误'}`)
+    }
+  }
+
+  /**
    * 获取仓库信息
-   * @param param options.owner 仓库的拥有者
-   * @param param options.repo 仓库的名称
+   * @param options 仓库信息参数
+   * @param options.owner 仓库的拥有者
+   * @param options.repo 仓库的名称
    * 二选一，推荐使用 options.owner 和 options.repo
-   * @param param options.url 仓库地址
+   * @param options.url 仓库地址
    * @returns
    */
   public async info (options: RepoParamType): Promise<RepoInfoResponseType> {
