@@ -25,11 +25,23 @@ export class Repo {
    * @param param options.url 仓库地址
    * @returns
    */
-  async info (options: RepoParamType): Promise<RepoInfoResponseType> {
-    // 解析仓库地址
-    let owner, repo
+  public async info (options: RepoParamType): Promise<RepoInfoResponseType> {
+    /* 解析仓库地址 */
+    let owner, repo, url
     if ('url' in options) {
-      const info = GitUrlParse(options.url)
+      url = options.url
+      /* 处理反代地址, 仅http协议 */
+      if (!url.startsWith(this.BaseUrl)) {
+        const parsedUrl = new URL(url)
+        let path = parsedUrl.pathname
+        if (path.includes('://')) {
+          path = new URL(path.startsWith('/') ? path.substring(1) : path).pathname
+        }
+        const baseUrl = this.BaseUrl.endsWith('/') ? this.BaseUrl : `${this.BaseUrl}/`
+        path = path.replace(/^\/+/, '')
+        url = baseUrl + path
+      }
+      const info = GitUrlParse(url)
       owner = info?.owner
       repo = info?.name
     } else if ('owner' in options && 'repo' in options) {
@@ -38,7 +50,11 @@ export class Repo {
     } else {
       throw new Error('参数错误')
     }
-    const req = await this.get(`/repos/${owner}/${repo}`)
-    return req
+    try {
+      const req = await this.get(`/repos/${owner}/${repo}`)
+      return req
+    } catch (error) {
+      throw new Error(`获取仓库信息失败: : ${error instanceof Error ? error.message : '未知错误'}`)
+    }
   }
 }
