@@ -95,7 +95,6 @@ s
    * 以上为必选参数，以下为可选参数
    * @param options.description 仓库描述
    * @param options.homepage 仓库主页
-   * @param options.private 是否为私有仓库
    * @param options.visibility 仓库可见性，可选public， private， 默认为 public
    * @param options.has_issues 是否开启议题issue
    * @param options.has_projects 是否开启项目project
@@ -120,7 +119,7 @@ s
    */
   public async create_org_repo (options: OrgRepoCreateParamType) {
     try {
-      const { owner, ...repoOptions } = options
+      const { owner, name, ...repoOptions } = options
       const body: Partial<OrgRepoCreateParamType> = {}
       Object.assign(body, repoOptions)
       const req = await this.post(`/orgs/${owner}/repos`, body)

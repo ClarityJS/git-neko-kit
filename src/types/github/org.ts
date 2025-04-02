@@ -21,12 +21,12 @@ export type OrgRepoListType = RepoInfoResponseType[]
 
 /** 创建组织仓库请求参数 */
 export interface OrgRepoCreateParamType extends RepoOwnerParamType {
+  /** 仓库名称 */
+  name: string;
   /** 仓库描述 */
   description?: string;
   /** 仓库主页 */
   homepage?: string;
-  /** 是否为私有仓库 */
-  private?: boolean;
   /** 仓库可见性 */
   visibility?: 'public' | 'private';
   /** 是否开启议题issue */
