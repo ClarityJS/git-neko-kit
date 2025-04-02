@@ -16,6 +16,15 @@ const type = 'github'
 
 /**
  * Github API 基础类，发送请求，生成jwtToken 等操作
+ * @class GitHub
+ * @property {string} BaseUrl - GitHub API基础URL
+ * @property {string} ApiUrl - GitHub API端点URL
+ * @property {string} jwtToken - 认证令牌
+ * @property {string} Client_ID - GitHub App 的 Client ID
+ * @property {string} Client_Secret - GitHub App 的 Client Secret
+ * @property {Function} get - 封装的GET请求方法
+ * @property {Function} post - 封装的POST请求方法
+ *
  */
 export class GitHub {
   public app: App
@@ -32,6 +41,15 @@ export class GitHub {
   private currentRequestConfig: RequestConfigType
   private proxy?: ProxyParamsType
 
+  /**
+   * GitHub API 基础类，发送请求，生成jwtToken 等操作
+   * @param options - 初始化参数
+   * @param options.APP_ID - GitHub App ID
+   * @param options.Private_Key - GitHub App 的 Private Key
+   * @param options.Client_ID - GitHub App 的 Client ID
+   * @param options.Client_Secret - GitHub App 的 Client Secret
+   *
+   */
   constructor (options: GitHubAuthType) {
     this.BaseUrl = BaseUrl(type)
     this.ApiUrl = ApiBaseUrl(type)
@@ -55,9 +73,9 @@ export class GitHub {
 
   /**
    * 设置代理配置
-   * @param proxy 代理配置对象
-   * @param proxy.type 代理类型，例如 'http' 或 'https' 或'socks5'
-   * @param proxy.address 代理地址，例如 'http://127.0.0.1:7890'
+   * @param proxy - 代理配置对象
+   * @param proxy.type - 代理类型，可选值为 'common' | 'http' | 'https' | 'socks' @example 'http
+   * @param proxy.address - 代理地址 @example 'http://127.0.0.1:7890'
    */
   public setProxy (proxy?: ProxyParamsType): void {
     if (proxy?.address) {
@@ -114,8 +132,10 @@ export class GitHub {
   /**
  * 设置当前的 Request 配置，包括 URL 和 token
  * @param config 配置对象，包含 url 和 token
- * @param config.url 请求的 URL, 默认为 ApiUrl
- * @param config.token 请求的 token, 默认为 jwtToken
+ * @param config.url 请求的 URL @default ApiUrl
+ * @param config.token 请求的 token @default jwtToken
+ * @param config.status 是否返回状态码 @default false
+ * @param config.tokenType token 类型 @default Bearer
  */
   public setRequestConfig (config: RequestConfigType): void {
     if (config.url) this.currentRequestConfig.url = config.url
@@ -136,9 +156,9 @@ export class GitHub {
 
   /**
    * Github GET 请求方法
-   * @param path 请求路径
-   * @param parms 请求参数
-   * @param customHeaders 请求头，选项
+   * @param path - 请求路径
+   * @param parms - 请求参数
+   * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
   public async get (path: string, parms?: any, customHeaders?: Record<string, string>) {
@@ -153,9 +173,9 @@ export class GitHub {
 
   /**
    * Github POST 请求方法
-   * @param path 请求路径
-   * @param data 请求数据
-   * @param customHeaders 请求头，选项
+   * @param path - 请求路径
+   * @param data - 请求数据
+   * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
   public async post (path: string, data: any, customHeaders?: Record<string, string>) {

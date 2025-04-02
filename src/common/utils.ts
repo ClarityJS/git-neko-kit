@@ -4,8 +4,8 @@ import { basePath } from '@/root'
 
 /**
  * 读取 JSON 文件
- * @param file 文件名
- * @param root 根目录
+ * @param file - 文件名
+ * @param root - 根目录
  * @returns JSON 对象
  */
 export function readJSON<T = Record<string, unknown>> (file = '', root = ''): T {

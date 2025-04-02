@@ -27,7 +27,7 @@ export class Install {
 
   /**
    * 生成Github App 安装链接
-   * @param state_id 随机生成的 state_id，用于验证授权请求的状态，可选，默认不使用
+   * @param state_id - 随机生成的 state_id，用于验证授权请求的状态，可选，默认不使用
    * @returns 返回安装链接对象
    * @returns state_id 随机生成的字符串，用于验证
    * @returns install_link 安装链接，用于跳转 Github 安装页
@@ -43,7 +43,7 @@ export class Install {
 
   /**
   * 生成Github Apps 配置链接
-  * @param stateId 可选，传入的 state_id, 随机字符串
+  * @param state_id - 传入的 state_id, 随机字符串
   * @returns 返回配置链接对象
   * @returns state_id 随机生成的字符串，用于验证
   * @returns  config_install_link 配置链接

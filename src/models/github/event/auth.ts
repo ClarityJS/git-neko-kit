@@ -5,6 +5,17 @@ import type {
   GithubOauthTokenResponseType
 } from '@/types'
 
+/**
+ * 授权类，用于获取 token 和验证 token 的状态
+ * @class Auth
+ * @property {Function} get - 封装的GET请求方法
+ * @property {Function} post - 封装的POST请求方法
+ * @property {string} BaseUrl - GitHub API基础URL
+ * @property {string} ApiUrl - GitHub API端点URL
+ * @property {string} Client_ID - GitHub App 的 Client ID
+ * @property {string} Client_Secret - GitHub App 的 Client Secret
+ *
+ */
 export class Auth {
   private get: GitHub['get']
   private post: GitHub['post']
@@ -12,7 +23,6 @@ export class Auth {
   private ApiUrl: string
   private Client_ID: string
   private Client_Secret: string
-  private jwtToken: string
   constructor (private options: GitHub, jwtToken: string) {
     this.get = options.get.bind(options)
     this.post = options.post.bind(options)
@@ -20,12 +30,11 @@ export class Auth {
     this.BaseUrl = options.BaseUrl
     this.Client_ID = options.Client_ID
     this.Client_Secret = options.Client_Secret
-    this.jwtToken = jwtToken
   }
 
   /**
    * 生成Github App 授权链接
-   * @param state_id 随机生成的 state_id，用于验证授权请求的状态，可选，默认不使用
+   * @param state_id - 随机生成的 state_id，用于验证授权请求的状态，可选，默认不使用
    * @returns 返回授权链接对象
    * @returns auth_link 授权链接，用于跳转 Github 授权页
    */
@@ -41,7 +50,7 @@ export class Auth {
 
   /**
    * 通过 code 获取 token
-   * @param code Github 返回的 code
+   * @param code - Github 返回的 code
    * @returns 返回 token
    */
   public async get_token_by_code (code: string): Promise<GithubOauthTokenResponseType> {
@@ -66,7 +75,7 @@ export class Auth {
 
   /**
    * 通过 refresh_token 获取 token
-   * @param refresh_token Github 返回的 refresh_token
+   * @param refresh_token - Github 返回的 refresh_token
    * @returns 返回 token
    */
   public async refresh_token (refresh_token: string): Promise<GithubOauthRefreshTokenResponseType> {
@@ -94,10 +103,10 @@ export class Auth {
 
   /**
    * 获取 token 的状态
-   * @param token token Github Apps 生成的用户的token，也就是 `get_token_by_code` 生成的 token
+   * @param token - Github Apps 生成的用户的token，也就是 `get_token_by_code` 生成的 token
    * @returns 返回 token 的状态
-   * @returns status token 的状态码，200 为有效，404,422均为无效
-   * @returns msg token 的状态信息，200 为有效，404,422均为无效
+   * @returns status - token 的状态码，200 为有效，404,422均为无效
+   * @returns msg token - 的状态信息，200 为有效，404,422均为无效
    */
   public async check_token_status (token: string): Promise<GithubOauthCheckTokenResponseType> {
     if (!token.startsWith('ghu_')) throw new Error('token 格式错误')

@@ -1,3 +1,5 @@
+export * from '@/models/github/event/app'
 export * from '@/models/github/event/auth'
 export * from '@/models/github/event/github'
+export * from '@/models/github/event/install'
 export * from '@/models/github/event/repo'
