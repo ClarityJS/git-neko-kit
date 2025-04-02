@@ -10,7 +10,7 @@ export default defineConfig({
   dts: true,                    // 生成类型声明文件
   clean: true,                  // 清理dist目录
   minify: true,                 // 压缩生产环境代码
-  target: 'es2022',             // 指定ECMAScript目标版本
+  target: 'node22',             // 指定ECMAScript目标版本
   sourcemap: false,              // 生成sourcemap
   treeshake: true,              // 启用树摇优化
   platform: 'node',            // 指定为Node.js环境
