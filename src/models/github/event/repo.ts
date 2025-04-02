@@ -67,7 +67,7 @@ s
           path = new URL(path.startsWith('/') ? path.substring(1) : path).pathname
         }
         const baseUrl = this.BaseUrl.endsWith('/') ? this.BaseUrl : `${this.BaseUrl}/`
-        path = path.replace(/^\/+/, '')
+        path = path.replace(/^\/|\/$/g, '')
         url = baseUrl + path
       }
       const info = GitUrlParse(url)
