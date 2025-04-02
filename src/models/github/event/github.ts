@@ -52,6 +52,7 @@ export class GitHub {
    * @param token 传入的 token
    */
   public setToken (token: string): void {
+    if (!token.startsWith('ghu_')) throw new Error('token 格式错误')
     this.currentRequestConfig.token = token
     this.repo = new Repo(this, this.jwtToken)
     this.auth = new Auth(this, this.jwtToken)
