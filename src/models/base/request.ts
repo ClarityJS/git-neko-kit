@@ -4,18 +4,14 @@ import { HttpsProxyAgent } from 'https-proxy-agent'
 import { SocksProxyAgent } from 'socks-proxy-agent'
 
 import { pkg } from '@/common'
-import { ResponseType } from '@/types'
+import type { ProxyParamsType, ResponseType } from '@/types'
 
 class Request {
   private baseUrl: string
   private authorization?: string
-  private proxy?: {
-    http?: string
-    https?: string
-    socks?: string
-  }
+  private proxy?: ProxyParamsType
 
-  constructor (baseUrl: string, authorization?: string, proxy?: { http?: string, https?: string, socks?: string }) {
+  constructor (baseUrl: string, authorization?: string, proxy?: ProxyParamsType) {
     this.baseUrl = baseUrl.replace(/\/$/, '')
     this.authorization = authorization
     this.proxy = proxy
@@ -36,17 +32,22 @@ class Request {
 
     /** 代理配置 */
     if (this.proxy) {
-      const { http, https, socks } = this.proxy
+      const httpAddress = this.proxy.type === 'http' ? this.proxy.address : undefined
+      const httpsAddress = this.proxy.type === 'https' ? this.proxy.address : undefined
+      const socksAddress = this.proxy.type === 'socks' ? this.proxy.address : undefined
+
       /** HTTP代理配置 */
-      if (http) {
-        config.httpAgent = new HttpProxyAgent(http)
-        config.httpsAgent = new HttpsProxyAgent(http)
-      } else if (https) {  /** HTTPS代理配置 */
-        config.httpsAgent = new HttpsProxyAgent(https)
+      if (httpAddress) {
+        config.httpAgent = new HttpProxyAgent(httpAddress)
+        config.httpsAgent = new HttpsProxyAgent(httpAddress)
+      }
+      /** HTTPS代理配置 */
+      if (httpsAddress) {
+        config.httpsAgent = new HttpsProxyAgent(httpsAddress)
       }
       /** SOCKS代理配置 */
-      if (socks) {
-        const socksAgent = new SocksProxyAgent(socks)
+      if (socksAddress) {
+        const socksAgent = new SocksProxyAgent(socksAddress)
         config.httpAgent = socksAgent
         config.httpsAgent = socksAgent
       }

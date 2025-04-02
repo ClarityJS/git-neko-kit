@@ -61,9 +61,19 @@ export class GitHub {
   /**
    * 设置代理配置
    * @param proxy 代理配置对象
+   * @param proxy.type 代理类型，例如 'http' 或 'https' 或'socks5'
+   * @param proxy.address 代理地址，例如 'http://127.0.0.1:7890'
    */
-  public setProxy (proxy?: ProxyParamsType) {
+  public setProxy (proxy?: ProxyParamsType): void {
+    if (proxy?.address) {
+      proxy.address = proxy.address.replace(/\/+$/, '')
+    }
     this.proxy = proxy
+
+    if (proxy?.type === 'common') {
+      this.BaseUrl = BaseUrl(type, proxy.address)
+      this.ApiUrl = ApiBaseUrl(type, proxy.address)
+    }
     this.repo = new Repo(this, this.jwtToken)
     this.auth = new Auth(this, this.jwtToken)
     this.install = new Install(this, this.jwtToken)
@@ -102,10 +112,10 @@ export class GitHub {
    * 创建一个请求实例，使用当前的 token
    * @returns 返回一个配置好的 Request 实例
    */
-  private createRequest () {
+  private createRequest (): Request {
     const { url, token } = this.currentRequestConfig
-    const proxyConfig = this.proxy
-      ? { [this.proxy.type]: this.proxy.address }
+    const proxyConfig = this.proxy?.type !== 'common'
+      ? this.proxy
       : undefined
 
     return new Request(url, token, proxyConfig)
