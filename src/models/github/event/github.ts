@@ -48,18 +48,6 @@ export class GitHub {
   }
 
   /**
-   * 设置 token
-   * @param token 传入的 token
-   */
-  public setToken (token: string): void {
-    if (!token.startsWith('ghu_')) throw new Error('token 格式错误')
-    this.currentRequestConfig.token = token
-    this.repo = new Repo(this, this.jwtToken)
-    this.auth = new Auth(this, this.jwtToken)
-    this.install = new Install(this, this.jwtToken)
-  }
-
-  /**
    * 设置代理配置
    * @param proxy 代理配置对象
    * @param proxy.type 代理类型，例如 'http' 或 'https' 或'socks5'
@@ -75,10 +63,29 @@ export class GitHub {
       this.BaseUrl = BaseUrl(type, proxy.address)
       this.ApiUrl = ApiBaseUrl(type, proxy.address)
     }
-    this.repo = new Repo(this, this.jwtToken)
-    this.auth = new Auth(this, this.jwtToken)
-    this.install = new Install(this, this.jwtToken)
-    this.app = new App(this, this.jwtToken)
+
+    const token = this.currentRequestConfig.token || this.jwtToken
+    this.repo = new Repo(this, token)
+    this.auth = new Auth(this, token)
+    this.install = new Install(this, token)
+    this.app = new App(this, token)
+  }
+
+  /**
+   * 设置 token
+   * @param token 传入的 token
+   */
+  public setToken (token: string): void {
+    if (!token.startsWith('ghu_')) throw new Error('token 格式错误')
+    this.currentRequestConfig.token = token
+
+    this.repo = new Repo(this, token)
+    this.auth = new Auth(this, token)
+    this.install = new Install(this, token)
+    this.app = new App(this, token)
+    if (this.proxy) {
+      this.setProxy(this.proxy)
+    }
   }
 
   /**
