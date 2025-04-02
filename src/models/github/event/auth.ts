@@ -95,6 +95,7 @@ export class Auth {
    * @returns status token 的状态码，200 为有效，404,422均为无效
    */
   public async check_token_status (token: string) {
+    if (!token.startsWith('ghu_')) throw new Error('token 格式错误')
     this.options.setRequestConfig(
       {
         url: this.ApiUrl,
