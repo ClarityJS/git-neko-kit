@@ -8,7 +8,7 @@ import { basePath } from '@/root'
  * @param root 根目录
  * @returns JSON 对象
  */
-export function readJSON (file = '', root = ''): any {
+export function readJSON (file = '', root = ''): Record<string, unknown> {
   root = root || basePath
   try {
     const filePath = `${root}/${file}`
