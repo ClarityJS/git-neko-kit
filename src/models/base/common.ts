@@ -1,4 +1,4 @@
-import { ApiType, proxyUrlType } from '@/types'
+import { ApiType, ReverseProxyCommonUrlType } from '@/types'
 
 /**
  * 获取API基础URL方法
@@ -6,7 +6,7 @@ import { ApiType, proxyUrlType } from '@/types'
  * @param proxyUrl 代理URL，可选，默认不使用
  * @returns 返回URL
  */
-export function ApiBaseUrl (type?: ApiType, proxyUrl?: proxyUrlType): string {
+export function ApiBaseUrl (type?: ApiType, proxyUrl?: ReverseProxyCommonUrlType): string {
   const urlMap: Record<ApiType, string> = {
     github: 'api.github.com',
     gitee: 'gitee.com/api/v5',
@@ -22,7 +22,7 @@ export function ApiBaseUrl (type?: ApiType, proxyUrl?: proxyUrlType): string {
  * @param proxyUrl 代理URL，可选，默认不使用
  * @returns 返回URL
  */
-export function BaseUrl (type?: ApiType, proxyUrl?: proxyUrlType): string {
+export function BaseUrl (type?: ApiType, proxyUrl?: ReverseProxyCommonUrlType): string {
   const urlMap: Record<ApiType, string> = {
     github: 'github.com',
     gitee: 'gitee.com',

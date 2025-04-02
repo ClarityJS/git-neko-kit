@@ -6,7 +6,7 @@ import { App } from '@/models/github/event/app'
 import { Auth } from '@/models/github/event/auth'
 import { Install } from '@/models/github/event/install'
 import { Repo } from '@/models/github/event/repo'
-import type { GitHubAuthType } from '@/types'
+import type { GitHubAuthType, ProxyParamsType } from '@/types'
 
 const type = 'github'
 
@@ -26,6 +26,7 @@ export class GitHub {
   public Client_ID: string
   public Client_Secret: string
   private currentRequestConfig: { url: string, token: string }
+  private proxy?: ProxyParamsType
 
   constructor (options: GitHubAuthType) {
     this.BaseUrl = BaseUrl(type)
@@ -55,6 +56,18 @@ export class GitHub {
     this.repo = new Repo(this, this.jwtToken)
     this.auth = new Auth(this, this.jwtToken)
     this.install = new Install(this, this.jwtToken)
+  }
+
+  /**
+   * 设置代理配置
+   * @param proxy 代理配置对象
+   */
+  public setProxy (proxy?: ProxyParamsType) {
+    this.proxy = proxy
+    this.repo = new Repo(this, this.jwtToken)
+    this.auth = new Auth(this, this.jwtToken)
+    this.install = new Install(this, this.jwtToken)
+    this.app = new App(this, this.jwtToken)
   }
 
   /**
@@ -91,7 +104,11 @@ export class GitHub {
    */
   private createRequest () {
     const { url, token } = this.currentRequestConfig
-    return new Request(url, token)
+    const proxyConfig = this.proxy
+      ? { [this.proxy.type]: this.proxy.address }
+      : undefined
+
+    return new Request(url, token, proxyConfig)
   }
 
   /**
