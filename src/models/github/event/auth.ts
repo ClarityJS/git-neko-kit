@@ -7,6 +7,7 @@ export class Auth {
   private BaseUrl: string
   private ApiUrl: string
   private Client_ID: string
+  private Client_Secret: string
   private jwtToken: string
   constructor (private options: GitHub, jwtToken: string) {
     this.get = options.get.bind(options)
@@ -14,6 +15,7 @@ export class Auth {
     this.ApiUrl = options.ApiUrl
     this.BaseUrl = options.BaseUrl
     this.Client_ID = options.Client_ID
+    this.Client_Secret = options.Client_Secret
     this.jwtToken = jwtToken
   }
 
@@ -95,15 +97,17 @@ export class Auth {
   public async check_token_status (token: string) {
     this.options.setRequestConfig(
       {
-        url: this.ApiUrl
+        url: this.ApiUrl,
+        tokenType: 'Basic',
+        token: `${this.Client_ID}:${this.Client_Secret}`,
+        status: true
       })
     try {
       let status, msg
       const req = await this.post(`/applications/${this.Client_ID}/token`, {
-        client_id: this.Client_ID,
         access_token: token
       })
-      status = req.status
+      status = req.statusCode
       msg = status === 200 ? 'token 有效' : 'token 无效'
       return { status, msg }
     } catch (error) {
