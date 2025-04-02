@@ -8,7 +8,7 @@ export interface GitHubAuthType {
   /** GitHub App Client Secret */
   Client_Secret: string
 }
-/** Github 授权令牌接口 */
+/** Github 授权令牌接口返回类型 */
 export interface GithubOauthTokenResponseType {
   /** 用户访问令牌， 格式为 ghu_ 开头 */
   access_token: string;
@@ -25,6 +25,7 @@ export interface GithubOauthTokenResponseType {
 
 }
 
+/** Github 刷新令牌接口返回类型 */
 export interface GithubOauthRefreshTokenResponseType {
   /** 用户访问令牌，格式为 ghu_ 开头 */
   access_token: string;
@@ -38,4 +39,12 @@ export interface GithubOauthRefreshTokenResponseType {
   scope: string;
   /** 令牌类型，始终为 'bearer' */
   token_type: 'bearer';
+}
+
+/** 检查Token状态返回类型 */
+export interface GithubOauthCheckTokenResponseType {
+  /** 状态码 */
+  status: number;
+  /** 状态信息 */
+  msg: string;
 }

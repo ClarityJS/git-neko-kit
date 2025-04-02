@@ -6,7 +6,11 @@ import { App } from '@/models/github/event/app'
 import { Auth } from '@/models/github/event/auth'
 import { Install } from '@/models/github/event/install'
 import { Repo } from '@/models/github/event/repo'
-import type { GitHubAuthType, ProxyParamsType, RequestConfigType } from '@/types'
+import type {
+  GitHubAuthType,
+  ProxyParamsType,
+  RequestConfigType
+} from '@/types'
 
 const type = 'github'
 

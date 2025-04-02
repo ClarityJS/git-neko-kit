@@ -1,5 +1,9 @@
 import { GitHub } from '@/models/github/event/github'
-import type { GithubOauthRefreshTokenResponseType, GithubOauthTokenResponseType } from '@/types'
+import type {
+  GithubOauthCheckTokenResponseType,
+  GithubOauthRefreshTokenResponseType,
+  GithubOauthTokenResponseType
+} from '@/types'
 
 export class Auth {
   private get: GitHub['get']
@@ -93,8 +97,9 @@ export class Auth {
    * @param token token Github Apps 生成的用户的token，也就是 `get_token_by_code` 生成的 token
    * @returns 返回 token 的状态
    * @returns status token 的状态码，200 为有效，404,422均为无效
+   * @returns msg token 的状态信息，200 为有效，404,422均为无效
    */
-  public async check_token_status (token: string) {
+  public async check_token_status (token: string): Promise<GithubOauthCheckTokenResponseType> {
     if (!token.startsWith('ghu_')) throw new Error('token 格式错误')
     this.options.setRequestConfig(
       {

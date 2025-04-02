@@ -1,7 +1,13 @@
 import GitUrlParse from 'git-url-parse'
 
 import { GitHub } from '@/models/github/event/github'
-import type { OrgReoParmsType, OrgRepoCreateParamType, OrgRepoListType, RepoInfoParamType, RepoInfoResponseType } from '@/types'
+import type {
+  OrgReoParmsType,
+  OrgRepoCreateParamType,
+  OrgRepoListType,
+  RepoInfoParamType,
+  RepoInfoResponseType
+} from '@/types'
 
 export class Repo {
   private get: GitHub['get']
