@@ -117,7 +117,7 @@ s
    * @param options.custom_properties 自定义属性，可选键值对，默认为 {}
    * @returns 返回仓库信息
    */
-  public async create_org_repo (options: OrgRepoCreateParamType) {
+  public async create_org_repo (options: OrgRepoCreateParamType): Promise<RepoInfoResponseType> {
     try {
       const { owner, name, ...repoOptions } = options
       const body: Partial<OrgRepoCreateParamType> = {}
