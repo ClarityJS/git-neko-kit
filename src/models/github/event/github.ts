@@ -6,7 +6,7 @@ import { App } from '@/models/github/event/app'
 import { Auth } from '@/models/github/event/auth'
 import { Install } from '@/models/github/event/install'
 import { Repo } from '@/models/github/event/repo'
-import type { GitHubAuthType, ProxyParamsType } from '@/types'
+import type { GitHubAuthType, ProxyParamsType, RequestConfigType } from '@/types'
 
 const type = 'github'
 
@@ -25,7 +25,7 @@ export class GitHub {
   public Private_Key: string
   public Client_ID: string
   public Client_Secret: string
-  private currentRequestConfig: { url: string, token: string }
+  private currentRequestConfig: RequestConfigType
   private proxy?: ProxyParamsType
 
   constructor (options: GitHubAuthType) {
@@ -43,7 +43,9 @@ export class GitHub {
 
     this.currentRequestConfig = {
       url: this.ApiUrl,
-      token: ''
+      token: '',
+      tokenType: 'Bearer',
+      status: false
     }
   }
 
@@ -64,7 +66,7 @@ export class GitHub {
       this.ApiUrl = ApiBaseUrl(type, proxy.address)
     }
 
-    const token = this.currentRequestConfig.token || this.jwtToken
+    const token = this.currentRequestConfig.token ?? this.jwtToken
     this.repo = new Repo(this, token)
     this.auth = new Auth(this, token)
     this.install = new Install(this, token)
@@ -111,9 +113,11 @@ export class GitHub {
  * @param config.url 请求的 URL, 默认为 ApiUrl
  * @param config.token 请求的 token, 默认为 jwtToken
  */
-  public setRequestConfig (config: { url?: string, token?: string }): void {
+  public setRequestConfig (config: RequestConfigType): void {
     if (config.url) this.currentRequestConfig.url = config.url
     if (config.token) this.currentRequestConfig.token = config.token
+    if (config.status !== undefined) this.currentRequestConfig.status = config.status
+    if (config.tokenType) this.currentRequestConfig.tokenType = config.tokenType
   }
 
   /**
@@ -121,12 +125,9 @@ export class GitHub {
    * @returns 返回一个配置好的 Request 实例
    */
   private createRequest (): Request {
-    const { url, token } = this.currentRequestConfig
-    const proxyConfig = this.proxy?.type !== 'common'
-      ? this.proxy
-      : undefined
-
-    return new Request(url, token, proxyConfig)
+    const { url, token, tokenType } = this.currentRequestConfig
+    const proxyConfig = this.proxy?.type !== 'common' ? this.proxy : undefined
+    return new Request(url, tokenType, token, proxyConfig)
   }
 
   /**
@@ -157,7 +158,9 @@ export class GitHub {
     const request = this.createRequest()
     const res = await request.post(path, data, customHeaders)
     if (res.success) {
-      return res.data
+      return this.currentRequestConfig.status
+        ? { data: res.data, statusCode: res.statusCode }
+        : res.data
     } else {
       throw new Error(res.msg)
     }

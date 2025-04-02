@@ -4,17 +4,24 @@ import { HttpsProxyAgent } from 'https-proxy-agent'
 import { SocksProxyAgent } from 'socks-proxy-agent'
 
 import { pkg } from '@/common'
-import type { ProxyParamsType, ResponseType } from '@/types'
+import type { ProxyParamsType, RequestTokenType, ResponseType } from '@/types'
 
 class Request {
   private baseUrl: string
+  private tokenType: RequestTokenType
   private authorization?: string
   private proxy?: ProxyParamsType
 
-  constructor (baseUrl: string, authorization?: string, proxy?: ProxyParamsType) {
+  constructor (
+    baseUrl: string,
+    tokenType: RequestTokenType = 'Bearer',
+    authorization?: string,
+    proxy?: ProxyParamsType
+  ) {
     this.baseUrl = baseUrl.replace(/\/$/, '')
     this.authorization = authorization
     this.proxy = proxy
+    this.tokenType = tokenType
   }
 
   private async request (
@@ -27,7 +34,8 @@ class Request {
     const url = `${this.baseUrl}/${path}`.replace(/\/+/g, '/')
     const config: AxiosRequestConfig = {
       headers: this.createHeaders(customHeaders),
-      params
+      params,
+      validateStatus: () => true
     }
 
     /** 代理配置 */
@@ -54,38 +62,21 @@ class Request {
     }
     try {
       const response = method === 'get'
-        ? await axios.get(url, { ...config, params })
-        : await axios.post(url, data, { ...config })
+        ? await axios.get(url, config)
+        : await axios.post(url, data, config)
+
       return {
         success: true,
         statusCode: response.status,
         data: response.data,
-        msg: '请求成功'
+        msg: response.status >= 200 && response.status < 300 ? '请求成功' : '请求异常'
       }
     } catch (error) {
-      let statusCode = 500
-      let errorMsg = '请求失败'
-      if (error instanceof AxiosError) {
-        if (error.response) {
-          statusCode = error.response.status ?? 500
-          errorMsg = error.response.data?.message ?? error.message
-
-        /** 后续处理 */
-          //   if (statusCode === 401) {
-          //     errorMsg = '认证失败，请检查 token'
-          //   }
-          // } else if (error.request) {
-          //   errorMsg = '网络错误：服务器没有响应'
-          // } else {
-          //   errorMsg = error.message ?? '请求失败'
-        }
-      }
-
       return {
         success: false,
-        statusCode,
-        msg: errorMsg,
-        data: (error instanceof AxiosError) ? error.response?.data : error
+        statusCode: 500,
+        msg: (error as AxiosError).message || '网络连接失败',
+        data: null
       }
     }
   }
@@ -109,7 +100,14 @@ class Request {
     }
 
     if (this.authorization) {
-      headers['Authorization'] = `Bearer ${this.authorization}`
+      if (this.tokenType === 'Basic') {
+        const basicToken = Buffer.from(this.authorization).toString('base64')
+        headers['Authorization'] = `Basic ${basicToken}`
+      } else if (this.tokenType === 'Bearer') {
+        headers['Authorization'] = `Baerer ${this.authorization}`
+      } else {
+        headers['Authorization'] = `${this.tokenType} ${this.authorization}`
+      }
     }
 
     if (customHeaders) {
