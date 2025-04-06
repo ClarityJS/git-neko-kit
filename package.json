@@ -15,8 +15,7 @@
     "start": "node dist/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "dev": "tsx src/index.ts",
-    "dev:test": "tsx test/index.ts"
+    "dev": "tsx src/index.ts"
   },
   "keywords": [
     "git",

@@ -7,6 +7,7 @@ import { Auth } from '@/models/github/event/auth'
 import { Install } from '@/models/github/event/install'
 import { Repo } from '@/models/github/event/repo'
 import type {
+  ApiResponseType,
   GitHubAuthType,
   ProxyParamsType,
   RequestConfigType
@@ -66,8 +67,7 @@ export class GitHub {
     this.currentRequestConfig = {
       url: this.ApiUrl,
       token: '',
-      tokenType: 'Bearer',
-      status: false
+      tokenType: 'Bearer'
     }
   }
 
@@ -134,13 +134,11 @@ export class GitHub {
  * @param config 配置对象，包含 url 和 token
  * @param config.url 请求的 URL @default ApiUrl
  * @param config.token 请求的 token @default jwtToken
- * @param config.status 是否返回状态码 @default false
  * @param config.tokenType token 类型 @default Bearer
  */
   public setRequestConfig (config: RequestConfigType): void {
     if (config.url) this.currentRequestConfig.url = config.url
     if (config.token) this.currentRequestConfig.token = config.token
-    if (config.status !== undefined) this.currentRequestConfig.status = config.status
     if (config.tokenType) this.currentRequestConfig.tokenType = config.tokenType
   }
 
@@ -161,13 +159,14 @@ export class GitHub {
    * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
-  public async get (path: string, parms?: any, customHeaders?: Record<string, string>) {
+  public async get (path: string, parms?: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
     const request = this.createRequest()
-    const res = await request.get(path, parms, customHeaders)
-    if (res.success) {
-      return res.data
-    } else {
-      throw new Error(res.msg)
+    const req = await request.get(path, parms, customHeaders)
+    return {
+      status: req.success ? 'ok' : 'error',
+      statusCode: req.statusCode,
+      msg: req.msg,
+      data: req.data
     }
   }
 
@@ -178,15 +177,14 @@ export class GitHub {
    * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
-  public async post (path: string, data: any, customHeaders?: Record<string, string>) {
+  public async post (path: string, data: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
     const request = this.createRequest()
-    const res = await request.post(path, data, customHeaders)
-    if (res.success) {
-      return this.currentRequestConfig.status
-        ? { data: res.data, statusCode: res.statusCode }
-        : res.data
-    } else {
-      throw new Error(res.msg)
+    const req = await request.post(path, data, customHeaders)
+    return {
+      status: req.success ? 'ok' : 'error',
+      statusCode: req.statusCode,
+      msg: req.msg,
+      data: req.data
     }
   }
 }

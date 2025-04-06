@@ -9,6 +9,4 @@ export interface RequestConfigType {
   token?: string,
   /** 令牌类型，默认为 Bearer，即使用 Bearer 令牌 */
   tokenType?: RequestTokenType
-  /** 是否返回状态码，默认为 false */
-  status?: boolean,
 }

@@ -2,6 +2,7 @@ import GitUrlParse from 'git-url-parse'
 
 import { GitHub } from '@/models/github/event/github'
 import type {
+  ApiResponseType,
   OrgReoParmsType,
   OrgRepoCreateParamType,
   OrgRepoListType,
@@ -49,16 +50,18 @@ export class Repo {
    * @param options.page - 页码 @default 1
    * @returns 组织仓库列表
    */
-  public async get_org_repos_list (options: OrgReoParmsType): Promise<OrgRepoListType> {
+  public async get_org_repos_list (
+    options: OrgReoParmsType
+  ): Promise<ApiResponseType<OrgRepoListType>> {
     try {
-      const req = await this.get(`/orgs/${options.org}/repos`, {
-        org: options.org,
-        type: options.type ?? 'all',
-        sort: options.sort ?? 'created',
-        direction: options.direction ?? 'desc',
-        per_page: options.per_page ?? 30,
-        page: options.page ?? 1
-      })
+      const params = {
+        type: options.type,
+        sort: options.sort,
+        direction: options.direction,
+        per_page: options.per_page,
+        page: options.page
+      }
+      const req = await this.get(`/orgs/${options.org}/repos`, params)
       return req
     } catch (error) {
       throw new Error(`获取组织仓库列表失败: : ${error instanceof Error ? error.message : '未知错误'}`)
@@ -73,7 +76,9 @@ export class Repo {
    * @param options.repo - 仓库名称（与url参数二选一）
    * @returns 仓库详细信息
    */
-  public async info (options: RepoInfoParamType): Promise<RepoInfoResponseType> {
+  public async info (
+    options: RepoInfoParamType
+  ): Promise<ApiResponseType<RepoInfoResponseType>> {
     /* 解析仓库地址 */
     let owner, repo, url
     if ('url' in options) {
@@ -135,15 +140,19 @@ export class Repo {
    * @param options.custom_properties - 自定义键值对属性
    * @returns 返回创建成功的仓库信息
    */
-  public async create_org_repo (options: OrgRepoCreateParamType): Promise<RepoInfoResponseType> {
+  public async create_org_repo (
+    options: OrgRepoCreateParamType
+  ): Promise<ApiResponseType<RepoInfoResponseType>> {
     try {
       const { owner, name, ...repoOptions } = options
-      const body: Partial<OrgRepoCreateParamType> = {}
-      Object.assign(body, repoOptions)
+      const body = {
+        name,
+        ...repoOptions
+      }
       const req = await this.post(`/orgs/${owner}/repos`, body)
       return req
     } catch (error) {
-      throw new Error(`创建组织仓库失败: : ${error instanceof Error ? error.message : '未知错误'}`)
+      throw new Error(`创建组织仓库失败: ${error instanceof Error ? error.message : '未知错误'}`)
     }
   }
 }

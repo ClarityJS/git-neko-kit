@@ -1,5 +1,5 @@
 import { GitHub } from '@/models/github/event/github'
-import type { GitHubAppInfoType } from '@/types'
+import type { ApiResponseType, GitHubAppInfoType } from '@/types'
 
 /**
  * 应用类，用于获取应用信息
@@ -23,17 +23,16 @@ export class App {
    * 获取当前 Github App 信息
    * @returns 返回 Github App 信息
    */
-  public async get_info (): Promise<GitHubAppInfoType> {
+  public async get_info (): Promise<ApiResponseType<GitHubAppInfoType>> {
     this.options.setRequestConfig(
       {
         url: this.ApiUrl,
         token: this.jwtToken
       })
-    const res = await this.get('/app')
-    return res
+    return await this.get('/app')
   }
 
   public async get_name () {
-    return (await this.get_info()).name
+    return (await this.get_info()).data.name
   }
 }

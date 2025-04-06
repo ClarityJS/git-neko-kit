@@ -27,6 +27,10 @@ export interface GithubOauthTokenResponseType {
 
 /** Github 刷新令牌接口返回类型 */
 export interface GithubOauthRefreshTokenResponseType {
+  /** 是否成功刷新 */
+  success: boolean;
+  /** 刷新令牌信息 */
+  info: string;
   /** 用户访问令牌，格式为 ghu_ 开头 */
   access_token: string;
   /** access_token 过期前的秒数，默认值为 28800（8小时） */
@@ -43,8 +47,8 @@ export interface GithubOauthRefreshTokenResponseType {
 
 /** 检查Token状态返回类型 */
 export interface GithubOauthCheckTokenResponseType {
-  /** 状态码 */
-  status: number;
+  /** 令牌是否有效 */
+  success: boolean;
   /** 状态信息 */
-  msg: string;
+  info: string;
 }

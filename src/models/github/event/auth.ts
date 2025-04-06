@@ -1,5 +1,6 @@
 import { GitHub } from '@/models/github/event/github'
 import type {
+  ApiResponseType,
   GithubOauthCheckTokenResponseType,
   GithubOauthRefreshTokenResponseType,
   GithubOauthTokenResponseType
@@ -53,7 +54,7 @@ export class Auth {
    * @param code - Github 返回的 code
    * @returns 返回 token
    */
-  public async get_token_by_code (code: string): Promise<GithubOauthTokenResponseType> {
+  public async get_token_by_code (code: string): Promise<ApiResponseType<GithubOauthTokenResponseType>> {
     this.options.setRequestConfig(
       {
         url: this.BaseUrl
@@ -64,8 +65,8 @@ export class Auth {
         client_secret: this.options.Client_Secret,
         code
       }, { Accept: 'application/json' })
-      if (req.error) {
-        throw new Error('获取 token 失败', req.error)
+      if (req.status === 'error') {
+        throw new Error(`获取 token 失败: ${req.msg}`)
       }
       return req
     } catch (error) {
@@ -74,11 +75,41 @@ export class Auth {
   }
 
   /**
+   * 获取 token 的状态
+   * @param token - Github Apps 生成的用户的token，也就是 `get_token_by_code` 生成的 token
+   * @returns 返回 token 的状态
+   * @returns info - 返回 token 的状态信息，'Token 有效' | 'Token 无效'
+   */
+  public async check_token_status (token: string): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
+    if (!token.startsWith('ghu_')) throw new Error('token 格式错误')
+    this.options.setRequestConfig({
+      url: this.ApiUrl,
+      tokenType: 'Basic',
+      token: `${this.Client_ID}:${this.Client_Secret}`
+    })
+    try {
+      const req = await this.post(`/applications/${this.Client_ID}/token`, {
+        access_token: token
+      })
+      const status = !((req.status === 'ok' && (req.statusCode === 404 || req.statusCode === 422)))
+      return {
+        ...req,
+        data: {
+          success: status,
+          info: status ? 'Token 有效' : 'Token 无效'
+        }
+      }
+    } catch (error) {
+      throw new Error(`Token 状态检查请求失败: ${error instanceof Error ? error.message : '未知错误'}`)
+    }
+  }
+
+  /**
    * 通过 refresh_token 获取 token
    * @param refresh_token - Github 返回的 refresh_token
    * @returns 返回 token
    */
-  public async refresh_token (refresh_token: string): Promise<GithubOauthRefreshTokenResponseType> {
+  public async refresh_token (refresh_token: string): Promise<ApiResponseType<GithubOauthRefreshTokenResponseType>> {
     if (!refresh_token.startsWith('ghr_')) throw new Error('refresh_token 格式错误')
     this.options.setRequestConfig(
       {
@@ -92,41 +123,19 @@ export class Auth {
         refresh_token
       }, { Accept: 'application/json' })
 
-      if (req.error) {
-        throw new Error('获取 token 失败', req.error)
+      const isSuccess = req.status === 'ok' && !req.data.error
+      const errorMsg = req.data.error === 'bad_refresh_token' ? 'refresh_token 已过期' : 'Token 刷新失败'
+      const msg = isSuccess ? 'Token 刷新成功' : errorMsg
+      return {
+        ...req,
+        data: {
+          success: !!isSuccess,
+          info: msg,
+          ...(isSuccess ? req.data : {})
+        }
       }
-      return req
     } catch (error) {
       throw new Error(`Token 刷新请求失败: ${error instanceof Error ? error.message : '未知错误'}`)
-    }
-  }
-
-  /**
-   * 获取 token 的状态
-   * @param token - Github Apps 生成的用户的token，也就是 `get_token_by_code` 生成的 token
-   * @returns 返回 token 的状态
-   * @returns status - token 的状态码，200 为有效，404,422均为无效
-   * @returns msg token - 的状态信息，200 为有效，404,422均为无效
-   */
-  public async check_token_status (token: string): Promise<GithubOauthCheckTokenResponseType> {
-    if (!token.startsWith('ghu_')) throw new Error('token 格式错误')
-    this.options.setRequestConfig(
-      {
-        url: this.ApiUrl,
-        tokenType: 'Basic',
-        token: `${this.Client_ID}:${this.Client_Secret}`,
-        status: true
-      })
-    try {
-      let status, msg
-      const req = await this.post(`/applications/${this.Client_ID}/token`, {
-        access_token: token
-      })
-      status = req.statusCode
-      msg = status === 200 ? 'token 有效' : 'token 无效'
-      return { status, msg }
-    } catch (error) {
-      throw new Error(`Token 状态检查请求失败: ${error instanceof Error ? error.message : '未知错误'}`)
     }
   }
 }

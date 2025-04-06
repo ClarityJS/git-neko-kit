@@ -69,7 +69,7 @@ class Request {
         success: true,
         statusCode: response.status,
         data: response.data,
-        msg: response.status >= 200 && response.status < 300 ? '请求成功' : '请求异常'
+        msg: response.status >= 200 && response.status < 500 ? '请求成功' : '请求异常'
       }
     } catch (error) {
       return {
