@@ -35,6 +35,7 @@ export class GitHub {
   public BaseUrl: string = BaseUrl(type)
   public ApiUrl: string = ApiBaseUrl(type)
   public jwtToken: string
+  public userToken: string | null
   public APP_ID: string
   public Private_Key: string
   public Client_ID: string
@@ -59,16 +60,17 @@ export class GitHub {
     this.Client_ID = options.Client_ID
     this.Client_Secret = options.Client_Secret
     this.jwtToken = this.generate_jwt()
-    this.repo = new Repo(this, this.jwtToken)
-    this.auth = new Auth(this, this.jwtToken)
-    this.install = new Install(this, this.jwtToken)
-    this.app = new App(this, this.jwtToken)
+    this.repo = new Repo(this)
+    this.auth = new Auth(this)
+    this.install = new Install(this)
+    this.app = new App(this)
 
     this.currentRequestConfig = {
       url: this.ApiUrl,
-      token: '',
+      token: null,
       tokenType: 'Bearer'
     }
+    this.userToken = this.currentRequestConfig.token ?? ''
   }
 
   /**
@@ -89,10 +91,10 @@ export class GitHub {
     }
 
     const token = this.currentRequestConfig.token ?? this.jwtToken
-    this.repo = new Repo(this, token)
-    this.auth = new Auth(this, token)
-    this.install = new Install(this, token)
-    this.app = new App(this, token)
+    this.repo = new Repo(this)
+    this.auth = new Auth(this)
+    this.install = new Install(this)
+    this.app = new App(this)
   }
 
   /**
@@ -103,10 +105,10 @@ export class GitHub {
     if (!token.startsWith('ghu_')) throw new Error('token 格式错误')
     this.currentRequestConfig.token = token
 
-    this.repo = new Repo(this, token)
-    this.auth = new Auth(this, token)
-    this.install = new Install(this, token)
-    this.app = new App(this, token)
+    this.repo = new Repo(this)
+    this.auth = new Auth(this)
+    this.install = new Install(this)
+    this.app = new App(this)
     if (this.proxy) {
       this.setProxy(this.proxy)
     }
@@ -149,7 +151,7 @@ export class GitHub {
   private createRequest (): Request {
     const { url, token, tokenType } = this.currentRequestConfig
     const proxyConfig = this.proxy?.type !== 'common' ? this.proxy : undefined
-    return new Request(url, tokenType, token, proxyConfig)
+    return new Request(url ?? this.ApiUrl, tokenType, token ?? undefined, proxyConfig)
   }
 
   /**

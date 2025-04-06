@@ -12,7 +12,7 @@ export class Install {
   private Client_ID: string
   private Client_Secret: string
   private app: App
-  constructor (options: GitHub, jwtToken: string) {
+  constructor (options: GitHub) {
     this.get = options.get.bind(options)
     this.post = options.post.bind(options)
     this.APP_ID = options.APP_ID
@@ -21,8 +21,8 @@ export class Install {
     this.Client_Secret = options.Client_Secret
     this.ApiUrl = options.ApiUrl
     this.BaseUrl = options.BaseUrl
-    this.jwtToken = jwtToken
-    this.app = new App(options, jwtToken)
+    this.jwtToken = options.jwtToken
+    this.app = new App(options)
   }
 
   /**

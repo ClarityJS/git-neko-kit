@@ -13,10 +13,10 @@ export class App {
   private get: GitHub['get']
   private ApiUrl: string
   private jwtToken: string
-  constructor (private options: GitHub, jwtToken: string) {
+  constructor (private options: GitHub) {
     this.get = options.get.bind(options)
     this.ApiUrl = options.ApiUrl
-    this.jwtToken = jwtToken
+    this.jwtToken = options.jwtToken
   }
 
   /**

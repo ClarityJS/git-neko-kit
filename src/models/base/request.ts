@@ -104,12 +104,11 @@ class Request {
         const basicToken = Buffer.from(this.authorization).toString('base64')
         headers['Authorization'] = `Basic ${basicToken}`
       } else if (this.tokenType === 'Bearer') {
-        headers['Authorization'] = `Baerer ${this.authorization}`
+        headers['Authorization'] = `Bearer ${this.authorization}`
       } else {
         headers['Authorization'] = `${this.tokenType} ${this.authorization}`
       }
     }
-
     if (customHeaders) {
       Object.assign(headers, customHeaders)
     }

@@ -31,12 +31,14 @@ export class Repo {
   private BaseUrl: string
   private ApiUrl: string
   private jwtToken: string
-  constructor (options: GitHub, jwtToken: string) {
+  private userToken: string
+  constructor (private options: GitHub) {
     this.get = options.get.bind(options)
     this.post = options.post.bind(options)
     this.ApiUrl = options.ApiUrl
     this.BaseUrl = options.BaseUrl
-    this.jwtToken = jwtToken
+    this.jwtToken = options.jwtToken
+    this.userToken = options.userToken ?? ''
   }
 
   /**
@@ -76,9 +78,12 @@ export class Repo {
    * @param options.repo - 仓库名称（与url参数二选一）
    * @returns 仓库详细信息
    */
-  public async info (
+  public async get_repo_info (
     options: RepoInfoParamType
   ): Promise<ApiResponseType<RepoInfoResponseType>> {
+    this.options.setRequestConfig({
+      token: this.userToken
+    })
     /* 解析仓库地址 */
     let owner, repo, url
     if ('url' in options) {

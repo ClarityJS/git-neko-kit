@@ -24,7 +24,7 @@ export class Auth {
   private ApiUrl: string
   private Client_ID: string
   private Client_Secret: string
-  constructor (private options: GitHub, jwtToken: string) {
+  constructor (private options: GitHub) {
     this.get = options.get.bind(options)
     this.post = options.post.bind(options)
     this.ApiUrl = options.ApiUrl

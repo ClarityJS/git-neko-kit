@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid'
+
 import { ApiType, ReverseProxyCommonUrlType } from '@/types'
 
 /**
@@ -29,4 +31,13 @@ export function BaseUrl (type?: ApiType, proxyUrl?: ReverseProxyCommonUrlType): 
     gitcode: 'gitcode.com'
   }
   return `https://${proxyUrl?.replace(/\/$/, '') ?? ''}/${urlMap[type ?? 'github']}`.replace(/\/$/, '')
+}
+
+/**
+ * 生成一个用户唯一的标识符
+ * 暂时先不导出，后续可能会用到，先留着
+ * @returns {string} 生成的唯一标识符
+ */
+function create_state_id () {
+  return uuidv4().replace(/-/g, '')
 }
