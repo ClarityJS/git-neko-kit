@@ -1,6 +1,4 @@
-import GitUrlParse from 'git-url-parse'
-
-import { formatDate } from '@/common'
+import { formatDate, parse_git_url } from '@/common'
 import { GitHub } from '@/models/github/event/github'
 import type {
   ApiResponseType,
@@ -93,20 +91,9 @@ export class Repo {
     let owner, repo, url
     if ('url' in options) {
       url = options.url
-      /* 处理反代地址, 仅http协议 */
-      if (!url.startsWith(this.BaseUrl)) {
-        const parsedUrl = new URL(url)
-        let path = parsedUrl.pathname
-        if (path.includes('://')) {
-          path = new URL(path.startsWith('/') ? path.substring(1) : path).pathname
-        }
-        const baseUrl = this.BaseUrl.endsWith('/') ? this.BaseUrl : `${this.BaseUrl}/`
-        path = path.replace(/^\/|\/$/g, '')
-        url = baseUrl + path
-      }
-      const info = GitUrlParse(url)
+      const info = parse_git_url(url, this.BaseUrl)
       owner = info?.owner
-      repo = info?.name
+      repo = info?.repo
     } else if ('owner' in options && 'repo' in options) {
       owner = options.owner
       repo = options.repo

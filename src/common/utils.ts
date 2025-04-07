@@ -1,6 +1,9 @@
 import fs from 'node:fs'
 
+import GitUrlParse from 'git-url-parse'
+
 import { basePath } from '@/root'
+import { RepoBaseParamType } from '@/types'
 
 /**
  * 读取 JSON 文件
@@ -40,4 +43,28 @@ export function formatDate (DateString: string, Locale: string = 'zh-CN'): strin
     second: '2-digit',
     hour12: false
   })
+}
+
+/**
+ * 解析 Git 仓库地址
+ * @param url - Git 仓库地址
+ * @param GitUrl - 原始Git 仓库地址
+ * @returns Git 仓库信息
+ */
+export function parse_git_url (url: string, GitUrl: string): RepoBaseParamType {
+  if (!url.startsWith(GitUrl)) {
+    const parsedUrl = new URL(url)
+    let path = parsedUrl.pathname
+    if (path.includes('://')) {
+      path = new URL(path.startsWith('/') ? path.substring(1) : path).pathname
+    }
+    const baseUrl = GitUrl.endsWith('/') ? GitUrl : `${GitUrl}/`
+    path = path.replace(/^\/|\/$/g, '')
+    url = baseUrl + path
+  }
+  const info = GitUrlParse(url)
+  return {
+    owner: info.owner,
+    repo: info.name
+  }
 }
