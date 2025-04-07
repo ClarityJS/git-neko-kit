@@ -1,5 +1,6 @@
 import GitUrlParse from 'git-url-parse'
 
+import { formatDate } from '@/common'
 import { GitHub } from '@/models/github/event/github'
 import type {
   ApiResponseType,
@@ -29,16 +30,12 @@ export class Repo {
   private get: GitHub['get']
   private post: GitHub['post']
   private BaseUrl: string
-  private ApiUrl: string
-  private jwtToken: string
-  private userToken: string
+  private userToken: string | null
   constructor (private options: GitHub) {
     this.get = options.get.bind(options)
     this.post = options.post.bind(options)
-    this.ApiUrl = options.ApiUrl
     this.BaseUrl = options.BaseUrl
-    this.jwtToken = options.jwtToken
-    this.userToken = options.userToken ?? ''
+    this.userToken = options.userToken ?? null
   }
 
   /**
@@ -64,6 +61,14 @@ export class Repo {
         page: options.page
       }
       const req = await this.get(`/orgs/${options.org}/repos`, params)
+      if (req.data) {
+        req.data = req.data.map((repo: RepoInfoResponseType) => ({
+          ...repo,
+          created_at: formatDate(repo.created_at),
+          updated_at: formatDate(repo.updated_at),
+          pushed_at: formatDate(repo.pushed_at)
+        }))
+      }
       return req
     } catch (error) {
       throw new Error(`获取组织仓库列表失败: : ${error instanceof Error ? error.message : '未知错误'}`)
@@ -110,6 +115,11 @@ export class Repo {
     }
     try {
       const req = await this.get(`/repos/${owner}/${repo}`)
+      if (req.data) {
+        req.data.created_at = formatDate(req.data.created_at)
+        req.data.updated_at = formatDate(req.data.updated_at)
+        req.data.pushed_at = formatDate(req.data.pushed_at)
+      }
       return req
     } catch (error) {
       throw new Error(`获取仓库信息失败: : ${error instanceof Error ? error.message : '未知错误'}`)
@@ -155,6 +165,11 @@ export class Repo {
         ...repoOptions
       }
       const req = await this.post(`/orgs/${owner}/repos`, body)
+      if (req.data) {
+        req.data.created_at = formatDate(req.data.created_at)
+        req.data.updated_at = formatDate(req.data.updated_at)
+        req.data.pushed_at = formatDate(req.data.pushed_at)
+      }
       return req
     } catch (error) {
       throw new Error(`创建组织仓库失败: ${error instanceof Error ? error.message : '未知错误'}`)

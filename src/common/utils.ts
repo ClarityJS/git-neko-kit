@@ -23,3 +23,21 @@ export function readJSON<T = Record<string, unknown>> (file = '', root = ''): T 
     return {} as T
   }
 }
+
+/**
+ * 格式化日期
+ * @parm DataString - 日期字符串
+ * @param Locale - 语言环境
+ * @returns 格式化后的日期字符串
+ */
+export function formatDate (DateString: string, Locale: string = 'zh-CN'): string {
+  return new Date(DateString).toLocaleString(Locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  })
+}

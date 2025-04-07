@@ -70,7 +70,7 @@ export class GitHub {
       token: null,
       tokenType: 'Bearer'
     }
-    this.userToken = this.currentRequestConfig.token ?? ''
+    this.userToken = this.currentRequestConfig.token ?? null
   }
 
   /**
