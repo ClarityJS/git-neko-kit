@@ -59,6 +59,11 @@ export class Repo {
         page: options.page
       }
       const req = await this.get(`/orgs/${options.org}/repos`, params)
+      if (req.statusCode === 404) {
+        throw new Error('组织不存在')
+      } else if (req.statusCode === 401) {
+        throw new Error('未授权访问或令牌过期无效')
+      }
       if (req.data) {
         req.data = req.data.map((repo: RepoInfoResponseType) => ({
           ...repo,
@@ -102,6 +107,11 @@ export class Repo {
     }
     try {
       const req = await this.get(`/repos/${owner}/${repo}`)
+      if (req.statusCode === 404) {
+        throw new Error('组织不存在')
+      } else if (req.statusCode === 401) {
+        throw new Error('未授权访问或令牌过期无效')
+      }
       if (req.data) {
         req.data.created_at = formatDate(req.data.created_at)
         req.data.updated_at = formatDate(req.data.updated_at)
@@ -152,6 +162,9 @@ export class Repo {
         ...repoOptions
       }
       const req = await this.post(`/orgs/${owner}/repos`, body)
+      if (req.statusCode === 401) {
+        throw new Error('未授权访问或令牌过期无效')
+      }
       if (req.data) {
         req.data.created_at = formatDate(req.data.created_at)
         req.data.updated_at = formatDate(req.data.updated_at)
