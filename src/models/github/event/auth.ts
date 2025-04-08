@@ -40,13 +40,17 @@ export class Auth {
    * @returns auth_link 授权链接，用于跳转 Github 授权页
    */
   public create_auth_link (state_id?: string): string {
-    const url = new URL('/login/oauth/authorize', this.BaseUrl)
-    url.search = new URLSearchParams({
-      client_id: this.Client_ID,
-      ...(state_id && { state: state_id })
-    }).toString()
+    try {
+      const url = new URL('/login/oauth/authorize', this.BaseUrl)
+      url.search = new URLSearchParams({
+        client_id: this.Client_ID,
+        ...(state_id && { state: state_id })
+      }).toString()
 
-    return url.toString()
+      return url.toString()
+    } catch (error) {
+      throw new Error(`生成授权链接失败: ${(error as Error).message}`)
+    }
   }
 
   /**
@@ -65,12 +69,9 @@ export class Auth {
         client_secret: this.options.Client_Secret,
         code
       }, { Accept: 'application/json' })
-      if (req.status === 'error') {
-        throw new Error(`获取 token 失败: ${req.msg}`)
-      }
       return req
     } catch (error) {
-      throw new Error(`Token 获取请求失败: ${error instanceof Error ? error.message : '未知错误'}`)
+      throw new Error(`Token 获取请求失败: ${(error as Error).message}`)
     }
   }
 
@@ -100,7 +101,7 @@ export class Auth {
         }
       }
     } catch (error) {
-      throw new Error(`Token 状态检查请求失败: ${error instanceof Error ? error.message : '未知错误'}`)
+      throw new Error(`Token 状态检查请求失败: ${(error as Error).message}`)
     }
   }
 
@@ -125,17 +126,18 @@ export class Auth {
 
       const isSuccess = req.status === 'ok' && !req.data.error
       const errorMsg = req.data.error === 'bad_refresh_token' ? 'refresh_token 已过期' : 'Token 刷新失败'
+      if (!isSuccess) throw new Error(errorMsg)
       const msg = isSuccess ? 'Token 刷新成功' : errorMsg
       return {
         ...req,
         data: {
-          success: !!isSuccess,
+          success: isSuccess,
           info: msg,
-          ...(isSuccess ? req.data : {})
+          ...req.data
         }
       }
     } catch (error) {
-      throw new Error(`Token 刷新请求失败: ${error instanceof Error ? error.message : '未知错误'}`)
+      throw new Error(`Token 刷新请求失败: ${(error as Error).message}`)
     }
   }
 }

@@ -33,12 +33,16 @@ export class Install {
    * @returns install_link 安装链接，用于跳转 Github 安装页
    */
   public async create_install_link (state_id?: string): Promise<string> {
-    const APP_Name = await this.app.get_name()
-    const url = new URL(`apps/${APP_Name}/installations/new`, this.BaseUrl)
-    url.search = new URLSearchParams({
-      ...(state_id && { state: state_id })
-    }).toString()
-    return url.toString()
+    try {
+      const APP_Name = await this.app.get_name()
+      const url = new URL(`apps/${APP_Name}/installations/new`, this.BaseUrl)
+      url.search = new URLSearchParams({
+        ...(state_id && { state: state_id })
+      }).toString()
+      return url.toString()
+    } catch (error) {
+      throw new Error(`生成安装链接失败: ${(error as Error).message}`)
+    }
   }
 
   /**
@@ -49,11 +53,15 @@ export class Install {
   * @returns  config_install_link 配置链接
   */
   public async create_config_install_link (state_id?: string): Promise<string> {
-    const APP_Name = await this.app.get_name()
-    const url = new URL(`apps/${APP_Name}/installations/new`, this.BaseUrl)
-    url.search = new URLSearchParams({
-      ...(state_id && { state: state_id })
-    }).toString()
-    return url.toString()
+    try {
+      const APP_Name = await this.app.get_name()
+      const url = new URL(`apps/${APP_Name}/installations/new`, this.BaseUrl)
+      url.search = new URLSearchParams({
+        ...(state_id && { state: state_id })
+      }).toString()
+      return url.toString()
+    } catch (error) {
+      throw new Error(`生成配置链接失败: ${(error as Error).message}`)
+    }
   }
 }

@@ -24,15 +24,23 @@ export class App {
    * @returns 返回 Github App 信息
    */
   public async get_info (): Promise<ApiResponseType<GitHubAppInfoType>> {
-    this.options.setRequestConfig(
-      {
-        url: this.ApiUrl,
-        token: this.jwtToken
-      })
-    return await this.get('/app')
+    try {
+      this.options.setRequestConfig(
+        {
+          url: this.ApiUrl,
+          token: this.jwtToken
+        })
+      return await this.get('/app')
+    } catch (error) {
+      throw new Error(`获取应用信息失败: ${(error as Error).message}`)
+    }
   }
 
   public async get_name () {
-    return (await this.get_info()).data.name
+    try {
+      return (await this.get_info()).data.name
+    } catch (error) {
+      throw new Error(`获取应用名称失败: ${(error as Error).message}`)
+    }
   }
 }
