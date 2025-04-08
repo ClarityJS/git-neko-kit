@@ -6,6 +6,7 @@ import { App } from '@/models/github/event/app'
 import { Auth } from '@/models/github/event/auth'
 import { Install } from '@/models/github/event/install'
 import { Repo } from '@/models/github/event/repo'
+import { User } from '@/models/github/event/user'
 import type {
   ApiResponseType,
   GitHubAuthType,
@@ -32,6 +33,8 @@ export class GitHub {
   public install: Install
   public repo: Repo
   public auth: Auth
+  public user: User
+
   public BaseUrl: string = BaseUrl(type)
   public ApiUrl: string = ApiBaseUrl(type)
   public jwtToken: string
@@ -64,6 +67,7 @@ export class GitHub {
     this.auth = new Auth(this)
     this.install = new Install(this)
     this.app = new App(this)
+    this.user = new User(this)
 
     this.currentRequestConfig = {
       url: this.ApiUrl,
@@ -90,11 +94,11 @@ export class GitHub {
       this.ApiUrl = ApiBaseUrl(type, proxy.address)
     }
 
-    const token = this.currentRequestConfig.token ?? this.jwtToken
     this.repo = new Repo(this)
     this.auth = new Auth(this)
     this.install = new Install(this)
     this.app = new App(this)
+    this.user = new User(this)
   }
 
   /**
@@ -109,6 +113,7 @@ export class GitHub {
     this.auth = new Auth(this)
     this.install = new Install(this)
     this.app = new App(this)
+    this.user = new User(this)
     if (this.proxy) {
       this.setProxy(this.proxy)
     }

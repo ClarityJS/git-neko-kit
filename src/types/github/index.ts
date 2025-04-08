@@ -15,3 +15,7 @@ export {
   RepoInfoParamType,
   RepoInfoResponseType
 } from '@/types/github/repo'
+export {
+  UserParamType,
+  UserResponseType
+} from '@/types/github/user'
