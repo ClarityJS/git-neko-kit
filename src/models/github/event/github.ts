@@ -74,7 +74,7 @@ export class GitHub {
       token: null,
       tokenType: 'Bearer'
     }
-    this.userToken = this.currentRequestConfig.token ?? null
+    this.userToken = null
   }
 
   /**
@@ -106,8 +106,11 @@ export class GitHub {
    * @param token 传入的 token
    */
   public setToken (token: string): void {
-    if (!token.startsWith('ghu_')) throw new Error('token 格式错误')
-    this.currentRequestConfig.token = token
+    if (!token.startsWith('ghu_')) {
+      this.userToken = null
+      throw new Error('token 格式错误')
+    }
+    this.userToken = token
 
     this.repo = new Repo(this)
     this.auth = new Auth(this)
