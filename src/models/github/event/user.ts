@@ -50,6 +50,11 @@ export class User {
     })
     try {
       const req = await this.get(`/users/${options.username}`)
+      if (req.statusCode === 401) {
+        throw new Error('未授权访问或令牌过期无效')
+      } else if (req.statusCode === 404) {
+        throw new Error('用户或组织不存在')
+      }
       if (req.data) {
         req.data.created_at = formatDate(req.data.created_at)
         req.data.updated_at = formatDate(req.data.updated_at)
