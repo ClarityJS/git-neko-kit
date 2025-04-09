@@ -16,7 +16,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "dev": "tsx src/index.ts",
-    "test": "tsx test/index.js"
+    "test": "tsx test/index.ts"
   },
   "keywords": [
     "git",

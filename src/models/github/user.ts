@@ -30,9 +30,27 @@ export class User {
 
   /**
    * 通过访问令牌获取用户信息
-   * @deprecated 暂未实现
    */
-  private async get_user_info_by_token () {
+  public async get_user_info_by_token ():
+  Promise<ApiResponseType<UserResponseType>> {
+    this.options.setRequestConfig({
+      token: this.userToken
+    })
+    try {
+      const req = await this.get('/user')
+      if (req.statusCode === 401) {
+        throw new Error('未授权访问或令牌过期无效')
+      } else if (req.statusCode === 404) {
+        throw new Error('用户不存在')
+      }
+      if (req.data) {
+        req.data.created_at = formatDate(req.data.created_at)
+        req.data.updated_at = formatDate(req.data.updated_at)
+      }
+      return req
+    } catch (error) {
+      throw new Error(`获取用户信息失败: ${(error as Error).message}`)
+    }
   }
 
   /**

@@ -3,6 +3,8 @@ interface UserBase {
   login: string;
   /** 用户ID */
   id: number;
+  /** 用户视图类型 */
+  user_view_type: string;
   /** 用户节点ID */
   node_id: string;
   /** 用户头像URL */
