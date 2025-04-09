@@ -78,6 +78,17 @@ export class GitHub {
   }
 
   /**
+   * 初始化方法
+   */
+  private init (): void {
+    this.repo = new Repo(this)
+    this.auth = new Auth(this)
+    this.install = new Install(this)
+    this.app = new App(this)
+    this.user = new User(this)
+  }
+
+  /**
    * 设置代理配置
    * @param proxy - 代理配置对象
    * @param proxy.type - 代理类型，可选值为 'common' | 'http' | 'https' | 'socks' @example 'http
@@ -94,11 +105,7 @@ export class GitHub {
       this.ApiUrl = ApiBaseUrl(type, proxy.address)
     }
 
-    this.repo = new Repo(this)
-    this.auth = new Auth(this)
-    this.install = new Install(this)
-    this.app = new App(this)
-    this.user = new User(this)
+    this.init()
   }
 
   /**
@@ -112,11 +119,7 @@ export class GitHub {
     }
     this.userToken = token
 
-    this.repo = new Repo(this)
-    this.auth = new Auth(this)
-    this.install = new Install(this)
-    this.app = new App(this)
-    this.user = new User(this)
+    this.init()
     if (this.proxy) {
       this.setProxy(this.proxy)
     }
