@@ -84,7 +84,7 @@ export class User {
     }
   }
 
-  public async get_user_contribution_calendar (options: UserNameParamType): Promise<ApiResponseType<ContributionResult>> {
+  public async get_user_contribution (options: UserNameParamType): Promise<ApiResponseType<ContributionResult>> {
     this.options.setRequestConfig({
       url: this.BaseUrl
     })
