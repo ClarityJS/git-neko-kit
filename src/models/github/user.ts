@@ -84,6 +84,12 @@ export class User {
     }
   }
 
+  /**
+   * 获取用户贡献数据
+   * @param options - 用户参数
+   * @param options.username - 用户名
+   * @returns 用户贡献数据
+   */
   public async get_user_contribution (options: UserNameParamType):
   Promise<ApiResponseType<ContributionResult>> {
     if (!options.username) {
