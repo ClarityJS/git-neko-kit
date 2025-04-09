@@ -4,6 +4,7 @@ import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
 import Request from '@/models/base/request'
 import { App } from '@/models/github/app'
 import { Auth } from '@/models/github/auth'
+import { Commit } from '@/models/github/commit'
 import { Install } from '@/models/github/install'
 import { Repo } from '@/models/github/repo'
 import { User } from '@/models/github/user'
@@ -34,6 +35,7 @@ export class GitHub {
   public repo: Repo
   public auth: Auth
   public user: User
+  public commit: Commit
 
   public BaseUrl: string = BaseUrl(type)
   public ApiUrl: string = ApiBaseUrl(type)
@@ -68,6 +70,7 @@ export class GitHub {
     this.install = new Install(this)
     this.app = new App(this)
     this.user = new User(this)
+    this.commit = new Commit(this)
 
     this.currentRequestConfig = {
       url: this.ApiUrl,
@@ -86,6 +89,7 @@ export class GitHub {
     this.install = new Install(this)
     this.app = new App(this)
     this.user = new User(this)
+    this.commit = new Commit(this)
   }
 
   /**

@@ -1,4 +1,4 @@
-interface UserBase {
+export interface UserBaseType {
   /** 用户登录名 */
   login: string;
   /** 用户ID */
@@ -40,7 +40,7 @@ interface UserBase {
 }
 
 /** GitHub用户详细信息 */
-export interface UserResponseType extends UserBase {
+export interface UserResponseType extends UserBaseType {
   /** 用户全名 */
   name: string | null;
   /** 公司 */

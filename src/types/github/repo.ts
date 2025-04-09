@@ -1,11 +1,7 @@
-import { RepoNameParamType, RepoOwnerParamType } from '@/types/github/base'
+import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType } from '@/types/github/base'
 
 /** 仓库信息响应类型 */
 export interface RepoBaseParamType extends RepoOwnerParamType, RepoNameParamType { }
-export interface RepoUrlParamType {
-  /** 仓库地址 */
-  url: string;
-}
 
 /** 仓库信息请求参数 */
 export type RepoInfoParamType = RepoBaseParamType | RepoUrlParamType

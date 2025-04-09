@@ -9,6 +9,10 @@ export {
   UserNameParamType
 } from '@/types/github/base'
 export {
+  CommitInfoParamType,
+  CommitInfoResponseType
+} from '@/types/github/commit'
+export {
   OrgReoParmsType,
   OrgRepoCreateParamType,
   OrgRepoListType
