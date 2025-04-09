@@ -1,6 +1,6 @@
 import { formatDate } from '@/common'
 import { GitHub } from '@/models/github/github'
-import { ApiResponseType, UserParamType, UserResponseType } from '@/types'
+import { ApiResponseType, UserNameParamType, UserResponseType } from '@/types'
 
 /**
  * GitHub 用户操作类
@@ -25,7 +25,7 @@ export class User {
     this.get = options.get.bind(options)
     this.post = options.post.bind(options)
     this.BaseUrl = options.BaseUrl
-    this.userToken = options.userToken ?? null
+    this.userToken = options.userToken
   }
 
   /**
@@ -41,7 +41,7 @@ export class User {
    * @param options - 用户参数
    * @param options.username - 用户名或组织名
    */
-  public async get_user_info (options: UserParamType): Promise<ApiResponseType<UserResponseType>> {
+  public async get_user_info (options: UserNameParamType): Promise<ApiResponseType<UserResponseType>> {
     if (!options.username) {
       throw new Error('用户名或组织名不能为空')
     }

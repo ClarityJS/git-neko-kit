@@ -1,11 +1,4 @@
-export interface RepoOwnerParamType {
-  /** 仓库的拥有者 */
-  owner: string;
-}
-export interface RepoNameParamType {
-  /** 仓库的名称 */
-  repo: string;
-}
+import { RepoNameParamType, RepoOwnerParamType } from '@/types/github/base'
 
 /** 仓库信息响应类型 */
 export interface RepoBaseParamType extends RepoOwnerParamType, RepoNameParamType { }

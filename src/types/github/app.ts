@@ -1,4 +1,3 @@
-import { ApiResponseType } from '@/types/base/response'
 /**
  * 代表 GitHub 应用所有者的详细信息
  */

@@ -6,6 +6,9 @@ export {
   GithubOauthTokenResponseType
 } from '@/types/github/auth'
 export {
+  UserNameParamType
+} from '@/types/github/base'
+export {
   OrgReoParmsType,
   OrgRepoCreateParamType,
   OrgRepoListType
@@ -16,6 +19,5 @@ export {
   RepoInfoResponseType
 } from '@/types/github/repo'
 export {
-  UserParamType,
   UserResponseType
 } from '@/types/github/user'

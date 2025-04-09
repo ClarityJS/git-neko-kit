@@ -1,8 +1,3 @@
-export interface UserParamType {
-  /** 用户名 */
-  username: string;
-}
-
 interface UserBase {
   /** 用户登录名 */
   login: string;

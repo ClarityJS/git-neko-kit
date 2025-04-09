@@ -1,4 +1,5 @@
-import { RepoInfoResponseType, RepoOwnerParamType } from '@/types/github/repo'
+import { RepoOwnerParamType } from '@/types/github/base'
+import { RepoInfoResponseType } from '@/types/github/repo'
 export interface OrgReoParmsType {
   /** 组织名称 */
   org: string
