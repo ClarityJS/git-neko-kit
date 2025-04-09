@@ -33,7 +33,7 @@ export class Repo {
     this.get = options.get.bind(options)
     this.post = options.post.bind(options)
     this.BaseUrl = options.BaseUrl
-    this.userToken = options.userToken ?? null
+    this.userToken = options.userToken
   }
 
   /**

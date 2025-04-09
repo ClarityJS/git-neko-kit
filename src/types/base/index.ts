@@ -2,3 +2,4 @@ export { ApiType, ProxyParamsType, ReverseProxyCommonUrlType } from '@/types/bas
 export { pkgType } from '@/types/base/pkg'
 export { RequestConfigType, RequestTokenType } from '@/types/base/request'
 export { ApiResponseType, ResponseType } from '@/types/base/response'
+export { ContributionResult } from '@/types/base/utils'

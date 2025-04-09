@@ -1,6 +1,6 @@
-import { formatDate } from '@/common'
+import { formatDate, getContributionData } from '@/common'
 import { GitHub } from '@/models/github/github'
-import { ApiResponseType, UserNameParamType, UserResponseType } from '@/types'
+import { ApiResponseType, ContributionResult, UserNameParamType, UserResponseType } from '@/types'
 
 /**
  * GitHub 用户操作类
@@ -32,7 +32,7 @@ export class User {
    * 通过访问令牌获取用户信息
    * @deprecated 暂未实现
    */
-  private async get_user_info_by_access () {
+  private async get_user_info_by_token () {
   }
 
   /**
@@ -41,7 +41,8 @@ export class User {
    * @param options - 用户参数
    * @param options.username - 用户名或组织名
    */
-  public async get_user_info (options: UserNameParamType): Promise<ApiResponseType<UserResponseType>> {
+  public async get_user_info (options: UserNameParamType):
+  Promise<ApiResponseType<UserResponseType>> {
     if (!options.username) {
       throw new Error('用户名或组织名不能为空')
     }
@@ -62,6 +63,38 @@ export class User {
       return req
     } catch (error) {
       throw new Error(`获取用户或组织信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  public async get_user_contribution_calendar (options: UserNameParamType): Promise<ApiResponseType<ContributionResult>> {
+    this.options.setRequestConfig({
+      url: this.BaseUrl
+    })
+    try {
+      const userInfo = await this.get_user_info({ username: options.username })
+      if (userInfo.data.type === 'Organization') {
+        throw new Error('组织不支持获取贡献日历')
+      }
+      const req = await this.get(`/${options.username}`, {
+        action: 'show',
+        controller: 'profiles',
+        tab: 'contributions',
+        user_id: options.username
+      }, {
+        'X-Requested-With': 'XMLHttpRequest'
+      })
+
+      if (req.statusCode === 404) {
+        throw new Error('用户不存在')
+      }
+
+      const res = getContributionData(req.data)
+      return {
+        ...req,
+        data: res
+      }
+    } catch (error) {
+      throw new Error(`获取用户信息失败: ${(error as Error).message}`)
     }
   }
 }

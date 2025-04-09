@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import GitUrlParse from 'git-url-parse'
 
 import { basePath } from '@/root'
-import { RepoBaseParamType } from '@/types'
+import { ContributionResult, RepoBaseParamType } from '@/types'
 
 /**
  * 读取 JSON 文件
@@ -66,5 +66,42 @@ export function parse_git_url (url: string, GitUrl: string): RepoBaseParamType {
   return {
     owner: info.owner,
     repo: info.name
+  }
+}
+/**
+ * 将数组按指定大小分割成二维数组
+ * @param items - 要分割的数组
+ * @param n - 每个子数组的大小
+ * @returns 分割后的二维数组
+ */
+function listSplit<T> (items: T[], n: number): T[][] {
+  return Array.from({ length: Math.ceil(items.length / n) }, (_, i) =>
+    items.slice(i * n, i * n + n)
+  )
+}
+
+/**
+ * 从HTML中解析贡献数据
+ * @param html - 包含贡献数据的HTML字符串
+ * @returns 解析后的贡献数据，包括总贡献数和按周分组的贡献数据
+ */
+export function getContributionData (html: string): ContributionResult {
+  const dateRegex = /data-date="(.*?)" id="contribution-day-component/g
+  const countRegex = /<tool-tip .*?class="sr-only position-absolute">(.*?) contribution/g
+  const dates = Array.from(html.matchAll(dateRegex), m => m[1])
+  const counts = Array.from(html.matchAll(countRegex), m =>
+    m[1].toLowerCase() === 'no' ? 0 : parseInt(m[1])
+  )
+  if (!dates.length || !counts.length) {
+    return { total: 0, contributions: [] }
+  }
+  const sortedData = dates
+    .map((date, index) => ({ date, count: counts[index] }))
+    .sort((a, b) => a.date.localeCompare(b.date))
+
+  const contributions = listSplit(sortedData, 7)
+  return {
+    total: counts.reduce((sum, count) => sum + count, 0),
+    contributions
   }
 }
