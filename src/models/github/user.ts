@@ -84,15 +84,19 @@ export class User {
     }
   }
 
-  public async get_user_contribution (options: UserNameParamType): Promise<ApiResponseType<ContributionResult>> {
-    this.options.setRequestConfig({
-      url: this.BaseUrl
-    })
+  public async get_user_contribution (options: UserNameParamType):
+  Promise<ApiResponseType<ContributionResult>> {
+    if (!options.username) {
+      throw new Error('用户名不能为空')
+    }
     try {
       const userInfo = await this.get_user_info({ username: options.username })
       if (userInfo.data.type === 'Organization') {
         throw new Error('组织不支持获取贡献日历')
       }
+      this.options.setRequestConfig({
+        url: this.BaseUrl
+      })
       const req = await this.get(`/${options.username}`, {
         action: 'show',
         controller: 'profiles',
@@ -112,7 +116,7 @@ export class User {
         data: res
       }
     } catch (error) {
-      throw new Error(`获取用户信息失败: ${(error as Error).message}`)
+      throw new Error(`获取用户贡献信息失败: ${(error as Error).message}`)
     }
   }
 }
