@@ -1,4 +1,4 @@
-import { GitHub } from '@/models/github/event/github'
+import { GitHub } from '@/models/github/github'
 import type { ApiResponseType, GitHubAppInfoType } from '@/types'
 
 /**

@@ -1,1 +1,1 @@
-export { Base, GitHub } from '@/models'
+export { GitHub } from '@/models'

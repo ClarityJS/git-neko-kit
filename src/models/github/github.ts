@@ -2,11 +2,11 @@ import jwt from 'jsonwebtoken'
 
 import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
 import Request from '@/models/base/request'
-import { App } from '@/models/github/event/app'
-import { Auth } from '@/models/github/event/auth'
-import { Install } from '@/models/github/event/install'
-import { Repo } from '@/models/github/event/repo'
-import { User } from '@/models/github/event/user'
+import { App } from '@/models/github/app'
+import { Auth } from '@/models/github/auth'
+import { Install } from '@/models/github/install'
+import { Repo } from '@/models/github/repo'
+import { User } from '@/models/github/user'
 import type {
   ApiResponseType,
   GitHubAuthType,

@@ -1,5 +1,5 @@
-import { App } from '@/models/github/event/app'
-import { GitHub } from '@/models/github/event/github'
+import { App } from '@/models/github/app'
+import { GitHub } from '@/models/github/github'
 
 export class Install {
   private get: GitHub['get']

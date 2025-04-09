@@ -1,5 +1,5 @@
 import { formatDate, parse_git_url } from '@/common'
-import { GitHub } from '@/models/github/event/github'
+import { GitHub } from '@/models/github/github'
 import type {
   ApiResponseType,
   OrgReoParmsType,
