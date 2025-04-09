@@ -1,5 +1,31 @@
 # 变更日志
 
+## [0.2.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.1.0...v0.2.0) (2025-04-09)
+
+
+### ✨ 新功能
+
+* **github:** 实现通过访问令牌获取用户信息的方法 ([d2f56a6](https://github.com/ClarityJS/git-neko-kit/commit/d2f56a6a522f4aea63d5dc5c24eae00cdf48cbf9))
+* **github:** 添加获取提交信息功能 ([c024133](https://github.com/ClarityJS/git-neko-kit/commit/c0241338267297c86f002448d69d443f7600da9d))
+* **user:** 添加 GitHub 用户操作类和相关类型定义 ([166ed9a](https://github.com/ClarityJS/git-neko-kit/commit/166ed9ac0e1137da472a7996a1e22db97d75ccc3))
+* **user:** 添加获取用户贡献日历数据功能 ([7b14d94](https://github.com/ClarityJS/git-neko-kit/commit/7b14d9401847beba4d811064c572f825262df000))
+
+
+### 🐛 错误修复
+
+* **github:** 优化 token 设置逻辑 ([a83c511](https://github.com/ClarityJS/git-neko-kit/commit/a83c51106f1e309e9073fdc740575985cc5917a1))
+* **github:** 修复用户贡献信息获取功能 ([0c0959d](https://github.com/ClarityJS/git-neko-kit/commit/0c0959dbe299a8d849551aa5db17c28c4866d106))
+* **src:** 优化用户信息获取异常处理 ([f7c9844](https://github.com/ClarityJS/git-neko-kit/commit/f7c9844fe56a580ca048bf4812d48725f0c01b96))
+
+
+### ♻️ 代码重构
+
+* **github:** 修改用户贡献获取方法的名称 ([94e22ff](https://github.com/ClarityJS/git-neko-kit/commit/94e22ff104a4cc92c925df9e28a2ed8ca61f9064))
+* **github:** 重构 GitHub 类的初始化逻辑 ([6f14421](https://github.com/ClarityJS/git-neko-kit/commit/6f144212bc5e36c96eff4b5678a8e6a3d86cc461))
+* **models:** 重构 GitHub 相关模型 ([8207e8d](https://github.com/ClarityJS/git-neko-kit/commit/8207e8d7ee14d8e9d48997cfd86a09d9cae606d6))
+* **src/models/github/user.ts:** 添加获取用户贡献数据的方法 ([904d0ab](https://github.com/ClarityJS/git-neko-kit/commit/904d0abdcd3af421930505d81c54caf70732669d))
+* **types:** 重构 GitHub API 类型定义 ([4a3f332](https://github.com/ClarityJS/git-neko-kit/commit/4a3f332613ba5ded40c3043b228bc0766a18f207))
+
 ## [0.1.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.0.3...v0.1.0) (2025-04-08)
 
 
