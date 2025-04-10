@@ -1,4 +1,5 @@
 import {
+  formatDate,
   NotCommitOrRepoMsg,
   NotParamMsg,
   NotPerrmissionMsg,
@@ -46,6 +47,7 @@ export class Commit {
    * @param options.repo - 仓库的名称
    * @param options.url - 仓库的URL (与owner/repo二选一)
    * @param options.sha - 提交的SHA值，默认为仓库的默认分支 @default 仓库的默认分支
+   * @param options.format - 是否格式化提交信息，默认为true @default false
    * @returns 提交信息
    */
   public async get_commit_info (options: CommitInfoParamType):
@@ -75,6 +77,33 @@ export class Commit {
       } else if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
+
+      if (req.data?.commit) {
+        req.data.commit = {
+          ...req.data.commit,
+          author: req.data.commit.author
+            ? {
+                ...req.data.commit.author,
+                date: formatDate(req.data.commit.author.date)
+              }
+            : null,
+          committer: req.data.commit.committer
+            ? {
+                ...req.data.commit.committer,
+                date: formatDate(req.data.commit.committer.date)
+              }
+            : null,
+          verification: req.data.commit.verification
+            ? {
+                ...req.data.commit.verification,
+                verified_at: req.data.commit.verification.verified_at
+                  ? formatDate(req.data.commit.verification.verified_at)
+                  : null
+              }
+            : null
+        }
+      }
+
       if (options.format) {
         const message = req.data?.commit?.message ?? ''
         const [title, ...bodyParts] = message.split('\n')
