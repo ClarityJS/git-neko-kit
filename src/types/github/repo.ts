@@ -324,6 +324,12 @@ export interface RepoInfoResponseType {
   watchers: number;
   /** * 仓库的默认分支 */
   default_branch: string;
+  /** *
+   * 仓库的主分支
+   * @description 该属性已被弃用，在部分旧版本的 API 中可能存在，
+   * @deprecated 已弃用，使用 default_branch 代替
+   * */
+  master_branch?: string;
   /** * 临时克隆令牌 */
   temp_clone_token: string | null;
   /** * 仓库的网络计数 */

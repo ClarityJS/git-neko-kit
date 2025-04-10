@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 
+import { isNotTokenMsg } from '@/common'
 import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
 import Request from '@/models/base/request'
 import { App } from '@/models/github/app'
@@ -115,7 +116,7 @@ export class GitHub {
   public setToken (token: string): void {
     if (!token.startsWith('ghu_')) {
       this.userToken = null
-      throw new Error('token 格式错误')
+      throw new Error(isNotTokenMsg)
     }
     this.userToken = token
 

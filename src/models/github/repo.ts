@@ -1,4 +1,10 @@
-import { formatDate, parse_git_url } from '@/common'
+import {
+  formatDate,
+  NotOrgMsg,
+  NotParamMsg,
+  NotPerrmissionMsg,
+  parse_git_url
+} from '@/common'
 import { GitHub } from '@/models/github/github'
 import type {
   ApiResponseType,
@@ -60,9 +66,9 @@ export class Repo {
       }
       const req = await this.get(`/orgs/${options.org}/repos`, params)
       if (req.statusCode === 404) {
-        throw new Error('组织不存在')
+        throw new Error(NotOrgMsg)
       } else if (req.statusCode === 401) {
-        throw new Error('未授权访问或令牌过期无效')
+        throw new Error(NotPerrmissionMsg)
       }
       if (req.data) {
         req.data = req.data.map((repo: RepoInfoResponseType) => ({
@@ -103,14 +109,14 @@ export class Repo {
       owner = options.owner
       repo = options.repo
     } else {
-      throw new Error('参数错误')
+      throw new Error(NotParamMsg)
     }
     try {
       const req = await this.get(`/repos/${owner}/${repo}`)
       if (req.statusCode === 404) {
-        throw new Error('组织不存在')
+        throw new Error(NotOrgMsg)
       } else if (req.statusCode === 401) {
-        throw new Error('未授权访问或令牌过期无效')
+        throw new Error(NotPerrmissionMsg)
       }
       if (req.data) {
         req.data.created_at = formatDate(req.data.created_at)
@@ -163,7 +169,7 @@ export class Repo {
       }
       const req = await this.post(`/orgs/${owner}/repos`, body)
       if (req.statusCode === 401) {
-        throw new Error('未授权访问或令牌过期无效')
+        throw new Error(NotPerrmissionMsg)
       }
       if (req.data) {
         req.data.created_at = formatDate(req.data.created_at)

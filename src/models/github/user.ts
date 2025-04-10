@@ -1,6 +1,20 @@
-import { formatDate, getContributionData } from '@/common'
+import {
+  formatDate,
+  getContributionData,
+  isOrgMsg,
+  NotOrgOrRepoMsg,
+  NotOrgOrUserParamMsg,
+  NotPerrmissionMsg,
+  NotUserMsg,
+  NotUserParamMsg
+} from '@/common'
 import { GitHub } from '@/models/github/github'
-import { ApiResponseType, ContributionResult, UserNameParamType, UserResponseType } from '@/types'
+import {
+  ApiResponseType,
+  ContributionResult,
+  UserNameParamType,
+  UserResponseType
+} from '@/types'
 
 /**
  * GitHub 用户操作类
@@ -39,9 +53,9 @@ export class User {
     try {
       const req = await this.get('/user')
       if (req.statusCode === 401) {
-        throw new Error('未授权访问或令牌过期无效')
+        throw new Error(NotPerrmissionMsg)
       } else if (req.statusCode === 404) {
-        throw new Error('用户不存在')
+        throw new Error(NotUserMsg)
       }
       if (req.data) {
         req.data.created_at = formatDate(req.data.created_at)
@@ -62,7 +76,7 @@ export class User {
   public async get_user_info (options: UserNameParamType):
   Promise<ApiResponseType<UserResponseType>> {
     if (!options.username) {
-      throw new Error('用户名或组织名不能为空')
+      throw new Error(NotOrgOrUserParamMsg)
     }
     this.options.setRequestConfig({
       token: this.userToken
@@ -70,9 +84,9 @@ export class User {
     try {
       const req = await this.get(`/users/${options.username}`)
       if (req.statusCode === 401) {
-        throw new Error('未授权访问或令牌过期无效')
+        throw new Error(NotPerrmissionMsg)
       } else if (req.statusCode === 404) {
-        throw new Error('用户或组织不存在')
+        throw new Error(NotOrgOrRepoMsg)
       }
       if (req.data) {
         req.data.created_at = formatDate(req.data.created_at)
@@ -93,12 +107,12 @@ export class User {
   public async get_user_contribution (options: UserNameParamType):
   Promise<ApiResponseType<ContributionResult>> {
     if (!options.username) {
-      throw new Error('用户名不能为空')
+      throw new Error(NotUserParamMsg)
     }
     try {
       const userInfo = await this.get_user_info({ username: options.username })
       if (userInfo.data.type === 'Organization') {
-        throw new Error('组织不支持获取贡献日历')
+        throw new Error(`${isOrgMsg}获取贡献日历`)
       }
       this.options.setRequestConfig({
         url: this.BaseUrl
@@ -113,7 +127,7 @@ export class User {
       })
 
       if (req.statusCode === 404) {
-        throw new Error('用户不存在')
+        throw new Error(NotUserParamMsg)
       }
 
       const res = getContributionData(req.data)

@@ -1,14 +1,26 @@
 import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType, ShaParamType } from '@/types/github/base'
 import { UserBaseType } from '@/types/github/user'
 
-export interface CommitInfoBaseParamType extends RepoOwnerParamType, RepoNameParamType {
+interface CommitInfoCommonParamType {
   /** 提交SHA */
   sha?: ShaParamType['sha'];
+  /** 是否格式化消息 */
+  format: boolean;
 }
-export interface CommitInfoUrlParamType extends RepoUrlParamType {
-  /** 提交SHA */
-  sha?: ShaParamType['sha'];
-}
+
+/**
+ * 提交信息基础参数类型
+ * @description 用于获取提交信息的基础参数类型，包含仓库的拥有者、仓库名称、提交SHA等信息。
+ * */
+export interface CommitInfoBaseParamType extends RepoOwnerParamType, RepoNameParamType, CommitInfoCommonParamType {}
+
+/**
+ * 提交信息URL参数类型
+ * @description 用于获取提交信息的URL参数类型，包含仓库的URL和提交SHA等信息。
+ * */
+export interface CommitInfoUrlParamType extends RepoUrlParamType, CommitInfoCommonParamType {}
+
+/** 提交参数类型 */
 export type CommitInfoParamType = CommitInfoBaseParamType | CommitInfoUrlParamType
 interface GitUser {
   /** 用户姓名 */
@@ -41,6 +53,17 @@ interface Commit {
   committer: GitUser | null;
   /** 提交信息 */
   message: string;
+  /**
+   * 提交标题
+   * @description 仅在开启格式化消息时返回
+   * @example "feat: add new feature"
+   */
+  title?: string;
+  /** 提交正文
+   * @description 仅在开启格式化消息时返回
+   * @example "This is a new feature that adds a new feature to the application."
+   */
+  body?: string;
   /** 评论数量 */
   comment_count: number;
   /** 提交树信息 */
