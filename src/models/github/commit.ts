@@ -1,7 +1,16 @@
-import { parse_git_url } from '@/common'
+import {
+  NotCommitOrRepoMsg,
+  NotParamMsg,
+  NotPerrmissionMsg,
+  parse_git_url
+} from '@/common'
 import { GitHub } from '@/models/github/github'
 import { Repo } from '@/models/github/repo'
-import { ApiResponseType, CommitInfoParamType, CommitInfoResponseType } from '@/types'
+import {
+  ApiResponseType,
+  CommitInfoParamType,
+  CommitInfoResponseType
+} from '@/types'
 
 /**
  * GitHub 提交操作类
@@ -30,6 +39,15 @@ export class Commit {
     this.repo = new Repo(options)
   }
 
+  /**
+   * 获取一个提交信息
+   * @param options - 提交信息参数
+   * @param options.owner - 仓库的拥有者
+   * @param options.repo - 仓库的名称
+   * @param options.url - 仓库的URL (与owner/repo二选一)
+   * @param options.sha - 提交的SHA值，默认为仓库的默认分支 @default 仓库的默认分支
+   * @returns 提交信息
+   */
   public async get_commit_info (options: CommitInfoParamType):
   Promise<ApiResponseType<CommitInfoResponseType>> {
     try {
@@ -43,7 +61,7 @@ export class Commit {
         owner = options.owner
         repo = options.repo
       } else {
-        throw new Error('参数错误')
+        throw new Error(NotParamMsg)
       }
       if (!options.sha) {
         const req = await this.repo.get_repo_info({ owner, repo })
@@ -52,6 +70,23 @@ export class Commit {
         sha = options.sha
       }
       const req = await this.get(`/repos/${owner}/${repo}/commits/${sha}`)
+      if (req.statusCode === 404) {
+        throw new Error(NotCommitOrRepoMsg)
+      } else if (req.statusCode === 401) {
+        throw new Error(NotPerrmissionMsg)
+      }
+      if (options.format) {
+        const message = req.data?.commit?.message ?? ''
+        const [title, ...bodyParts] = message.split('\n')
+        req.data = {
+          ...req.data,
+          commit: {
+            ...req.data.commit,
+            title: title.trim(),
+            body: bodyParts.join('\n').trim()
+          }
+        }
+      }
       return req
     } catch (error) {
       throw new Error(`获取提交信息失败: ${(error as Error).message}`)
