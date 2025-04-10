@@ -5,7 +5,6 @@ import Request from '@/models/base/request'
 import { App } from '@/models/github/app'
 import { Auth } from '@/models/github/auth'
 import { Commit } from '@/models/github/commit'
-import { Install } from '@/models/github/install'
 import { Repo } from '@/models/github/repo'
 import { User } from '@/models/github/user'
 import type {
@@ -31,7 +30,6 @@ const type = 'github'
  */
 export class GitHub {
   public app: App
-  public install: Install
   public repo: Repo
   public auth: Auth
   public user: User
@@ -67,7 +65,6 @@ export class GitHub {
     this.jwtToken = this.generate_jwt()
     this.repo = new Repo(this)
     this.auth = new Auth(this)
-    this.install = new Install(this)
     this.app = new App(this)
     this.user = new User(this)
     this.commit = new Commit(this)
@@ -86,7 +83,6 @@ export class GitHub {
   private init (): void {
     this.repo = new Repo(this)
     this.auth = new Auth(this)
-    this.install = new Install(this)
     this.app = new App(this)
     this.user = new User(this)
     this.commit = new Commit(this)
