@@ -1,5 +1,6 @@
 import {
   formatDate,
+  NotCommitMsg,
   NotCommitOrRepoMsg,
   NotParamMsg,
   NotPerrmissionMsg,
@@ -76,6 +77,8 @@ export class Commit {
         throw new Error(NotCommitOrRepoMsg)
       } else if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
+      } else if (req.statusCode === 422) {
+        throw new Error(NotCommitMsg)
       }
 
       if (req.data?.commit) {
