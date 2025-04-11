@@ -107,13 +107,18 @@ export class Repo {
     })
     try {
       const params = {
-        type: options.type,
+        type: options.type ?? 'owner',
         sort: options.sort,
         direction: options.direction,
         per_page: options.per_page,
         page: options.page
       }
-      const req = await this.get(`/users/${options.username}/repos`, params)
+      let req
+      try {
+        req = await this.get('/user/repos', params)
+      } catch (error) {
+        req = await this.get(`/users/${options.username}/repos`, params)
+      }
       if (req.statusCode === 404) {
         throw new Error(NotUserMsg)
       } else if (req.statusCode === 401) {
