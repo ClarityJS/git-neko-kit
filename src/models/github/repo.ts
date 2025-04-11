@@ -4,16 +4,18 @@ import {
   NotOrgOrUserMsg,
   NotParamMsg,
   NotPerrmissionMsg,
+  NotUserMsg,
   parse_git_url
 } from '@/common'
 import { GitHub } from '@/models/github/github'
 import type {
   ApiResponseType,
-  OrgReoParmsType,
   OrgRepoCreateParamType,
+  OrgRepoListParmsType,
   OrgRepoListType,
   RepoInfoParamType,
-  RepoInfoResponseType
+  RepoInfoResponseType,
+  UserRepoListParmsType
 } from '@/types'
 
 /**
@@ -55,7 +57,7 @@ export class Repo {
    * @returns 组织仓库列表
    */
   public async get_org_repos_list (
-    options: OrgReoParmsType
+    options: OrgRepoListParmsType
   ): Promise<ApiResponseType<OrgRepoListType>> {
     try {
       const params = {
@@ -84,6 +86,52 @@ export class Repo {
       return req
     } catch (error) {
       throw new Error(`获取组织仓库列表失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取用户仓库列表
+   * @param options - 请求参数对象
+   * @param options.username - 用户名
+   * @param options.type' - 仓库类型，可选值：'all' | 'public' | 'private' | 'forks' | 'sources' | 'member' @default 'all'
+   * @param options.sort - 排序字段，可选值：'created' | 'updated' | 'pushed' | 'full_name' @default 'created
+   * @param options.direction - 排序方向，可选值：'asc' | 'desc' @default 'desc'
+   * @param options.per_page - 每页数量（1-100） @default 30
+   * @param options.page - 页码 @default 1
+   * @returns 用户仓库列表
+   */
+  public async get_user_repos_list (options: UserRepoListParmsType)
+    : Promise<ApiResponseType<UserRepoListParmsType>> {
+    this.options.setRequestConfig({
+      token: this.userToken
+    })
+    try {
+      const params = {
+        type: options.type,
+        sort: options.sort,
+        direction: options.direction,
+        per_page: options.per_page,
+        page: options.page
+      }
+      const req = await this.get(`/users/${options.username}/repos`, params)
+      if (req.statusCode === 404) {
+        throw new Error(NotUserMsg)
+      } else if (req.statusCode === 401) {
+        throw new Error(NotPerrmissionMsg)
+      }
+      if (req.data) {
+        req.data = await Promise.all(
+          req.data.map(async (repo: RepoInfoResponseType) => ({
+            ...repo,
+            created_at: await formatDate(repo.created_at),
+            updated_at: await formatDate(repo.updated_at),
+            pushed_at: await formatDate(repo.pushed_at)
+          }))
+        )
+      }
+      return req
+    } catch (error) {
+      throw new Error(`获取用户仓库列表失败: ${(error as Error).message}`)
     }
   }
 

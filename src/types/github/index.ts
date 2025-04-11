@@ -13,14 +13,16 @@ export {
   CommitInfoResponseType
 } from '@/types/github/commit'
 export {
-  OrgReoParmsType,
-  OrgRepoCreateParamType,
-  OrgRepoListType
+  OrgRepoCreateParamType
 } from '@/types/github/org'
 export {
+  OrgRepoListParmsType,
+  OrgRepoListType,
   RepoBaseParamType,
   RepoInfoParamType,
-  RepoInfoResponseType
+  RepoInfoResponseType,
+  UserRepoListParmsType,
+  UserRepoListType
 } from '@/types/github/repo'
 export {
   UserResponseType

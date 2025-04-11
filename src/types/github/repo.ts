@@ -1,5 +1,31 @@
 import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType } from '@/types/github/base'
 
+/** 仓库列表参数类型 */
+export interface RepoListBaseParmsType {
+  /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
+  type?: 'all' | 'public' | 'private' | 'forks' | 'sources' | 'member'
+  /** 排序方式，可选created， updated， pushed， full_name， 默认为 full_name */
+  sort?: 'created' | 'updated' | 'pushed' | 'full_name'
+  /** 排序方式，可选asc， desc， 默认为 desc */
+  direction?: 'asc' | 'desc'
+  /** 每页数量 */
+  per_page?: number
+  /** 页码 */
+  page?: number
+}
+
+/** 组织仓库列表参数类型 */
+export interface OrgRepoListParmsType extends RepoListBaseParmsType {
+  /** 组织名称 */
+  org: string
+}
+
+/** 用户仓库列表参数类型 */
+export interface UserRepoListParmsType extends RepoListBaseParmsType {
+  /** 用户名 */
+  username: string
+}
+
 /** 仓库信息响应类型 */
 export interface RepoBaseParamType extends RepoOwnerParamType, RepoNameParamType { }
 
@@ -375,3 +401,14 @@ export interface RepoInfoResponseType {
   /** * 自定义属性 */
   custom_properties?: Record<string, any>;
 }
+
+/**
+ * 组织仓库列表类型
+ * @description 该类型包含了多个仓库的信息，每个仓库都有自己的详细信息。
+ */
+export type OrgRepoListType = RepoInfoResponseType[]
+
+/** 用户仓库列表类型 */
+export type UserRepoListType = Array<RepoInfoResponseType & {
+  role_name?: string;
+}>

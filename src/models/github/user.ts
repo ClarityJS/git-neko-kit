@@ -58,8 +58,8 @@ export class User {
         throw new Error(NotUserMsg)
       }
       if (req.data) {
-        req.data.created_at = formatDate(req.data.created_at)
-        req.data.updated_at = formatDate(req.data.updated_at)
+        req.data.created_at = await formatDate(req.data.created_at)
+        req.data.updated_at = await formatDate(req.data.updated_at)
       }
       return req
     } catch (error) {
@@ -89,8 +89,8 @@ export class User {
         throw new Error(NotOrgOrRepoMsg)
       }
       if (req.data) {
-        req.data.created_at = formatDate(req.data.created_at)
-        req.data.updated_at = formatDate(req.data.updated_at)
+        req.data.created_at = await formatDate(req.data.created_at)
+        req.data.updated_at = await formatDate(req.data.updated_at)
       }
       return req
     } catch (error) {
