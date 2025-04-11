@@ -1,6 +1,7 @@
 import {
   formatDate,
   NotOrgMsg,
+  NotOrgOrUserMsg,
   NotParamMsg,
   NotPerrmissionMsg,
   parse_git_url
@@ -114,7 +115,7 @@ export class Repo {
     try {
       const req = await this.get(`/repos/${owner}/${repo}`)
       if (req.statusCode === 404) {
-        throw new Error(NotOrgMsg)
+        throw new Error(NotOrgOrUserMsg)
       } else if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
