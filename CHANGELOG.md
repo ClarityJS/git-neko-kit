@@ -1,5 +1,29 @@
 # 变更日志
 
+## [0.3.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.2.0...v0.3.0) (2025-04-11)
+
+
+### ✨ 新功能
+
+* **commit:** 格式化提交信息中的日期 ([56d2b6b](https://github.com/ClarityJS/git-neko-kit/commit/56d2b6b35c389e3728b93cb0da9888dd065f1851))
+* **github:** 添加获取用户仓库列表功能 ([4efe253](https://github.com/ClarityJS/git-neko-kit/commit/4efe253d6f256d9edf9fd46a951145ce2e4569b2))
+
+
+### 🐛 错误修复
+
+* **dayjs:** 修复 dayjs 本地化文件导入路径 ([dd2d05c](https://github.com/ClarityJS/git-neko-kit/commit/dd2d05c56e539ba8679b96599a3c042c2bbe8c99))
+* **github:** 优化用户仓库获取逻辑 ([472d591](https://github.com/ClarityJS/git-neko-kit/commit/472d591c8ccbfe92bd293976e0bdb8c6ead163d8))
+* **github:** 增加对 422 错误的处理 ([f57f284](https://github.com/ClarityJS/git-neko-kit/commit/f57f2848a1bfe12d4cc99fa1a28089efcfe73427))
+* **models:** 修复错误消息 ([e5899f0](https://github.com/ClarityJS/git-neko-kit/commit/e5899f0feeef98449e5fafecc544194fe797e6c9))
+
+
+### ♻️ 代码重构
+
+* **common:** 新增错误消息模块并优化错误处理 ([1323b13](https://github.com/ClarityJS/git-neko-kit/commit/1323b13088e7159d8395731c1c54e8d7cbd66703))
+* **date:** 重构日期格式化方法 ([3b0f68f](https://github.com/ClarityJS/git-neko-kit/commit/3b0f68f811883cea6af917f311317dfacb5e24cf))
+* **github:** 优化提交信息获取功能 ([0b33dae](https://github.com/ClarityJS/git-neko-kit/commit/0b33daea44ab04bb5602002b0d6da07dcaa652f6))
+* **models:** 将生成安装链接和配置链接的方法移至 App 类 ([a70695b](https://github.com/ClarityJS/git-neko-kit/commit/a70695b1be49d823482521a792df31ad00f30e0f))
+
 ## [0.2.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.1.0...v0.2.0) (2025-04-10)
 
 
