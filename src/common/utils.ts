@@ -37,7 +37,7 @@ export function readJSON<T = Record<string, unknown>> (file = '', root = ''): T 
 export async function formatDate (DateString: string, Locale: string = 'zh-CN'): Promise<string> {
   const locale = Locale.toLowerCase()
   try {
-    await import(`dayjs/locale/${locale}`)
+    await import(`dayjs/locale/${locale}.js`)
     dayjs.locale(locale)
   } catch (e) {
     console.warn(`无法加载dayjs locale: ${locale}`, e)
