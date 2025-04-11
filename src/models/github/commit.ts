@@ -87,20 +87,20 @@ export class Commit {
           author: req.data.commit.author
             ? {
                 ...req.data.commit.author,
-                date: formatDate(req.data.commit.author.date)
+                date: await formatDate(req.data.commit.author.date)
               }
             : null,
           committer: req.data.commit.committer
             ? {
                 ...req.data.commit.committer,
-                date: formatDate(req.data.commit.committer.date)
+                date: await formatDate(req.data.commit.committer.date)
               }
             : null,
           verification: req.data.commit.verification
             ? {
                 ...req.data.commit.verification,
                 verified_at: req.data.commit.verification.verified_at
-                  ? formatDate(req.data.commit.verification.verified_at)
+                  ? await formatDate(req.data.commit.verification.verified_at)
                   : null
               }
             : null

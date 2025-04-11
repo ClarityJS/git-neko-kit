@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 
+import dayjs from 'dayjs'
 import GitUrlParse from 'git-url-parse'
 
 import { basePath } from '@/root'
@@ -33,16 +34,16 @@ export function readJSON<T = Record<string, unknown>> (file = '', root = ''): T 
  * @param Locale - 语言环境
  * @returns 格式化后的日期字符串
  */
-export function formatDate (DateString: string, Locale: string = 'zh-CN'): string {
-  return new Date(DateString).toLocaleString(Locale, {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  })
+export async function formatDate (DateString: string, Locale: string = 'zh-CN'): Promise<string> {
+  const locale = Locale.toLowerCase()
+  try {
+    await import(`dayjs/locale/${locale}`)
+    dayjs.locale(locale)
+  } catch (e) {
+    console.warn(`无法加载dayjs locale: ${locale}`, e)
+    dayjs.locale('zh-cn')
+  }
+  return dayjs(DateString).format('YYYY-MM-DD HH:mm:ss')
 }
 
 /**

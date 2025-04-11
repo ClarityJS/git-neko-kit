@@ -72,12 +72,14 @@ export class Repo {
         throw new Error(NotPerrmissionMsg)
       }
       if (req.data) {
-        req.data = req.data.map((repo: RepoInfoResponseType) => ({
-          ...repo,
-          created_at: formatDate(repo.created_at),
-          updated_at: formatDate(repo.updated_at),
-          pushed_at: formatDate(repo.pushed_at)
-        }))
+        req.data = await Promise.all(
+          req.data.map(async (repo: RepoInfoResponseType) => ({
+            ...repo,
+            created_at: await formatDate(repo.created_at),
+            updated_at: await formatDate(repo.updated_at),
+            pushed_at: await formatDate(repo.pushed_at)
+          }))
+        )
       }
       return req
     } catch (error) {
@@ -120,9 +122,9 @@ export class Repo {
         throw new Error(NotPerrmissionMsg)
       }
       if (req.data) {
-        req.data.created_at = formatDate(req.data.created_at)
-        req.data.updated_at = formatDate(req.data.updated_at)
-        req.data.pushed_at = formatDate(req.data.pushed_at)
+        req.data.created_at = await formatDate(req.data.created_at)
+        req.data.updated_at = await formatDate(req.data.updated_at)
+        req.data.pushed_at = await formatDate(req.data.pushed_at)
       }
       return req
     } catch (error) {
@@ -173,9 +175,9 @@ export class Repo {
         throw new Error(NotPerrmissionMsg)
       }
       if (req.data) {
-        req.data.created_at = formatDate(req.data.created_at)
-        req.data.updated_at = formatDate(req.data.updated_at)
-        req.data.pushed_at = formatDate(req.data.pushed_at)
+        req.data.created_at = await formatDate(req.data.created_at)
+        req.data.updated_at = await formatDate(req.data.updated_at)
+        req.data.pushed_at = await formatDate(req.data.pushed_at)
       }
       return req
     } catch (error) {
