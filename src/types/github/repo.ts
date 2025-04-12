@@ -33,7 +33,7 @@ export interface RepoBaseParamType extends RepoOwnerParamType, RepoNameParamType
 export type RepoInfoParamType = RepoBaseParamType | RepoUrlParamType
 
 /** 拥有者信息 */
-interface Owner {
+export interface Owner {
   /** * 仓库的拥有者 */
   name: string | null;
   /** * 仓库的拥有者的邮箱 */
@@ -81,7 +81,7 @@ interface Owner {
 }
 
 /** 许可证信息 */
-interface License {
+export interface License {
   /** * 许可证的键，例如 'mit' */
   key: string;
   /** * 许可证的名称，例如 'MIT License' */
@@ -97,7 +97,7 @@ interface License {
 }
 
 /** 仓库行为准则 */
-interface CodeOfConduct {
+export interface CodeOfConduct {
   /** * 行为准则的键 */
   key: string;
   /** * 行为准则的名称 */
@@ -111,31 +111,31 @@ interface CodeOfConduct {
 }
 
 /** 仓库高级安全状态 */
-interface SecurityAnalysisAdvancedSecurity {
+export interface SecurityAnalysisAdvancedSecurity {
   /** * 高级安全状态 */
   status: string;
 }
 
 /** Dependabot 安全更新状态 */
-interface SecurityAnalysisDependabotSecurityUpdates {
+export interface SecurityAnalysisDependabotSecurityUpdates {
   /** * Dependabot 安全更新状态 */
   status: string;
 }
 
 /** 秘钥扫描状态 */
-interface SecurityAnalysisSecretScanning {
+export interface SecurityAnalysisSecretScanning {
   /** * 秘钥扫描状态 */
   status: string;
 }
 
 /** 秘钥扫描推送保护状态 */
-interface SecurityAnalysisSecretScanningPushProtection {
+export interface SecurityAnalysisSecretScanningPushProtection {
   /** * 秘钥扫描推送保护状态 */
   status: string;
 }
 
 /** 仓库安全和分析设置 */
-interface SecurityAndAnalysis {
+export interface SecurityAndAnalysis {
   /** * 高级安全设置 */
   advanced_security?: SecurityAnalysisAdvancedSecurity;
   /** * Dependabot 安全更新设置 */
@@ -147,7 +147,7 @@ interface SecurityAndAnalysis {
 }
 
 /** 仓库的权限信息 */
-interface Permissions {
+export interface Permissions {
   /** * 管理员权限 */
   admin: boolean;
   /** * 推送权限 */
@@ -352,7 +352,7 @@ export interface RepoInfoResponseType {
   default_branch: string;
   /** *
    * 仓库的主分支
-   * @description 该属性已被弃用，在部分旧版本的 API 中可能存在，
+   * @remarks 该属性已被弃用，在部分旧版本的 API 中可能存在，
    * @deprecated 已弃用，使用 default_branch 代替
    * */
   master_branch?: string;
@@ -404,7 +404,7 @@ export interface RepoInfoResponseType {
 
 /**
  * 组织仓库列表类型
- * @description 该类型包含了多个仓库的信息，每个仓库都有自己的详细信息。
+ * @remarks 该类型包含了多个仓库的信息，每个仓库都有自己的详细信息。
  */
 export type OrgRepoListType = RepoInfoResponseType[]
 

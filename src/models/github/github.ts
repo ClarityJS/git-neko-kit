@@ -1,6 +1,8 @@
+import { URL } from 'node:url'
+
 import jwt from 'jsonwebtoken'
 
-import { isNotTokenMsg } from '@/common'
+import { isNotTokenMsg, NotProxyAddressMsg } from '@/common'
 import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
 import Request from '@/models/base/request'
 import { App } from '@/models/github/app'
@@ -80,6 +82,8 @@ export class GitHub {
 
   /**
    * 初始化方法
+   * @private init
+   * @remarks 初始化方法，用于设置代理配置和初始化相关模块
    */
   private init (): void {
     this.repo = new Repo(this)
@@ -92,26 +96,47 @@ export class GitHub {
   /**
    * 设置代理配置
    * @param proxy - 代理配置对象
-   * @param proxy.type - 代理类型，可选值为 'common' | 'http' | 'https' | 'socks' @example 'http
-   * @param proxy.address - 代理地址 @example 'http://127.0.0.1:7890'
+   * @param proxy - 对象包含以下属性:
+   * - type: 代理类型，可选值为 'common' | 'http' | 'https' | 'socks', 'common'为通用反代，其他为指定协议的代理
+   * - address: 代理地址
+   * @example
+   * ```typescript
+   * setProxy({
+   *   type: 'http',
+   *   address: 'http://127.0.0.1:7890'
+   * })
+   * ```
    */
-  public setProxy (proxy?: ProxyParamsType): void {
+  public setProxy (proxy: ProxyParamsType): void {
     if (proxy?.address) {
+      try {
+        const url = new URL(proxy.address)
+        if (!['http:', 'https:', 'socks:'].includes(url.protocol)) {
+          throw new Error(NotProxyAddressMsg)
+        }
+      } catch (e) {
+        throw new Error(NotProxyAddressMsg)
+      }
+
       proxy.address = proxy.address.replace(/\/+$/, '')
     }
-    this.proxy = proxy
 
     if (proxy?.type === 'common') {
       this.BaseUrl = BaseUrl(type, proxy.address)
       this.ApiUrl = ApiBaseUrl(type, proxy.address)
     }
-
+    this.proxy = proxy
     this.init()
   }
 
   /**
    * 设置 token
    * @param token 传入的 token
+   * @remarks 传入的 token 必须以 ghu_ 开头，否则会抛出错误
+   * @example
+   * ```typescript
+   * setToken('ghu_xxxx')
+   * ```
    */
   public setToken (token: string): void {
     if (!token.startsWith('ghu_')) {

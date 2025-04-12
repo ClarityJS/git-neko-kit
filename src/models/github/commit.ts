@@ -42,17 +42,15 @@ export class Commit {
   }
 
   /**
-   * 获取一个提交信息
-   * @param options - 提交信息参数
-   * @param options.owner - 仓库的拥有者
-   * @param options.repo - 仓库的名称
-   * @param options.url - 仓库的URL (与owner/repo二选一)
-   * @param options.sha - 提交的SHA值，默认为仓库的默认分支 @default 仓库的默认分支
-   * @param options.format - 是否格式化提交信息，默认为true @default false
-   * @returns 提交信息
+   * 获取提交信息
+   * @param options - 提交信息参数对象，必须包含以下组合之一：
+   * - {url: string, sha: string} 仓库URL和提交哈希
+   * - {owner: string, repo: string, sha: string} 仓库拥有者、名称和提交哈希
+   * - options.format - 可选，是否格式化提交信息, 默认为false
    */
-  public async get_commit_info (options: CommitInfoParamType):
-  Promise<ApiResponseType<CommitInfoResponseType>> {
+  public async get_commit_info (
+    options: CommitInfoParamType
+  ): Promise<ApiResponseType<CommitInfoResponseType>> {
     try {
       let owner, repo, url, sha
       if ('url' in options) {

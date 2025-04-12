@@ -30,20 +30,25 @@ export function readJSON<T = Record<string, unknown>> (file = '', root = ''): T 
 
 /**
  * 格式化日期
- * @parm DataString - 日期字符串
- * @param Locale - 语言环境
+ * @param dateString - 日期字符串
+ * @param locale - 语言环境，默认为 'zh-CN'
+ * @param format - 日期格式，默认为 'YYYY-MM-DD HH:mm:ss'
  * @returns 格式化后的日期字符串
  */
-export async function formatDate (DateString: string, Locale: string = 'zh-CN'): Promise<string> {
-  const locale = Locale.toLowerCase()
+export async function formatDate (
+  dateString: string,
+  locale: string = 'zh-CN',
+  format: string = 'YYYY-MM-DD HH:mm:ss'
+): Promise<string> {
+  const normalizedLocale = locale.toLowerCase()
   try {
-    await import(`dayjs/locale/${locale}.js`)
-    dayjs.locale(locale)
+    await import(`dayjs/locale/${normalizedLocale}.js`)
+    dayjs.locale(normalizedLocale)
   } catch (e) {
-    console.warn(`无法加载dayjs locale: ${locale}`, e)
     dayjs.locale('zh-cn')
   }
-  return dayjs(DateString).format('YYYY-MM-DD HH:mm:ss')
+  const date = dayjs(dateString)
+  return date.format(format)
 }
 
 /**

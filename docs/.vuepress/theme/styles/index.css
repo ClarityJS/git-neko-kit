@@ -1,0 +1,7 @@
+@import './rainbow.css';
+
+:root {
+  /** 首页 */
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, var(--rainbow-prev) 30%, var(--rainbow-next));
+  --vp-home-hero-image-filter: blur(80px)
+}

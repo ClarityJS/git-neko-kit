@@ -1,7 +1,7 @@
 import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType, ShaParamType } from '@/types/github/base'
 import { UserBaseType } from '@/types/github/user'
 
-interface CommitInfoCommonParamType {
+export interface CommitInfoCommonParamType {
   /** 提交SHA */
   sha?: ShaParamType['sha'];
   /** 是否格式化消息 */
@@ -10,19 +10,19 @@ interface CommitInfoCommonParamType {
 
 /**
  * 提交信息基础参数类型
- * @description 用于获取提交信息的基础参数类型，包含仓库的拥有者、仓库名称、提交SHA等信息。
+ * @remarks 用于获取提交信息的基础参数类型，包含仓库的拥有者、仓库名称、提交SHA等信息。
  * */
 export interface CommitInfoBaseParamType extends RepoOwnerParamType, RepoNameParamType, CommitInfoCommonParamType {}
 
 /**
  * 提交信息URL参数类型
- * @description 用于获取提交信息的URL参数类型，包含仓库的URL和提交SHA等信息。
+ * @remarks 用于获取提交信息的URL参数类型，包含仓库的URL和提交SHA等信息。
  * */
 export interface CommitInfoUrlParamType extends RepoUrlParamType, CommitInfoCommonParamType {}
 
 /** 提交参数类型 */
 export type CommitInfoParamType = CommitInfoBaseParamType | CommitInfoUrlParamType
-interface GitUser {
+export interface GitUser {
   /** 用户姓名 */
   name: string | null;
   /** 用户邮箱 */
@@ -31,7 +31,7 @@ interface GitUser {
   date: string;
 }
 
-interface Verification {
+export interface Verification {
   /** 是否已验证 */
   verified: boolean;
   /** 验证原因 */
@@ -44,7 +44,7 @@ interface Verification {
   verified_at: string | null;
 }
 
-interface Commit {
+export interface Commit {
   /** 提交的URL */
   url: string;
   /** 提交作者信息 */
@@ -55,12 +55,12 @@ interface Commit {
   message: string;
   /**
    * 提交标题
-   * @description 仅在开启格式化消息时返回
+   * @remarks 仅在开启格式化消息时返回
    * @example "feat: add new feature"
    */
   title?: string;
   /** 提交正文
-   * @description 仅在开启格式化消息时返回
+   * @remarks 仅在开启格式化消息时返回
    * @example "This is a new feature that adds a new feature to the application."
    */
   body?: string;
@@ -77,7 +77,7 @@ interface Commit {
   verification: Verification;
 }
 
-interface DiffEntry {
+export interface DiffEntry {
   /** 文件SHA */
   sha: string;
   /** 文件名 */
@@ -102,7 +102,7 @@ interface DiffEntry {
   previous_filename: string | null;
 }
 
-interface CommitStats {
+export interface CommitStats {
   /** 新增行数 */
   additions: number;
   /** 删除行数 */
@@ -111,7 +111,7 @@ interface CommitStats {
   total: number;
 }
 
-interface ParentCommit {
+export interface ParentCommit {
   /** 父提交SHA */
   sha: string;
   /** 父提交URL */

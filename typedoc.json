@@ -1,11 +1,28 @@
 {
   "$schema": "https://typedoc.org/schema.json",
+
+  /** 指定文档生成的入口文件 */
   "entryPoints": ["./src/index.ts"],
-  "out": "./docs",
-  "includeVersion": true,
-  "excludeExternals": true,
-  "excludePrivate": true,
-  "excludeInternal": true,
-  "plugin": ["typedoc-plugin-missing-exports", "typedoc-plugin-markdown"],
-  "internalModule": "Map"
+
+  /** 指定文档输出目录 */
+  "out": "./docs/docs",
+
+  /** 文档根目录 */
+  "docsRoot": "./docs",
+
+  /** 文档语言设置 */
+  "lang": "zh",
+
+  // "internalModule": "Common",
+  /** 使用的 TypeDoc 插件列表 */
+  "plugin": [
+    // "typedoc-plugin-missing-exports", 
+    "typedoc-plugin-markdown", 
+    "typedoc-vitepress-theme"
+  ],
+
+  /** 需要排除的文件模式 */
+  "exclude": [
+    "**/test/**"
+  ]
 }

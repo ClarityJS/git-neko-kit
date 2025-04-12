@@ -1,7 +1,7 @@
 /**
  * 单日贡献数据
  */
-interface ContributionData {
+export interface ContributionData {
   /** 日期字符串，格式为YYYY-MM-DD */
   date: string
   /** 当日的贡献次数 */

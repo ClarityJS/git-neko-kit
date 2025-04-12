@@ -16,6 +16,7 @@ export const NotCommitOrRepoMsg = '喵呜~ 这个提交或仓库不存在哦'
 export const NotIssueMsg = '喵呜~ 这个问题不存在哦'
 export const NotBranchMsg = '喵呜~ 这个分支不存在哦'
 export const NotTagMsg = '喵呜~ 这个标签不存在哦'
+export const NotProxyAddressMsg = '喵呜~ 代理地址格式不正确哦'
 
 export const isOrgMsg = '喵呜~ 组织账号暂不支持'
 export const isNotTokenMsg = '喵呜~ 这个令牌似乎不是有效的'

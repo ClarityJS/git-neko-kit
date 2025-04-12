@@ -63,7 +63,7 @@ export class User {
       }
       return req
     } catch (error) {
-      throw new Error(`获取用户信息失败: ${(error as Error).message}`)
+      throw new Error(`获取授权用户信息失败: ${(error as Error).message}`)
     }
   }
 

@@ -7,7 +7,7 @@ export type ApiType = 'github' | 'gitee' | 'gitcode'
  * 通用代理配置
  * @public
  */
-export interface CommonProxy {
+export interface CommonProxyType {
   type: 'common'
   /** 代理基础地址 */
   address: string
@@ -17,7 +17,7 @@ export interface CommonProxy {
  * HTTP 代理配置
  * @public
  */
-export interface HttpProxy {
+export interface HttpProxyType {
   type: 'http'
   address: string
 }
@@ -26,7 +26,7 @@ export interface HttpProxy {
  * HTTPS 代理配置
  * @public
  */
-export interface HttpsProxy {
+export interface HttpsProxyType {
   type: 'https'
   address: string
 }
@@ -35,14 +35,14 @@ export interface HttpsProxy {
  * SOCKS5 代理配置
  * @public
  */
-export interface SocksProxy {
+export interface SocksProxyType {
   type: 'socks'
   address: string
 }
 
 /** 代理配置参数类型 */
 export type ProxyParamsType =
-  | HttpProxy
-  | HttpsProxy
-  | SocksProxy
-  | CommonProxy
+  | HttpProxyType
+  | HttpsProxyType
+  | SocksProxyType
+  | CommonProxyType

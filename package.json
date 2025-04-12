@@ -12,11 +12,16 @@
   },
   "scripts": {
     "build": "tsc --noEmit && tsup --config tsup.config.ts",
+    "build:typedoc": "typedoc --options typedoc.json",
+    "build:pages": "vitepress build docs",
+    "build:docs": "pnpm run build:typedoc && pnpm run docs:build",
     "start": "node dist/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "dev": "tsx src/index.ts",
-    "test": "tsx test/index.ts"
+    "test": "tsx test/index.ts",
+    "docs:dev": "vuepress dev docs --port 5500",
+    "docs:build": "vuepress build docs"
   },
   "keywords": [
     "git",
@@ -43,6 +48,7 @@
     "@typescript-eslint/parser": "^8.28.0",
     "eslint": "^9.23.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-tsdoc": "^0.4.0",
     "globals": "^16.0.0",
     "neostandard": "^0.12.1",
     "tsc-alias": "^1.8.11",
@@ -51,8 +57,13 @@
     "typedoc": "^0.28.1",
     "typedoc-plugin-markdown": "^4.6.1",
     "typedoc-plugin-missing-exports": "^4.0.0",
+    "typedoc-vitepress-theme": "^1.1.2",
     "typescript": "^5.8.2",
-    "typescript-eslint": "^8.28.0"
+    "typescript-eslint": "^8.28.0",
+    "vue": "^3.5.13",
+    "vuepress": "2.0.0-rc.20",
+    "@vuepress/bundler-vite": "2.0.0-rc.20",
+    "vuepress-theme-plume": "1.0.0-rc.140"
   },
   "files": [
     "dist/*",
