@@ -1,4 +1,4 @@
-name: GitHub Pages
+name: Deploy Pages
 
 on:
   push:
@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
   deploy:
@@ -48,8 +46,14 @@ jobs:
         run: |
           pnpm build:docs
 
-      - name: 部署到 GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: 部署到 Cloudflare Pages
+        uses: AdrianGonz97/refined-cf-pages-action@v1
         with:
-          github_token: ${{ steps.app-token.outputs.token }}
-          publish_dir: docs/.vuepress/dist
+          apiToken: ${{ secrets.CF_TOKEN  }}
+          accountId: ${{ secrets.CF_ID  }}
+          githubToken: ${{ steps.app-token.outputs.token }}
+          projectName: 'git-neko-kit'
+          directory: 'docs/.vuepress/dist'
+          deploymentName: cloudflare-pages
+          branch: main
+          wranglerVersion: '3'

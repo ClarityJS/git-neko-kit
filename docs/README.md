@@ -6,7 +6,7 @@ config:
     hero:
       name: git-neeko-kit
       tagline: GitHub, Gitee, GitCode等平台API封装库
-      text: 一个简约的，功能丰富的 vuepress 文档&博客 主题
+      # text: 一个简约的，功能丰富的 vuepress 文档&博客 主题
       image:
         src: /logo.png
         alt: plume
