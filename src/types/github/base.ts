@@ -2,6 +2,10 @@ export interface UserNameParamType {
   /** 用户名 */
   username: string;
 }
+export interface UserIdParamType {
+  /** 用户id */
+  user_id: number;
+}
 
 export interface RepoOwnerParamType {
   /** 仓库的拥有者 */

@@ -12,6 +12,7 @@ import { GitHub } from '@/models/github/github'
 import {
   ApiResponseType,
   ContributionResult,
+  UserIdParamType,
   UserNameParamType,
   UserResponseType
 } from '@/types'
@@ -48,31 +49,6 @@ export class User {
   }
 
   /**
-   * 通过访问令牌获取用户信息
-   */
-  public async get_user_info_by_token ():
-  Promise<ApiResponseType<UserResponseType>> {
-    this.options.setRequestConfig({
-      token: this.userToken
-    })
-    try {
-      const req = await this.get('/user')
-      if (req.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
-      } else if (req.statusCode === 404) {
-        throw new Error(NotUserMsg)
-      }
-      if (req.data) {
-        req.data.created_at = await formatDate(req.data.created_at)
-        req.data.updated_at = await formatDate(req.data.updated_at)
-      }
-      return req
-    } catch (error) {
-      throw new Error(`获取授权用户信息失败: ${(error as Error).message}`)
-    }
-  }
-
-  /**
    * 获取指定的用户信息
    * 不止可以获取用户信息还可以获取组织信息
    * @param options - 用户参数
@@ -100,6 +76,60 @@ export class User {
       return req
     } catch (error) {
       throw new Error(`获取用户或组织信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 通过用户id获取用户信息
+   * user_id 不是用户名, 而是用户的唯一标识符，
+   * @param options - 用户参数
+   * @param options.user_id - 用户id
+   * @returns 用户信息
+   */
+  public async get_user_info_by_user_id (options: UserIdParamType):
+  Promise<ApiResponseType<UserResponseType>> {
+    this.options.setRequestConfig({
+      token: this.userToken
+    })
+    try {
+      const req = await this.get(`/user/${options.user_id}`)
+      if (req.statusCode === 401) {
+        throw new Error(NotPerrmissionMsg)
+      } else if (req.statusCode === 404) {
+        throw new Error(NotUserMsg)
+      }
+      if (req.data) {
+        req.data.created_at = await formatDate(req.data.created_at)
+        req.data.updated_at = await formatDate(req.data.updated_at)
+      }
+      return req
+    } catch (error) {
+      throw new Error(`通过用户id获取用户${options.user_id}信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 通过访问令牌获取用户信息
+   */
+  public async get_user_info_by_token ():
+  Promise<ApiResponseType<UserResponseType>> {
+    this.options.setRequestConfig({
+      token: this.userToken
+    })
+    try {
+      const req = await this.get('/user')
+      if (req.statusCode === 401) {
+        throw new Error(NotPerrmissionMsg)
+      } else if (req.statusCode === 404) {
+        throw new Error(NotUserMsg)
+      }
+      if (req.data) {
+        req.data.created_at = await formatDate(req.data.created_at)
+        req.data.updated_at = await formatDate(req.data.updated_at)
+      }
+      return req
+    } catch (error) {
+      throw new Error(`获取授权用户信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -141,8 +171,21 @@ export class User {
         data: res
       }
     } catch (error) {
-      throw new Error(`获取用户贡献信息失败: ${(error as Error).message}`)
+      throw new Error(`获取用户${options.username}贡献信息失败: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 快速获取获取用户id
+   * 该方法会自动获取当前用户的id，需要传入token
+   * @returns 用户id
+   * @example
+   * ```ts
+   * const userId = await user.get_user_id()
+   * console.log(userId)
+   */
+  public async get_user_id (): Promise<number> {
+    return (await this.get_user_info_by_token()).data.id
   }
 
   /**

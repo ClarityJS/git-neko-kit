@@ -410,5 +410,6 @@ export type OrgRepoListType = RepoInfoResponseType[]
 
 /** 用户仓库列表类型 */
 export type UserRepoListType = Array<RepoInfoResponseType & {
+  /** * 仓库的角色名称 */
   role_name?: string;
 }>
