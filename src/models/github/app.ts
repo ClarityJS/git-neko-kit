@@ -39,18 +39,6 @@ export class App {
   }
 
   /**
-   * 获取当前 Github App 名称
-   * @returns 返回 Github App 名称
-   */
-  public async get_name () {
-    try {
-      return (await this.get_info()).data.name
-    } catch (error) {
-      throw new Error(`获取应用名称失败: ${(error as Error).message}`)
-    }
-  }
-
-  /**
    * 生成Github App 安装链接
    * @param state_id - 随机生成的 state_id，用于验证授权请求的状态，可选，默认不使用
    * @returns 返回安装链接对象
@@ -59,7 +47,7 @@ export class App {
    */
   public async create_install_link (state_id?: string): Promise<string> {
     try {
-      const url = new URL(`apps/${await this.get_name()}/installations/new`, this.BaseUrl)
+      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.BaseUrl)
       url.search = new URLSearchParams({
         ...(state_id && { state: state_id })
       }).toString()
@@ -78,7 +66,7 @@ export class App {
     */
   public async create_config_install_link (state_id?: string): Promise<string> {
     try {
-      const url = new URL(`apps/${await this.get_name()}/installations/new`, this.BaseUrl)
+      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.BaseUrl)
       url.search = new URLSearchParams({
         ...(state_id && { state: state_id })
       }).toString()
@@ -86,5 +74,13 @@ export class App {
     } catch (error) {
       throw new Error(`生成应用配置链接失败: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 快速获取当前 Github App 名称
+   * @returns 返回 Github App 名称
+   */
+  public async get_app_name () {
+    return (await this.get_info()).data.name
   }
 }

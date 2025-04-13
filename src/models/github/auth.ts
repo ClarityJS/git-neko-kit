@@ -1,3 +1,4 @@
+import { isNotAccessTokenMsg, isNotRefreshTokenMsg } from '@/common'
 import { GitHub } from '@/models/github/github'
 import type {
   ApiResponseType,
@@ -71,7 +72,7 @@ export class Auth {
       }, { Accept: 'application/json' })
       return req
     } catch (error) {
-      throw new Error(`Token 获取请求失败: ${(error as Error).message}`)
+      throw new Error(`请求获取Token失败: ${(error as Error).message}`)
     }
   }
 
@@ -82,7 +83,7 @@ export class Auth {
    * @returns info - 返回 token 的状态信息，'Token 有效' | 'Token 无效'
    */
   public async check_token_status (token: string): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
-    if (!token.startsWith('ghu_')) throw new Error('token 格式错误')
+    if (!token.startsWith('ghu_')) throw new Error(isNotAccessTokenMsg)
     this.options.setRequestConfig({
       url: this.ApiUrl,
       tokenType: 'Basic',
@@ -101,7 +102,7 @@ export class Auth {
         }
       }
     } catch (error) {
-      throw new Error(`Token 状态检查请求失败: ${(error as Error).message}`)
+      throw new Error(`请求获取Token状态失败: ${(error as Error).message}`)
     }
   }
 
@@ -111,7 +112,7 @@ export class Auth {
    * @returns 返回 token
    */
   public async refresh_token (refresh_token: string): Promise<ApiResponseType<GithubOauthRefreshTokenResponseType>> {
-    if (!refresh_token.startsWith('ghr_')) throw new Error('refresh_token 格式错误')
+    if (!refresh_token.startsWith('ghr_')) throw new Error(isNotRefreshTokenMsg)
     this.options.setRequestConfig(
       {
         url: this.BaseUrl
@@ -137,7 +138,7 @@ export class Auth {
         }
       }
     } catch (error) {
-      throw new Error(`Token 刷新请求失败: ${(error as Error).message}`)
+      throw new Error(`请求刷新Token失败: ${(error as Error).message}`)
     }
   }
 }
