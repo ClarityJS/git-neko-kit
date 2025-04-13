@@ -100,7 +100,7 @@ export class Repo {
    * @param options.page - 页码 默认值：1
    * @returns 仓库详细信息
    */
-  public async get_useer_repos_list_by_token (options: RepoListBaseParmsType) {
+  public async get_user_repos_list_by_token (options: RepoListBaseParmsType) {
     this.options.setRequestConfig({
       token: this.userToken
     })
@@ -158,10 +158,12 @@ export class Repo {
         page: options.page
       }
       let req
-      try {
-        req = await this.get_useer_repos_list_by_token(options)
-      } catch (error) {
+      if ('username' in options) {
         req = await this.get(`/users/${options.username}/repos`, params)
+      } else if (this.userToken) {
+        req = await this.get_user_repos_list_by_token(options)
+      } else {
+        throw new Error(NotParamMsg)
       }
       if (req.statusCode === 404) {
         throw new Error(NotUserMsg)
