@@ -1,3 +1,15 @@
+export interface AccessTokenType {
+  /** 访问令牌 */
+  access_token: string;
+}
+export interface AccessCodeType {
+  /** 授权码 */
+  code: string;
+}
+export interface RefreshTokenType {
+  /** 刷新令牌 */
+  refresh_token: string;
+}
 export interface UserNameParamType {
   /** 用户名 */
   username: string;

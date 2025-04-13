@@ -1,10 +1,23 @@
-import { isNotAccessTokenMsg, isNotRefreshTokenMsg } from '@/common'
+import {
+  AccessTokenSuccessMsg,
+  isNotAccessTokenMsg,
+  isNotRefreshTokenMsg,
+  isNotSuccessAccessTokenMsg,
+  NotAccessCodeMsg,
+  NotAccessTokenMsg,
+  NotPerrmissionMsg,
+  NotRefreshTokenSuccessMsg,
+  RefreshAccessTokenSuccessMsg
+} from '@/common'
 import { GitHub } from '@/models/github/github'
 import type {
+  AccessCodeType,
+  AccessTokenType,
   ApiResponseType,
   GithubOauthCheckTokenResponseType,
   GithubOauthRefreshTokenResponseType,
-  GithubOauthTokenResponseType
+  GithubOauthTokenResponseType,
+  RefreshTokenType
 } from '@/types'
 
 /**
@@ -25,6 +38,12 @@ export class Auth {
   private ApiUrl: string
   private Client_ID: string
   private Client_Secret: string
+  private userToken: string | null
+
+  /**
+   * 构造函数
+   * @param options - GitHub实例配置对象
+   */
   constructor (private options: GitHub) {
     this.get = options.get.bind(options)
     this.post = options.post.bind(options)
@@ -32,6 +51,7 @@ export class Auth {
     this.BaseUrl = options.BaseUrl
     this.Client_ID = options.Client_ID
     this.Client_Secret = options.Client_Secret
+    this.userToken = options.userToken
   }
 
   /**
@@ -59,7 +79,8 @@ export class Auth {
    * @param code - Github 返回的 code
    * @returns 返回 token
    */
-  public async get_token_by_code (code: string): Promise<ApiResponseType<GithubOauthTokenResponseType>> {
+  public async get_token_by_code (options: AccessCodeType): Promise<ApiResponseType<GithubOauthTokenResponseType>> {
+    if (!options.code) throw new Error(NotAccessCodeMsg)
     this.options.setRequestConfig(
       {
         url: this.BaseUrl
@@ -68,7 +89,7 @@ export class Auth {
       const req = await this.post('login/oauth/access_token', {
         client_id: this.Client_ID,
         client_secret: this.options.Client_Secret,
-        code
+        code: options.code
       }, { Accept: 'application/json' })
       return req
     } catch (error) {
@@ -78,12 +99,14 @@ export class Auth {
 
   /**
    * 获取 token 的状态
-   * @param token - Github Apps 生成的用户的token，也就是 `get_token_by_code` 生成的 token
+   * @param token - Github Apps 生成的用户的token
+   * 上一步 `get_token_by_code` 生成的 token
    * @returns 返回 token 的状态
    * @returns info - 返回 token 的状态信息，'Token 有效' | 'Token 无效'
    */
-  public async check_token_status (token: string): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
-    if (!token.startsWith('ghu_')) throw new Error(isNotAccessTokenMsg)
+  public async check_token_status (): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
+    if (!this.userToken) throw new Error(NotAccessTokenMsg)
+    if (!this.userToken.startsWith('ghu_')) throw new Error(isNotAccessTokenMsg)
     this.options.setRequestConfig({
       url: this.ApiUrl,
       tokenType: 'Basic',
@@ -91,18 +114,18 @@ export class Auth {
     })
     try {
       const req = await this.post(`/applications/${this.Client_ID}/token`, {
-        access_token: token
+        access_token: this.userToken
       })
       const status = !((req.status === 'ok' && (req.statusCode === 404 || req.statusCode === 422)))
       return {
         ...req,
         data: {
           success: status,
-          info: status ? 'Token 有效' : 'Token 无效'
+          info: status ? AccessTokenSuccessMsg : isNotSuccessAccessTokenMsg
         }
       }
     } catch (error) {
-      throw new Error(`请求获取Token状态失败: ${(error as Error).message}`)
+      throw new Error(`请求获取access_token状态失败: ${(error as Error).message}`)
     }
   }
 
@@ -111,8 +134,9 @@ export class Auth {
    * @param refresh_token - Github 返回的 refresh_token
    * @returns 返回 token
    */
-  public async refresh_token (refresh_token: string): Promise<ApiResponseType<GithubOauthRefreshTokenResponseType>> {
-    if (!refresh_token.startsWith('ghr_')) throw new Error(isNotRefreshTokenMsg)
+  public async refresh_token (options: RefreshTokenType): Promise<ApiResponseType<GithubOauthRefreshTokenResponseType>> {
+    if (!options.refresh_token) throw new Error(NotAccessCodeMsg)
+    if (!options.refresh_token.startsWith('ghr_')) throw new Error(isNotRefreshTokenMsg)
     this.options.setRequestConfig(
       {
         url: this.BaseUrl
@@ -122,18 +146,26 @@ export class Auth {
         client_id: this.Client_ID,
         client_secret: this.options.Client_Secret,
         grant_type: 'refresh_token',
-        refresh_token
+        refresh_token: options.refresh_token
       }, { Accept: 'application/json' })
 
-      const isSuccess = req.status === 'ok' && !req.data.error
-      const errorMsg = req.data.error === 'bad_refresh_token' ? 'refresh_token 已过期' : 'Token 刷新失败'
-      if (!isSuccess) throw new Error(errorMsg)
-      const msg = isSuccess ? 'Token 刷新成功' : errorMsg
+      const isSuccess = req.status === 'ok' && req.statusCode === 200 && !req.data.error
+
+      const errorMsg = req.data.error === 'bad_refresh_token'
+        ? isNotRefreshTokenMsg
+        : req.data.error === 'unauthorized'
+          ? NotPerrmissionMsg
+          : NotRefreshTokenSuccessMsg
+
+      if (!isSuccess) {
+        throw new Error(errorMsg)
+      }
+
       return {
         ...req,
         data: {
           success: isSuccess,
-          info: msg,
+          info: RefreshAccessTokenSuccessMsg,
           ...req.data
         }
       }

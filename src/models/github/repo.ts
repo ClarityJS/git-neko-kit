@@ -61,7 +61,7 @@ export class Repo {
     options: OrgRepoListParmsType
   ): Promise<ApiResponseType<OrgRepoListType>> {
     try {
-      if (!options || !('org' in options)) {
+      if (!options.org) {
         throw new Error(NotParamMsg)
       }
       const params = {
@@ -149,6 +149,7 @@ export class Repo {
    */
   public async get_user_repos_list (options: UserRepoListParmsType)
     : Promise<ApiResponseType<UserRepoListParmsType>> {
+    if (!options.username) throw new Error(NotParamMsg)
     this.options.setRequestConfig({
       token: this.userToken
     })
@@ -160,14 +161,7 @@ export class Repo {
         per_page: options?.per_page,
         page: options?.page
       }
-      let req
-      if (options?.username !== null && options.username.trim() !== '') {
-        req = await this.get(`/users/${options.username}/repos`, params)
-      } else if (this.userToken) {
-        req = await this.get_user_repos_list_by_token(options)
-      } else {
-        throw new Error(NotParamMsg)
-      }
+      const req = await this.get(`/users/${options.username}/repos`, params)
       if (req.statusCode === 404) {
         throw new Error(NotUserMsg)
       } else if (req.statusCode === 401) {

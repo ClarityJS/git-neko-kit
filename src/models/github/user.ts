@@ -88,6 +88,9 @@ export class User {
    */
   public async get_user_info_by_user_id (options: UserIdParamType):
   Promise<ApiResponseType<UserResponseType>> {
+    if (!options.user_id) {
+      throw new Error(NotUserParamMsg)
+    }
     this.options.setRequestConfig({
       token: this.userToken
     })

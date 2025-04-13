@@ -2,7 +2,7 @@ import { URL } from 'node:url'
 
 import jwt from 'jsonwebtoken'
 
-import { isNotTokenMsg, NotProxyAddressMsg } from '@/common'
+import { isNotAccessTokeMsg, NotProxyAddressMsg } from '@/common'
 import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
 import Request from '@/models/base/request'
 import { App } from '@/models/github/app'
@@ -141,7 +141,7 @@ export class GitHub {
   public setToken (token: string): void {
     if (!token.startsWith('ghu_')) {
       this.userToken = null
-      throw new Error(isNotTokenMsg)
+      throw new Error(isNotAccessTokeMsg)
     }
     this.userToken = token
 
