@@ -93,7 +93,7 @@ export class Auth {
       }, { Accept: 'application/json' })
       return req
     } catch (error) {
-      throw new Error(`请求获取Token失败: ${(error as Error).message}`)
+      throw new Error(`请求获取访问令牌失败: ${(error as Error).message}`)
     }
   }
 
@@ -104,9 +104,10 @@ export class Auth {
    * @returns 返回 token 的状态
    * @returns info - 返回 token 的状态信息，'Token 有效' | 'Token 无效'
    */
-  public async check_token_status (): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
-    if (!this.userToken) throw new Error(NotAccessTokenMsg)
-    if (!this.userToken.startsWith('ghu_')) throw new Error(isNotAccessTokenMsg)
+  public async check_token_status (options?: AccessTokenType): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
+    const access_token = options?.access_token ?? this.userToken
+    if (!access_token) throw new Error(NotAccessTokenMsg)
+    if (!access_token.startsWith('ghu_')) throw new Error(isNotAccessTokenMsg)
     this.options.setRequestConfig({
       url: this.ApiUrl,
       tokenType: 'Basic',
@@ -114,7 +115,7 @@ export class Auth {
     })
     try {
       const req = await this.post(`/applications/${this.Client_ID}/token`, {
-        access_token: this.userToken
+        access_token
       })
       const status = !((req.status === 'ok' && (req.statusCode === 404 || req.statusCode === 422)))
       return {
@@ -125,7 +126,7 @@ export class Auth {
         }
       }
     } catch (error) {
-      throw new Error(`请求获取access_token状态失败: ${(error as Error).message}`)
+      throw new Error(`请求获取访问令牌状态失败: ${(error as Error).message}`)
     }
   }
 
@@ -170,7 +171,7 @@ export class Auth {
         }
       }
     } catch (error) {
-      throw new Error(`请求刷新Token失败: ${(error as Error).message}`)
+      throw new Error(`请求刷新访问令牌失败: ${(error as Error).message}`)
     }
   }
 }
