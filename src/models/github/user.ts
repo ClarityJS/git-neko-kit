@@ -2,7 +2,7 @@ import {
   formatDate,
   getContributionData,
   isOrgMsg,
-  NotOrgOrRepoMsg,
+  NotOrgOrUserMsg,
   NotOrgOrUserParamMsg,
   NotPerrmissionMsg,
   NotUserMsg,
@@ -67,7 +67,7 @@ export class User {
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       } else if (req.statusCode === 404) {
-        throw new Error(NotOrgOrRepoMsg)
+        throw new Error(NotOrgOrUserMsg)
       }
       if (req.data) {
         req.data.created_at = await formatDate(req.data.created_at)
