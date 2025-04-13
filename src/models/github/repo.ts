@@ -61,12 +61,15 @@ export class Repo {
     options: OrgRepoListParmsType
   ): Promise<ApiResponseType<OrgRepoListType>> {
     try {
+      if (!options || !('org' in options)) {
+        throw new Error(NotParamMsg)
+      }
       const params = {
-        type: options.type,
-        sort: options.sort,
-        direction: options.direction,
-        per_page: options.per_page,
-        page: options.page
+        type: options?.type,
+        sort: options?.sort,
+        direction: options?.direction,
+        per_page: options?.per_page,
+        page: options?.page
       }
       const req = await this.get(`/orgs/${options.org}/repos`, params)
       if (req.statusCode === 404) {
@@ -100,17 +103,17 @@ export class Repo {
    * @param options.page - 页码 默认值：1
    * @returns 仓库详细信息
    */
-  public async get_user_repos_list_by_token (options: RepoListBaseParmsType) {
+  public async get_user_repos_list_by_token (options?: RepoListBaseParmsType) {
     this.options.setRequestConfig({
       token: this.userToken
     })
     try {
       const params = {
-        type: options.type,
-        sort: options.sort,
-        direction: options.direction,
-        per_page: options.per_page,
-        page: options.page
+        type: options?.type,
+        sort: options?.sort,
+        direction: options?.direction,
+        per_page: options?.per_page,
+        page: options?.page
       }
       const req = await this.get('/user/repos', params)
       if (req.statusCode === 401) {
@@ -151,14 +154,14 @@ export class Repo {
     })
     try {
       const params = {
-        type: options.type ?? 'owner',
-        sort: options.sort,
-        direction: options.direction,
-        per_page: options.per_page,
-        page: options.page
+        type: options?.type ?? 'owner',
+        sort: options?.sort,
+        direction: options?.direction,
+        per_page: options?.per_page,
+        page: options?.page
       }
       let req
-      if ('username' in options) {
+      if (options?.username !== null && options.username.trim() !== '') {
         req = await this.get(`/users/${options.username}/repos`, params)
       } else if (this.userToken) {
         req = await this.get_user_repos_list_by_token(options)
@@ -201,13 +204,14 @@ export class Repo {
     /* 解析仓库地址 */
     let owner, repo, url
     if ('url' in options) {
-      url = options.url
+      url = options?.url?.trim()
+      if (!url) throw new Error(NotParamMsg)
       const info = parse_git_url(url, this.BaseUrl)
       owner = info?.owner
       repo = info?.repo
     } else if ('owner' in options && 'repo' in options) {
-      owner = options.owner
-      repo = options.repo
+      owner = options?.owner
+      repo = options?.repo
     } else {
       throw new Error(NotParamMsg)
     }
