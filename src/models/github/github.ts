@@ -81,9 +81,9 @@ export class GitHub {
   }
 
   /**
+   * @private
    * 初始化方法
-   * @private init
-   * @remarks 初始化方法，用于设置代理配置和初始化相关模块
+   * 用于设置代理配置和初始化相关模块
    */
   private init (): void {
     this.repo = new Repo(this)
@@ -131,10 +131,10 @@ export class GitHub {
 
   /**
    * 设置 token
+   * 传入的 token 必须以 ghu_ 开头，否则会抛出错误
    * @param token 传入的 token
-   * @remarks 传入的 token 必须以 ghu_ 开头，否则会抛出错误
    * @example
-   * ```typescript
+   * ```ts
    * setToken('ghu_xxxx')
    * ```
    */

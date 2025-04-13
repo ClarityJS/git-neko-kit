@@ -352,7 +352,7 @@ export interface RepoInfoResponseType {
   default_branch: string;
   /** *
    * 仓库的主分支
-   * @remarks 该属性已被弃用，在部分旧版本的 API 中可能存在，
+   * 该属性已被弃用，在部分旧版本的 API 中可能存在，
    * @deprecated 已弃用，使用 default_branch 代替
    * */
   master_branch?: string;
@@ -404,7 +404,7 @@ export interface RepoInfoResponseType {
 
 /**
  * 组织仓库列表类型
- * @remarks 该类型包含了多个仓库的信息，每个仓库都有自己的详细信息。
+ * 该类型包含了多个仓库的信息，每个仓库都有自己的详细信息。
  */
 export type OrgRepoListType = RepoInfoResponseType[]
 

@@ -35,6 +35,11 @@ export class User {
   private post: GitHub['post']
   private BaseUrl: string
   private userToken: string | null
+
+  /**
+   * 构造函数
+   * @param options - GitHub实例配置对象
+   */
   constructor (private options: GitHub) {
     this.get = options.get.bind(options)
     this.post = options.post.bind(options)
@@ -138,5 +143,62 @@ export class User {
     } catch (error) {
       throw new Error(`获取用户贡献信息失败: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 快速获取获取用户名
+   * 该方法会自动获取当前用户的用户名，需要传入token
+   * @returns 用户名
+   * @example
+   * ```ts
+   * const username = await user.get_username()
+   * console.log(username)
+   * ```
+   */
+  public async get_username (): Promise<string> {
+    return (await this.get_user_info_by_token()).data.login
+  }
+
+  /**
+   * 快速获取获取用户昵称
+   * 该方法会自动获取当前用户的昵称，需要传入token
+   * @remarks 用户昵称可能会为null
+   * @returns 昵称
+   * @example
+   * ```ts
+   * const nickname = await user.get_nickname()
+   * console.log(nickname)
+   * ```
+   */
+  public async get_nickname (): Promise<string | null> {
+    return (await this.get_user_info_by_token()).data.name
+  }
+
+  /**
+   * 快速获取获取用户邮箱
+   * 该方法会自动获取当前用户的邮箱，需要传入token
+   * @returns 邮箱
+   * @example
+   * ```ts
+   * const email = await user.get_email()
+   * console.log(email)
+   * ```
+   */
+  public async get_user_email (): Promise<string | null> {
+    return (await this.get_user_info_by_token()).data.email
+  }
+
+  /**
+   * 快速获取获取用户头像地址
+   * 该方法会自动获取当前用户的头像地址，需要传入token
+   * @returns 头像地址
+   * @example
+   * ```ts
+   * const avatarUrl = await user.get_avatar_url()
+   * console.log(avatarUrl)
+   * ```
+   */
+  public async get_avatar_url (): Promise<string> {
+    return (await this.get_user_info_by_token()).data.avatar_url
   }
 }

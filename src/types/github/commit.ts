@@ -10,13 +10,13 @@ export interface CommitInfoCommonParamType {
 
 /**
  * 提交信息基础参数类型
- * @remarks 用于获取提交信息的基础参数类型，包含仓库的拥有者、仓库名称、提交SHA等信息。
+ * 用于获取提交信息的基础参数类型，包含仓库的拥有者、仓库名称、提交SHA等信息。
  * */
 export interface CommitInfoBaseParamType extends RepoOwnerParamType, RepoNameParamType, CommitInfoCommonParamType {}
 
 /**
  * 提交信息URL参数类型
- * @remarks 用于获取提交信息的URL参数类型，包含仓库的URL和提交SHA等信息。
+ * 用于获取提交信息的URL参数类型，包含仓库的URL和提交SHA等信息。
  * */
 export interface CommitInfoUrlParamType extends RepoUrlParamType, CommitInfoCommonParamType {}
 
@@ -55,12 +55,12 @@ export interface Commit {
   message: string;
   /**
    * 提交标题
-   * @remarks 仅在开启格式化消息时返回
+   * 仅在开启格式化消息时返回
    * @example "feat: add new feature"
    */
   title?: string;
   /** 提交正文
-   * @remarks 仅在开启格式化消息时返回
+   * 仅在开启格式化消息时返回
    * @example "This is a new feature that adds a new feature to the application."
    */
   body?: string;
