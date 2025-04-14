@@ -7,10 +7,10 @@ import { pkg } from '@/common'
 import type { ProxyParamsType, RequestTokenType, ResponseType } from '@/types'
 
 class Request {
-  private baseUrl: string
-  private tokenType: RequestTokenType
-  private authorization?: string
-  private proxy?: ProxyParamsType
+  private readonly baseUrl: string
+  private readonly tokenType: RequestTokenType
+  private readonly authorization?: string
+  private readonly proxy?: ProxyParamsType
 
   constructor (
     baseUrl: string,
@@ -75,7 +75,7 @@ class Request {
       return {
         success: false,
         statusCode: 500,
-        msg: (error as AxiosError).message || '网络连接失败',
+        msg: (error as AxiosError).message ?? '网络连接失败',
         data: null
       }
     }
