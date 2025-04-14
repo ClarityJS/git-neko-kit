@@ -32,20 +32,18 @@ import {
  * @property {string} jwtToken - 认证令牌
  */
 export class User {
-  private get: GitHub['get']
-  private post: GitHub['post']
-  private BaseUrl: string
-  private userToken: string | null
+  private readonly get: GitHub['get']
+  private readonly BaseUrl: string
+  private readonly userToken: string | null
 
   /**
    * 构造函数
    * @param options - GitHub实例配置对象
    */
-  constructor (private options: GitHub) {
-    this.get = options.get.bind(options)
-    this.post = options.post.bind(options)
-    this.BaseUrl = options.BaseUrl
-    this.userToken = options.userToken
+  constructor (private readonly options: GitHub) {
+    this.get = this.options.get.bind(this.options)
+    this.BaseUrl = this.options.BaseUrl
+    this.userToken = this.options.userToken
   }
 
   /**

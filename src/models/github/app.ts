@@ -10,15 +10,15 @@ import type { ApiResponseType, GitHubAppInfoType } from '@/types'
  *
  */
 export class App {
-  private get: GitHub['get']
-  private ApiUrl: string
-  private jwtToken: string
-  private BaseUrl: string
-  constructor (private options: GitHub) {
-    this.get = options.get.bind(options)
-    this.BaseUrl = options.BaseUrl
-    this.ApiUrl = options.ApiUrl
-    this.jwtToken = options.jwtToken
+  private readonly get: GitHub['get']
+  private readonly ApiUrl: string
+  private readonly jwtToken: string
+  private readonly BaseUrl: string
+  constructor (private readonly options: GitHub) {
+    this.get = this.options.get.bind(this.options)
+    this.BaseUrl = this.options.BaseUrl
+    this.ApiUrl = this.options.ApiUrl
+    this.jwtToken = this.options.jwtToken
   }
 
   /**

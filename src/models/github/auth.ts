@@ -32,26 +32,24 @@ import type {
  *
  */
 export class Auth {
-  private get: GitHub['get']
-  private post: GitHub['post']
-  private BaseUrl: string
-  private ApiUrl: string
-  private Client_ID: string
-  private Client_Secret: string
-  private userToken: string | null
+  private readonly post: GitHub['post']
+  private readonly BaseUrl: string
+  private readonly ApiUrl: string
+  private readonly Client_ID: string
+  private readonly Client_Secret: string
+  private readonly userToken: string | null
 
   /**
    * 构造函数
    * @param options - GitHub实例配置对象
    */
-  constructor (private options: GitHub) {
-    this.get = options.get.bind(options)
-    this.post = options.post.bind(options)
-    this.ApiUrl = options.ApiUrl
-    this.BaseUrl = options.BaseUrl
-    this.Client_ID = options.Client_ID
-    this.Client_Secret = options.Client_Secret
-    this.userToken = options.userToken
+  constructor (private readonly options: GitHub) {
+    this.post = this.options.post.bind(this.options)
+    this.ApiUrl = this.options.ApiUrl
+    this.BaseUrl = this.options.BaseUrl
+    this.Client_ID = this.options.Client_ID
+    this.Client_Secret = this.options.Client_Secret
+    this.userToken = this.options.userToken
   }
 
   /**
@@ -152,11 +150,12 @@ export class Auth {
 
       const isSuccess = req.status === 'ok' && req.statusCode === 200 && !req.data.error
 
-      const errorMsg = req.data.error === 'bad_refresh_token'
-        ? isNotRefreshTokenMsg
-        : req.data.error === 'unauthorized'
-          ? NotPerrmissionMsg
-          : NotRefreshTokenSuccessMsg
+      let errorMsg = NotRefreshTokenSuccessMsg
+      if (req.data.error === 'bad_refresh_token') {
+        errorMsg = isNotRefreshTokenMsg
+      } else if (req.data.error === 'unauthorized') {
+        errorMsg = NotPerrmissionMsg
+      }
 
       if (!isSuccess) {
         throw new Error(errorMsg)

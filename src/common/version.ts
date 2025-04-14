@@ -1,4 +1,4 @@
 import { readJSON } from '@/common/utils'
-import { pkgType } from '@/types'
+import { PkgInfoType } from '@/types'
 
-export const pkg: pkgType = readJSON<pkgType>('package.json')
+export const pkg: PkgInfoType = readJSON<PkgInfoType>('package.json')

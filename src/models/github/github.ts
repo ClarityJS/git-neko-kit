@@ -46,7 +46,7 @@ export class GitHub {
   public Private_Key: string
   public Client_ID: string
   public Client_Secret: string
-  private currentRequestConfig: RequestConfigType
+  private readonly currentRequestConfig: RequestConfigType
   private proxy?: ProxyParamsType
 
   /**
@@ -118,7 +118,7 @@ export class GitHub {
         throw new Error(NotProxyAddressMsg)
       }
 
-      proxy.address = proxy.address.replace(/\/+$/, '')
+      proxy.address = proxy.address.replace(/\/$/, '')
     }
 
     if (proxy?.type === 'common') {

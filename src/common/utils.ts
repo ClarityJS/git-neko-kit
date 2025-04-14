@@ -65,7 +65,7 @@ export function parse_git_url (url: string, GitUrl: string): RepoBaseParamType {
       path = new URL(path.startsWith('/') ? path.substring(1) : path).pathname
     }
     const baseUrl = GitUrl.endsWith('/') ? GitUrl : `${GitUrl}/`
-    path = path.replace(/^\/|\/$/g, '')
+    path = path.replace(/^\//, '').replace(/\/$/, '')
     url = baseUrl + path
   }
   const info = GitUrlParse(url)

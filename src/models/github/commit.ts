@@ -28,17 +28,13 @@ import {
  * @property {string} jwtToken - 认证令牌
  */
 export class Commit {
-  private get: GitHub['get']
-  private post: GitHub['post']
-  private BaseUrl: string
-  private userToken: string | null
-  private repo: Repo
-  constructor (private options: GitHub) {
-    this.get = options.get.bind(options)
-    this.post = options.post.bind(options)
-    this.BaseUrl = options.BaseUrl
-    this.userToken = options.userToken
-    this.repo = new Repo(options)
+  private readonly get: GitHub['get']
+  private readonly BaseUrl: string
+  private readonly repo: Repo
+  constructor (private readonly options: GitHub) {
+    this.get = this.options.get.bind(this.options)
+    this.BaseUrl = this.options.BaseUrl
+    this.repo = new Repo(this.options)
   }
 
   /**

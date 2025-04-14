@@ -1,4 +1,4 @@
-export interface pkgType {
+export interface PkgInfoType {
   /** 报名 */
   name: string
   /** 版本号 */
