@@ -22,8 +22,11 @@ export const NotAccessTokenMsg = '喵呜~ 访问令牌不能为空'
 export const NotRefreshTokenMsg = '喵呜~ 刷新令牌不能为空'
 export const NotAccessCodeMsg = '喵呜~ 授权码不能为空'
 
+export const NotWebHookSignatureMsg = '喵呜~ WebHook 签名验证失败'
+
 export const isNotAccessTokenMsg = '喵呜~ 这个令牌似乎不是有效的'
 export const isNotRefreshTokenMsg = '喵呜~ 这个刷新令牌似乎不是有效的'
-export const isOrgMsg = '喵呜~ 组织账号暂不支持'
 export const isNotAccessTokeMsg = '喵呜~ 这个令牌似乎不是有效的'
 export const isNotSuccessAccessTokenMsg = '喵呜~ 获取访问令牌失败'
+export const isOrgMsg = '喵呜~ 组织账号暂不支持'
+export const isNotWebHookSignatureMsg = '喵呜~ WebHook 签名格式不正确'

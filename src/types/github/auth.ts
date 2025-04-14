@@ -7,6 +7,8 @@ export interface GitHubAuthType {
   Client_ID: string
   /** GitHub App Client Secret */
   Client_Secret: string
+  /** WebHook Secret */
+  WebHook_Secret: string
 }
 /** Github 授权令牌接口返回类型 */
 export interface GithubOauthTokenResponseType {

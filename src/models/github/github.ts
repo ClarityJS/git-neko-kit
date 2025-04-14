@@ -10,6 +10,7 @@ import { Auth } from '@/models/github/auth'
 import { Commit } from '@/models/github/commit'
 import { Repo } from '@/models/github/repo'
 import { User } from '@/models/github/user'
+import { WebHook } from '@/models/github/webhook'
 import type {
   ApiResponseType,
   GitHubAuthType,
@@ -37,6 +38,7 @@ export class GitHub {
   public auth: Auth
   public user: User
   public commit: Commit
+  public webhook: WebHook
 
   public BaseUrl: string = BaseUrl(type)
   public ApiUrl: string = ApiBaseUrl(type)
@@ -46,6 +48,7 @@ export class GitHub {
   public Private_Key: string
   public Client_ID: string
   public Client_Secret: string
+  public WebHook_Secret: string
   private readonly currentRequestConfig: RequestConfigType
   private proxy?: ProxyParamsType
 
@@ -65,12 +68,14 @@ export class GitHub {
     this.Private_Key = options.Private_Key
     this.Client_ID = options.Client_ID
     this.Client_Secret = options.Client_Secret
+    this.WebHook_Secret = options.WebHook_Secret
     this.jwtToken = this.generate_jwt()
     this.repo = new Repo(this)
     this.auth = new Auth(this)
     this.app = new App(this)
     this.user = new User(this)
     this.commit = new Commit(this)
+    this.webhook = new WebHook(this)
 
     this.currentRequestConfig = {
       url: this.ApiUrl,
