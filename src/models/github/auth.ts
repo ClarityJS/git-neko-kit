@@ -74,7 +74,8 @@ export class Auth {
 
   /**
    * 通过 code 获取 token
-   * @param code - Github 返回的 code
+   * @param options - 获取 token 的参数
+   * @param options.code - Github 返回的 code
    * @returns 返回 token
    */
   public async get_token_by_code (options: AccessCodeType): Promise<ApiResponseType<GithubOauthTokenResponseType>> {
@@ -97,7 +98,8 @@ export class Auth {
 
   /**
    * 获取 token 的状态
-   * @param token - Github Apps 生成的用户的token
+   * @param options - 获取 token 的参数
+   * @param options.access_token - Github 返回的 access_token
    * 上一步 `get_token_by_code` 生成的 token
    * @returns 返回 token 的状态
    * @returns info - 返回 token 的状态信息，'Token 有效' | 'Token 无效'
@@ -130,7 +132,8 @@ export class Auth {
 
   /**
    * 通过 refresh_token 获取 token
-   * @param refresh_token - Github 返回的 refresh_token
+   * @param options - 获取 token 的参数
+   * @param options.refresh_token - Github 返回的 refresh_token
    * @returns 返回 token
    */
   public async refresh_token (options: RefreshTokenType): Promise<ApiResponseType<GithubOauthRefreshTokenResponseType>> {

@@ -16,9 +16,6 @@ export interface ResponseType<D = any> {
 }
 
 /** API响应类型 */
-export interface ApiResponseType<D = any> {
+export interface ApiResponseType<D = any> extends Omit<ResponseType<D>, 'success'> {
   status: 'ok' | 'error'
-  statusCode: ResponseStatusCodeType
-  msg: ResponseMsgType
-  data: D
 }

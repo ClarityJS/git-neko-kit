@@ -109,12 +109,8 @@ export class GitHub {
    */
   public setProxy (proxy: ProxyParamsType): void {
     if (proxy?.address) {
-      try {
-        const url = new URL(proxy.address)
-        if (!['http:', 'https:', 'socks:'].includes(url.protocol)) {
-          throw new Error(NotProxyAddressMsg)
-        }
-      } catch (e) {
+      const url = new URL(proxy.address)
+      if (!['http:', 'https:', 'socks:'].includes(url.protocol)) {
         throw new Error(NotProxyAddressMsg)
       }
 

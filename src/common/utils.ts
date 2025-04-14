@@ -45,7 +45,7 @@ export async function formatDate (
     await import(`dayjs/locale/${normalizedLocale}.js`)
     dayjs.locale(normalizedLocale)
   } catch (error) {
-    dayjs.locale('zh-cn')
+    dayjs.locale('en')
   }
   const date = dayjs(dateString)
   return date.format(format)
