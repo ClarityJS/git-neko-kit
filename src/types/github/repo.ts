@@ -413,3 +413,8 @@ export type UserRepoListType = Array<RepoInfoResponseType & {
   /** * 仓库的角色名称 */
   role_name?: string;
 }>
+
+export interface RepoVisibilityResponseType {
+  /** * 仓库的可见性 */
+  visibility: 'public' | 'private';
+}
