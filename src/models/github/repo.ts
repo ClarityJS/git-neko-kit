@@ -288,15 +288,20 @@ export class Repo {
   /**
    * 快速获取仓库可见性
    * @param options
-   * @param options.url 仓库URL地址
-   * @param options.owner 仓库拥有者
-   * @param options.repo 仓库名称
+   * options.url 仓库URL地址
+   * options.owner 仓库拥有者
+   * options.repo 仓库名称
    * url参数和owner、repo参数传入其中的一种
    * @remarks 优先使用url参数，若url参数不存在则使用owner和repo参数
    * @returns 仓库可见性，
    * @example
    * ```ts
    * const visibility = await repo.get_repo_visibility({url: 'https://github.com/ClarityJS/git-neko-kit'})
+   * console.log(visibility.data.visibility) // 输出 public 或 private
+   * ```
+   * @example
+   * ```ts
+   * const visibility = await repo.get_repo_visibility({owner: 'ClarityJS', repo: 'git-neko-kit'})
    * console.log(visibility.data.visibility) // 输出 public 或 private
    * ```
    */

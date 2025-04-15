@@ -25,7 +25,7 @@ export class WebHook {
    * - secret: WebHook的密钥
    * - sign_body: 要验证的签名主体
    * - signature: 要验证的签名
-   * @returns ApiResponseType<boolean> - 验证结果
+   * @returns 验证结果
    */
   public check_webhook_signature (options: WebHookParamType): ApiResponseType<boolean> {
     const secret = options.secret ?? this.WebHook_Secret
