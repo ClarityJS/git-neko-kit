@@ -23,13 +23,13 @@ export class WebHook {
    * 检查WebHook签名是否正确
    * @param options - WebHook参数对象，必须包含以下参数：
    * - secret: WebHook的密钥
-   * - sign_body: 要验证的签名主体
+   * - payload: 要验证的签名主体
    * - signature: 要验证的签名
    * @returns 验证结果
    */
   public check_webhook_signature (options: WebHookParamType): ApiResponseType<boolean> {
     const secret = options.secret ?? this.WebHook_Secret
-    if (!secret || !options.sign_body || !options.signature) throw new Error(NotParamMsg)
+    if (!secret || !options.payload || !options.signature) throw new Error(NotParamMsg)
     if (!options.signature.startsWith('sha256=')) throw new Error(isNotWebHookSignatureMsg)
 
     let status: 'ok' | 'error' = 'error'
@@ -39,7 +39,10 @@ export class WebHook {
 
     try {
       const hmac = crypto.createHmac('sha256', secret)
-      hmac.update(options.sign_body, 'utf8')
+      const payloadString = typeof options.payload === 'string'
+        ? options.payload
+        : JSON.stringify(options.payload)
+      hmac.update(payloadString, 'utf8')
       const calculatedSignature = hmac.digest('hex')
       const receivedSignature = options.signature.replace('sha256=', '')
 
