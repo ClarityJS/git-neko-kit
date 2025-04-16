@@ -56,9 +56,14 @@ export class Auth {
    * 生成Github App 授权链接
    * @param state_id - 随机生成的 state_id，用于验证授权请求的状态，可选，默认不使用
    * @returns 返回授权链接对象
-   * @returns auth_link 授权链接，用于跳转 Github 授权页
+   * @returns create_auth_link 授权链接，用于跳转 Github 授权页
+   * @example
+   * ```ts
+   * const link = await auth.create_auth_link('state_id')
+   * console.log(link) // https://github.com/login/oauth/authorize?client_id=<client_id>&state=<state_id>
+   * ```
    */
-  public create_auth_link (state_id?: string): string {
+  public create_auth_link (state_id?: string): Promise<string> {
     try {
       const url = new URL('/login/oauth/authorize', this.BaseUrl)
       url.search = new URLSearchParams({
@@ -66,7 +71,7 @@ export class Auth {
         ...(state_id && { state: state_id })
       }).toString()
 
-      return url.toString()
+      return Promise.resolve(url.toString())
     } catch (error) {
       throw new Error(`生成授权链接失败: ${(error as Error).message}`)
     }
@@ -77,6 +82,11 @@ export class Auth {
    * @param options - 获取 token 的参数
    * @param options.code - Github 返回的 code
    * @returns 返回 token
+   * @example
+   * ```ts
+   * const token = await auth.get_token_by_code({ code: 'code' })
+   * console.log(token) // 输出token对象
+   * ```
    */
   public async get_token_by_code (options: AccessCodeType): Promise<ApiResponseType<GithubOauthTokenResponseType>> {
     if (!options.code) throw new Error(NotAccessCodeMsg)
@@ -103,6 +113,10 @@ export class Auth {
    * 上一步 `get_token_by_code` 生成的 token
    * @returns 返回 token 的状态
    * @returns info - 返回 token 的状态信息，'Token 有效' | 'Token 无效'
+   * @example
+   * ```ts
+   * const status = await auth.check_token_status({ access_token: 'access_token' })
+   * console.log(status) // 输出token状态对象
    */
   public async check_token_status (options?: AccessTokenType): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
     const access_token = options?.access_token ?? this.userToken
@@ -135,6 +149,11 @@ export class Auth {
    * @param options - 获取 token 的参数
    * @param options.refresh_token - Github 返回的 refresh_token
    * @returns 返回 token
+   * @example
+   * ```
+   * const token = await auth.refresh_token({ refresh_token: 'refresh_token' })
+   * console.log(token) // 输出token对象
+   * ```
    */
   public async refresh_token (options: RefreshTokenType): Promise<ApiResponseType<GithubOauthRefreshTokenResponseType>> {
     if (!options.refresh_token) throw new Error(NotAccessCodeMsg)

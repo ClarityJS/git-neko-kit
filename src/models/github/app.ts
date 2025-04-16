@@ -25,7 +25,7 @@ export class App {
    * 获取当前 Github App 信息
    * @returns 返回 Github App 信息
    */
-  public async get_info (): Promise<ApiResponseType<GitHubAppInfoType>> {
+  private async get_info (): Promise<ApiResponseType<GitHubAppInfoType>> {
     try {
       this.options.setRequestConfig(
         {
@@ -61,8 +61,11 @@ export class App {
     * 生成Github Apps 配置链接
     * @param state_id - 传入的 state_id, 随机字符串
     * @returns 返回配置链接对象
-    * @returns state_id 随机生成的字符串，用于验证
-    * @returns  config_install_link 配置链接
+    * @returns config_install_link 配置链接
+    * @example
+    * ```ts
+    * const link = await app.create_config_install_link('state_id')
+    * console.log(link) // https://github.com/apps/<app_name>/installations/new?state=<state_id></state_id>
     */
   public async create_config_install_link (state_id?: string): Promise<string> {
     try {
@@ -79,6 +82,10 @@ export class App {
   /**
    * 快速获取当前 Github App 名称
    * @returns 返回 Github App 名称
+   * @example
+   * ```ts
+   * console.log(app.get_app_name()) // 输出AppName
+   * ```
    */
   public async get_app_name () {
     return (await this.get_info()).data.name
