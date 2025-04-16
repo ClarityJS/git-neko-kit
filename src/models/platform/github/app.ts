@@ -1,4 +1,4 @@
-import { GitHub } from '@/models/github/github'
+import { Base } from '@/models/platform/github/base'
 import type { ApiResponseType, GitHubAppInfoType } from '@/types'
 
 /**
@@ -10,11 +10,11 @@ import type { ApiResponseType, GitHubAppInfoType } from '@/types'
  *
  */
 export class App {
-  private readonly get: GitHub['get']
+  private readonly get: Base['get']
   private readonly ApiUrl: string
   private readonly jwtToken: string
   private readonly BaseUrl: string
-  constructor (private readonly options: GitHub) {
+  constructor (private readonly options: Base) {
     this.get = this.options.get.bind(this.options)
     this.BaseUrl = this.options.BaseUrl
     this.ApiUrl = this.options.ApiUrl

@@ -1,4 +1,4 @@
-import { RepoOwnerParamType } from '@/types/github/base'
+import { RepoOwnerParamType } from '@/types/platform/github/base'
 
 /** 创建组织仓库请求参数 */
 export interface OrgRepoCreateParamType extends RepoOwnerParamType {

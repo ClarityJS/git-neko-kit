@@ -6,8 +6,8 @@ import {
   NotPerrmissionMsg,
   parse_git_url
 } from '@/common'
-import { GitHub } from '@/models/github/github'
-import { Repo } from '@/models/github/repo'
+import { Base } from '@/models/platform/github/base'
+import { Repo } from '@/models/platform/github/repo'
 import {
   ApiResponseType,
   CommitInfoParamType,
@@ -15,7 +15,7 @@ import {
 } from '@/types'
 
 /**
- * GitHub 提交操作类
+ * Base 提交操作类
  *
  * 提供Commit相关的操作方法，包括获取最新提交记录、获取指定的提交记录等。
 
@@ -23,15 +23,15 @@ import {
  * @class Commit
  * @property {Function} get - 封装的GET请求方法
  * @property {Function} post - 封装的POST请求方法
- * @property {string} BaseUrl - GitHub API基础URL
+ * @property {string} BaseUrl - GitHub 基础URL
  * @property {string} ApiUrl - GitHub API端点URL
  * @property {string} jwtToken - 认证令牌
  */
 export class Commit {
-  private readonly get: GitHub['get']
+  private readonly get: Base['get']
   private readonly BaseUrl: string
   private readonly repo: Repo
-  constructor (private readonly options: GitHub) {
+  constructor (private readonly options: Base) {
     this.get = this.options.get.bind(this.options)
     this.BaseUrl = this.options.BaseUrl
     this.repo = new Repo(this.options)

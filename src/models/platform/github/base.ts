@@ -5,12 +5,12 @@ import jwt from 'jsonwebtoken'
 import { isNotAccessTokeMsg, NotProxyAddressMsg } from '@/common'
 import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
 import Request from '@/models/base/request'
-import { App } from '@/models/github/app'
-import { Auth } from '@/models/github/auth'
-import { Commit } from '@/models/github/commit'
-import { Repo } from '@/models/github/repo'
-import { User } from '@/models/github/user'
-import { WebHook } from '@/models/github/webhook'
+import { App } from '@/models/platform/github/app'
+import { Auth } from '@/models/platform/github/auth'
+import { Commit } from '@/models/platform/github/commit'
+import { Repo } from '@/models/platform/github/repo'
+import { User } from '@/models/platform/github/user'
+import { WebHook } from '@/models/platform/github/webhook'
 import type {
   ApiResponseType,
   GitHubAuthType,
@@ -22,6 +22,7 @@ const type = 'github'
 
 /**
  * Github API 基础类，发送请求，生成jwtToken 等操作
+ * 类入口访问其他类可通过此类
  * @class GitHub
  * @property {string} BaseUrl - GitHub API基础URL
  * @property {string} ApiUrl - GitHub API端点URL
@@ -30,9 +31,8 @@ const type = 'github'
  * @property {string} Client_Secret - GitHub App 的 Client Secret
  * @property {Function} get - 封装的GET请求方法
  * @property {Function} post - 封装的POST请求方法
- *
  */
-export class GitHub {
+export class Base {
   public app: App
   public repo: Repo
   public auth: Auth

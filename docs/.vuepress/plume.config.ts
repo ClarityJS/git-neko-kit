@@ -1,11 +1,11 @@
 import { defineThemeConfig } from 'vuepress-theme-plume'
-import navbar from './config/navbar'
 
 /**
  * @see https://theme-plume.vuejs.press/config/basic/
  */
 export default defineThemeConfig({
   logo: '/logo.png',
+  
 
   appearance: true,  // 配置 深色模式
 

@@ -1,4 +1,4 @@
-import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType } from '@/types/github/base'
+import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType } from '@/types/platform/github/base'
 
 /** 仓库列表参数类型 */
 export interface RepoListBaseParmsType {
@@ -38,9 +38,9 @@ export interface Owner {
   name: string | null;
   /** * 仓库的拥有者的邮箱 */
   email: string | null;
-  /** * 拥有者的 GitHub 用户名 */
+  /** * 拥有者的 Base 用户名 */
   login: string;
-  /** * 拥有者的 GitHub 用户 ID */
+  /** * 拥有者的 Base 用户 ID */
   id: number;
   /** * 拥有者的节点 ID */
   node_id: string;
@@ -48,9 +48,9 @@ export interface Owner {
   avatar_url: string;
   /** * 拥有者的 Gravatar ID */
   gravatar_id: string | null;
-  /** * 拥有者的 GitHub API URL */
+  /** * 拥有者的 Base API URL */
   url: string;
-  /** * 拥有者的 GitHub 主页 URL */
+  /** * 拥有者的 Base 主页 URL */
   html_url: string;
   /** * 拥有者的粉丝列表 URL */
   followers_url: string;

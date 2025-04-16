@@ -1,7 +1,7 @@
-import { Owner } from '@/types/github/repo'
+import { Owner } from '@/types/platform/github/repo'
 
 /**
- * 定义 GitHub 应用所需的权限
+ * 定义 Base 应用所需的权限
  */
 export interface GitHubAppPermissions {
   /** 对仓库内容的权限（例如读取、写入） */
@@ -21,7 +21,7 @@ export interface GitHubAppPermissions {
 }
 
 /**
- * 定义 GitHub 应用的详细信息
+ * 定义 Base 应用的详细信息
  */
 export interface GitHubAppInfoType {
   /** 应用的唯一 ID */
@@ -48,7 +48,7 @@ export interface GitHubAppInfoType {
   /** 应用的外部 URL */
   external_url: string;
 
-  /** 应用的 GitHub 页面 URL */
+  /** 应用的 Base 页面 URL */
   html_url: string;
 
   /** 应用创建时间的时间戳 */

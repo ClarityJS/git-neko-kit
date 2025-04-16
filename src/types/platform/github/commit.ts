@@ -1,5 +1,5 @@
-import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType, ShaParamType } from '@/types/github/base'
-import { UserBaseType } from '@/types/github/user'
+import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType, ShaParamType } from '@/types/platform/github/base'
+import { UserBaseType } from '@/types/platform/github/user'
 
 export interface CommitInfoCommonParamType {
   /** 提交SHA */

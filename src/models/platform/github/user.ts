@@ -8,7 +8,7 @@ import {
   NotUserMsg,
   NotUserParamMsg
 } from '@/common'
-import { GitHub } from '@/models/github/github'
+import { Base } from '@/models/platform/github/base'
 import {
   ApiResponseType,
   ContributionResult,
@@ -18,7 +18,7 @@ import {
 } from '@/types'
 
 /**
- * GitHub 用户操作类
+ * Base 用户操作类
  *
  * 提供对GitHub用户的CRUD操作，包括：
  * - 获取用户信息
@@ -27,12 +27,12 @@ import {
  * @class User
  * @property {Function} get - 封装的GET请求方法
  * @property {Function} post - 封装的POST请求方法
- * @property {string} BaseUrl - GitHub API基础URL
+ * @property {string} BaseUrl - GitHub 基础URL
  * @property {string} ApiUrl - GitHub API端点URL
  * @property {string} jwtToken - 认证令牌
  */
 export class User {
-  private readonly get: GitHub['get']
+  private readonly get: Base['get']
   private readonly BaseUrl: string
   private readonly userToken: string | null
 
@@ -40,7 +40,7 @@ export class User {
    * 构造函数
    * @param options - GitHub实例配置对象
    */
-  constructor (private readonly options: GitHub) {
+  constructor (private readonly options: Base) {
     this.get = this.options.get.bind(this.options)
     this.BaseUrl = this.options.BaseUrl
     this.userToken = this.options.userToken

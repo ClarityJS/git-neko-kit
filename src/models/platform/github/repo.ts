@@ -7,7 +7,7 @@ import {
   NotUserMsg,
   parse_git_url
 } from '@/common'
-import { GitHub } from '@/models/github/github'
+import { Base } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
   OrgRepoCreateParamType,
@@ -21,7 +21,7 @@ import type {
 } from '@/types'
 
 /**
- * GitHub 仓库操作类
+ * Base 仓库操作类
  *
  * 提供对GitHub仓库的CRUD操作，包括：
  * - 获取组织仓库列表
@@ -31,16 +31,16 @@ import type {
  * @class Repo
  * @property {Function} get - 封装的GET请求方法
  * @property {Function} post - 封装的POST请求方法
- * @property {string} BaseUrl - GitHub API基础URL
+ * @property {string} BaseUrl - GitHub 基础URL
  * @property {string} ApiUrl - GitHub API端点URL
  * @property {string} jwtToken - 认证令牌
  */
 export class Repo {
-  private readonly get: GitHub['get']
-  private readonly post: GitHub['post']
+  private readonly get: Base['get']
+  private readonly post: Base['post']
   private readonly BaseUrl: string
   private readonly userToken: string | null
-  constructor (private readonly options: GitHub) {
+  constructor (private readonly options: Base) {
     this.get = this.options.get.bind(this.options)
     this.post = this.options.post.bind(this.options)
     this.BaseUrl = this.options.BaseUrl

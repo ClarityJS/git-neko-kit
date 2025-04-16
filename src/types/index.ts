@@ -1,2 +1,2 @@
 export * from '@/types/base'
-export * from '@/types/github'
+export * from '@/types/platform'

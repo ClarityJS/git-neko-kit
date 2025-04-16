@@ -1,7 +1,7 @@
 import crypto from 'node:crypto'
 
 import { isNotWebHookSignatureMsg, NotParamMsg, NotWebHookSignatureMsg, WebHookSignatureSuccessMsg } from '@/common'
-import { GitHub } from '@/models/github/github'
+import { Base } from '@/models/platform/github/base'
 import type { ApiResponseType, WebHookParamType } from '@/types'
 
 /**
@@ -15,7 +15,7 @@ import type { ApiResponseType, WebHookParamType } from '@/types'
  */
 export class WebHook {
   private readonly WebHook_Secret: string
-  constructor (private readonly options: GitHub) {
+  constructor (private readonly options: Base) {
     this.WebHook_Secret = this.options.WebHook_Secret
   }
 

@@ -1,7 +1,0 @@
-export * from '@/models/github/app'
-export * from '@/models/github/auth'
-export * from '@/models/github/commit'
-export * from '@/models/github/github'
-export * from '@/models/github/repo'
-export * from '@/models/github/user'
-export * from '@/models/github/webhook'

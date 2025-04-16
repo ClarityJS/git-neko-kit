@@ -1,0 +1,7 @@
+export * from '@/models/platform/github/app'
+export * from '@/models/platform/github/auth'
+export * from '@/models/platform/github/base'
+export * from '@/models/platform/github/commit'
+export * from '@/models/platform/github/repo'
+export * from '@/models/platform/github/user'
+export * from '@/models/platform/github/webhook'
