@@ -46,7 +46,7 @@ async function initDate (locale: string = 'zh-cn') {
  * @returns 格式化后的日期字符串
  * @example
  * ```ts
- * console.log(formatDate('2025-04-16T10:00:00') // 输出 "2025-04-16 10:00:00"
+ * console.log(await formatDate('2025-04-16T10:00:00') // 输出 "2025-04-16 10:00:00"
  * ```
  */
 export async function formatDate (
@@ -65,7 +65,7 @@ export async function formatDate (
  * @returns 相对时间
  * @example
  * ```ta
- * console.log(get_relative_time('2023-04-01 12:00:00')) // 输出 "1 小时前"
+ * console.log(await get_relative_time('2023-04-01 12:00:00')) // 输出 "1 小时前"
  */
 export async function get_relative_time (dateString: string, locale:string): Promise<string> {
   await initDate(locale)
