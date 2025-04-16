@@ -305,7 +305,7 @@ export class Repo {
    * console.log(visibility.data.visibility) // 输出 public 或 private
    * ```
    */
-  public async get_repo_visibility (options: RepoInfoParamType): Promise<ApiResponseType<RepoVisibilityResponseType['visibility']>> {
+  public async get_repo_visibility (options: RepoInfoParamType): Promise<RepoVisibilityResponseType['visibility']> {
     let owner, repo, url, req
     if ('url' in options) {
       url = options?.url?.trim()
@@ -321,11 +321,6 @@ export class Repo {
     if (req.data) {
       visibility = req.data?.visibility
     }
-    return {
-      status: req.status,
-      statusCode: req.statusCode,
-      msg: req.msg,
-      data: visibility as RepoVisibilityResponseType['visibility']
-    }
+    return visibility as RepoVisibilityResponseType['visibility']
   }
 }
