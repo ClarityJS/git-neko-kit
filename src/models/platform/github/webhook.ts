@@ -1,7 +1,7 @@
 import crypto from 'node:crypto'
 
 import { isNotWebHookSignatureMsg, NotParamMsg, NotWebHookSignatureMsg, WebHookSignatureSuccessMsg } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import type { Base } from '@/models/platform/github/base'
 import type { ApiResponseType, WebHookParamType } from '@/types'
 
 /**
@@ -14,9 +14,9 @@ import type { ApiResponseType, WebHookParamType } from '@/types'
  *
  */
 export class WebHook {
-  private readonly WebHook_Secret: string
-  constructor (private readonly options: Base) {
-    this.WebHook_Secret = this.options.WebHook_Secret
+  private readonly options: Base
+  constructor (options: Base) {
+    this.options = options
   }
 
   /**
@@ -28,7 +28,7 @@ export class WebHook {
    * @returns 验证结果
    */
   public check_webhook_signature (options: WebHookParamType): ApiResponseType<boolean> {
-    const secret = options.secret ?? this.WebHook_Secret
+    const secret = options.secret ?? this.options.WebHook_Secret
     if (!secret || !options.payload || !options.signature) throw new Error(NotParamMsg)
     if (!options.signature.startsWith('sha256=')) throw new Error(isNotWebHookSignatureMsg)
 

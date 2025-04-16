@@ -8,7 +8,7 @@ import {
   NotUserMsg,
   NotUserParamMsg
 } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import type { Base } from '@/models/platform/github/base'
 import {
   ApiResponseType,
   ContributionResult,
@@ -32,18 +32,9 @@ import {
  * @property {string} jwtToken - 认证令牌
  */
 export class User {
-  private readonly get: Base['get']
-  private readonly BaseUrl: string
-  private readonly userToken: string | null
-
-  /**
-   * 构造函数
-   * @param options - GitHub实例配置对象
-   */
-  constructor (private readonly options: Base) {
-    this.get = this.options.get.bind(this.options)
-    this.BaseUrl = this.options.BaseUrl
-    this.userToken = this.options.userToken
+  private readonly options: Base
+  constructor (options: Base) {
+    this.options = options
   }
 
   /**
@@ -58,10 +49,10 @@ export class User {
       throw new Error(NotOrgOrUserParamMsg)
     }
     this.options.setRequestConfig({
-      token: this.userToken
+      token: this.options.userToken
     })
     try {
-      const req = await this.get(`/users/${options.username}`)
+      const req = await this.options.get(`/users/${options.username}`)
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       } else if (req.statusCode === 404) {
@@ -90,10 +81,10 @@ export class User {
       throw new Error(NotUserParamMsg)
     }
     this.options.setRequestConfig({
-      token: this.userToken
+      token: this.options.userToken
     })
     try {
-      const req = await this.get(`/user/${options.user_id}`)
+      const req = await this.options.get(`/user/${options.user_id}`)
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       } else if (req.statusCode === 404) {
@@ -115,10 +106,10 @@ export class User {
   public async get_user_info_by_token ():
   Promise<ApiResponseType<UserResponseType>> {
     this.options.setRequestConfig({
-      token: this.userToken
+      token: this.options.userToken
     })
     try {
-      const req = await this.get('/user')
+      const req = await this.options.get('/user')
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       } else if (req.statusCode === 404) {
@@ -151,9 +142,9 @@ export class User {
         throw new Error(`${isOrgMsg}获取贡献日历`)
       }
       this.options.setRequestConfig({
-        url: this.BaseUrl
+        url: this.options.BaseUrl
       })
-      const req = await this.get(`/${options.username}`, {
+      const req = await this.options.get(`/${options.username}`, {
         action: 'show',
         controller: 'profiles',
         tab: 'contributions',

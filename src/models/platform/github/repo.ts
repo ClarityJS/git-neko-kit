@@ -7,7 +7,7 @@ import {
   NotUserMsg,
   parse_git_url
 } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import type { Base } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
   OrgRepoCreateParamType,
@@ -36,15 +36,9 @@ import type {
  * @property {string} jwtToken - 认证令牌
  */
 export class Repo {
-  private readonly get: Base['get']
-  private readonly post: Base['post']
-  private readonly BaseUrl: string
-  private readonly userToken: string | null
-  constructor (private readonly options: Base) {
-    this.get = this.options.get.bind(this.options)
-    this.post = this.options.post.bind(this.options)
-    this.BaseUrl = this.options.BaseUrl
-    this.userToken = this.options.userToken
+  private readonly options: Base
+  constructor (options: Base) {
+    this.options = options
   }
 
   /**
@@ -65,6 +59,9 @@ export class Repo {
       if (!options.org) {
         throw new Error(NotParamMsg)
       }
+      this.options.setRequestConfig({
+        token: this.options.userToken
+      })
       const queryParams = new URLSearchParams()
       if (options?.type) queryParams.set('type', options.type)
       if (options?.sort) queryParams.set('sort', options.sort)
@@ -75,7 +72,8 @@ export class Repo {
       const url = queryString
         ? `/orgs/${options.org}/repos?${queryString}`
         : `/orgs/${options.org}/repos`
-      const req = await this.get(url)
+      console.log(url)
+      const req = await this.options.get(url)
       if (req.statusCode === 404) {
         throw new Error(NotOrgMsg)
       } else if (req.statusCode === 401) {
@@ -109,7 +107,7 @@ export class Repo {
    */
   public async get_user_repos_list_by_token (options?: RepoListBaseParmsType) {
     this.options.setRequestConfig({
-      token: this.userToken
+      token: this.options.userToken
     })
     try {
       const queryParams = new URLSearchParams()
@@ -123,7 +121,7 @@ export class Repo {
       const url = queryString
         ? `/user/repos?${queryString}`
         : '/uses/repos'
-      const req = await this.get(url)
+      const req = await this.options.get(url)
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
@@ -159,7 +157,7 @@ export class Repo {
     : Promise<ApiResponseType<UserRepoListParmsType>> {
     if (!options.username) throw new Error(NotParamMsg)
     this.options.setRequestConfig({
-      token: this.userToken
+      token: this.options.userToken
     })
     try {
       const queryParams = new URLSearchParams()
@@ -173,7 +171,7 @@ export class Repo {
       const url = queryString
         ? `/users/${options.username}/repos?${queryString}`
         : `/users/${options.username}/repos`
-      const req = await this.get(url)
+      const req = await this.options.get(url)
       if (req.statusCode === 404) {
         throw new Error(NotUserMsg)
       } else if (req.statusCode === 401) {
@@ -205,14 +203,14 @@ export class Repo {
     options: RepoInfoParamType
   ): Promise<ApiResponseType<RepoInfoResponseType>> {
     this.options.setRequestConfig({
-      token: this.userToken
+      token: this.options.userToken
     })
     /* 解析仓库地址 */
     let owner, repo, url
     if ('url' in options) {
       url = options?.url?.trim()
       if (!url) throw new Error(NotParamMsg)
-      const info = parse_git_url(url, this.BaseUrl)
+      const info = parse_git_url(url, this.options.BaseUrl)
       owner = info?.owner
       repo = info?.repo
     } else if ('owner' in options && 'repo' in options) {
@@ -222,7 +220,7 @@ export class Repo {
       throw new Error(NotParamMsg)
     }
     try {
-      const req = await this.get(`/repos/${owner}/${repo}`)
+      const req = await this.options.get(`/repos/${owner}/${repo}`)
       if (req.statusCode === 404) {
         throw new Error(NotOrgOrUserMsg)
       } else if (req.statusCode === 401) {
@@ -277,7 +275,7 @@ export class Repo {
         name,
         ...repoOptions
       }
-      const req = await this.post(`/orgs/${owner}/repos`, body)
+      const req = await this.options.post(`/orgs/${owner}/repos`, body)
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }

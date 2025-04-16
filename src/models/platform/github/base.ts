@@ -42,14 +42,14 @@ export class Base {
 
   public BaseUrl: string = BaseUrl(type)
   public ApiUrl: string = ApiBaseUrl(type)
-  public jwtToken: string
+  public readonly jwtToken: string
   public userToken: string | null
-  public APP_ID: string
-  public Private_Key: string
-  public Client_ID: string
-  public Client_Secret: string
-  public WebHook_Secret: string
-  private readonly currentRequestConfig: RequestConfigType
+  public readonly APP_ID: string
+  public readonly Private_Key: string
+  public readonly Client_ID: string
+  public readonly Client_Secret: string
+  public readonly WebHook_Secret: string
+  public readonly currentRequestConfig: RequestConfigType
   private proxy?: ProxyParamsType
 
   /**
@@ -153,7 +153,7 @@ export class Base {
   }
 
   /**
-   * 生成 JWT
+   * 生成 JWT Token
    * @param options 生成 JWT 所需的参数
    * @param options.APP_ID GitHub App ID
    * @param options.Private_Key 私钥内容

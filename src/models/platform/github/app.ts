@@ -1,4 +1,4 @@
-import { Base } from '@/models/platform/github/base'
+import type { Base } from '@/models/platform/github/base'
 import type { ApiResponseType, GitHubAppInfoType } from '@/types'
 
 /**
@@ -10,15 +10,9 @@ import type { ApiResponseType, GitHubAppInfoType } from '@/types'
  *
  */
 export class App {
-  private readonly get: Base['get']
-  private readonly ApiUrl: string
-  private readonly jwtToken: string
-  private readonly BaseUrl: string
-  constructor (private readonly options: Base) {
-    this.get = this.options.get.bind(this.options)
-    this.BaseUrl = this.options.BaseUrl
-    this.ApiUrl = this.options.ApiUrl
-    this.jwtToken = this.options.jwtToken
+  private readonly options: Base
+  constructor (options: Base) {
+    this.options = options
   }
 
   /**
@@ -29,10 +23,10 @@ export class App {
     try {
       this.options.setRequestConfig(
         {
-          url: this.ApiUrl,
-          token: this.jwtToken
+          url: this.options.ApiUrl,
+          token: this.options.jwtToken
         })
-      return await this.get('/app')
+      return await this.options.get('/app')
     } catch (error) {
       throw new Error(`获取应用信息失败: ${(error as Error).message}`)
     }
@@ -47,7 +41,7 @@ export class App {
    */
   public async create_install_link (state_id?: string): Promise<string> {
     try {
-      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.BaseUrl)
+      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.options.BaseUrl)
       url.search = new URLSearchParams({
         ...(state_id && { state: state_id })
       }).toString()
@@ -69,7 +63,7 @@ export class App {
     */
   public async create_config_install_link (state_id?: string): Promise<string> {
     try {
-      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.BaseUrl)
+      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.options.BaseUrl)
       url.search = new URLSearchParams({
         ...(state_id && { state: state_id })
       }).toString()
