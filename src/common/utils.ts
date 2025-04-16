@@ -41,7 +41,7 @@ async function initDate (locale: string = 'zh-cn') {
 /**
  * 格式化日期
  * @param dateString - 日期字符串
- * @param locale - 语言环境，默认为 'zh-CN'
+ * @param locale - 语言环境，默认为 'zh-cn'
  * @param format - 日期格式，默认为 'YYYY-MM-DD HH:mm:ss'
  * @returns 格式化后的日期字符串
  * @example
@@ -102,9 +102,10 @@ export function parse_git_url (url: string, GitUrl: string): RepoBaseParamType {
  * @param n - 每个子数组的大小
  * @returns 分割后的二维数组
  */
-function listSplit<T> (items: T[], n: number): T[][] {
-  return Array.from({ length: Math.ceil(items.length / n) }, (_, i) =>
+async function listSplit<T> (items: T[], n: number): Promise<T[][]> {
+  return Promise.resolve(Array.from({ length: Math.ceil(items.length / n) }, (_, i) =>
     items.slice(i * n, i * n + n)
+  )
   )
 }
 
@@ -113,7 +114,7 @@ function listSplit<T> (items: T[], n: number): T[][] {
  * @param html - 包含贡献数据的HTML字符串
  * @returns 解析后的贡献数据，包括总贡献数和按周分组的贡献数据
  */
-export function getContributionData (html: string): ContributionResult {
+export async function getContributionData (html: string): Promise<ContributionResult> {
   const dateRegex = /data-date="(.*?)" id="contribution-day-component/g
   const countRegex = /<tool-tip .*?class="sr-only position-absolute">(.*?) contribution/g
   const dates = Array.from(html.matchAll(dateRegex), m => m[1])
@@ -127,7 +128,7 @@ export function getContributionData (html: string): ContributionResult {
     .map((date, index) => ({ date, count: counts[index] }))
     .sort((a, b) => a.date.localeCompare(b.date))
 
-  const contributions = listSplit(sortedData, 7)
+  const contributions = await listSplit(sortedData, 7)
   return {
     total: counts.reduce((sum, count) => sum + count, 0),
     contributions

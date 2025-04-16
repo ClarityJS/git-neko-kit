@@ -166,7 +166,7 @@ export class User {
         throw new Error(NotUserParamMsg)
       }
 
-      const res = getContributionData(req.data)
+      const res = await getContributionData(req.data)
       return {
         ...req,
         data: res

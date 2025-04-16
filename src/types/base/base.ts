@@ -5,7 +5,6 @@ export type ApiType = 'github' | 'gitee' | 'gitcode'
 
 /**
  * 通用代理配置
- * @public
  */
 export interface CommonProxyType {
   type: 'common'
@@ -15,7 +14,6 @@ export interface CommonProxyType {
 
 /**
  * HTTP 代理配置
- * @public
  */
 export interface HttpProxyType {
   type: 'http'
@@ -24,7 +22,6 @@ export interface HttpProxyType {
 
 /**
  * HTTPS 代理配置
- * @public
  */
 export interface HttpsProxyType {
   type: 'https'
@@ -33,7 +30,6 @@ export interface HttpsProxyType {
 
 /**
  * SOCKS5 代理配置
- * @public
  */
 export interface SocksProxyType {
   type: 'socks'
