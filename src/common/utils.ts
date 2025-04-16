@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 
 import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime.js'
 import GitUrlParse from 'git-url-parse'
 
 import { basePath } from '@/root'
@@ -29,26 +30,47 @@ export function readJSON<T = Record<string, unknown>> (file = '', root = ''): T 
 }
 
 /**
+ * @param options - 初始化 日期
+ */
+async function initDate (locale: string = 'zh-cn') {
+  const normalizedLocale = locale.toLowerCase()
+  await import(`dayjs/locale/${normalizedLocale}.js`)
+  dayjs.locale(normalizedLocale)
+}
+
+/**
  * 格式化日期
  * @param dateString - 日期字符串
  * @param locale - 语言环境，默认为 'zh-CN'
  * @param format - 日期格式，默认为 'YYYY-MM-DD HH:mm:ss'
  * @returns 格式化后的日期字符串
+ * @example
+ * ```ts
+ * console.log(formatDate('2025-04-16T10:00:00') // 输出 "2025-04-16 10:00:00"
+ * ```
  */
 export async function formatDate (
   dateString: string,
   locale: string = 'zh-cn',
   format: string = 'YYYY-MM-DD HH:mm:ss'
 ): Promise<string> {
-  const normalizedLocale = locale.toLowerCase()
-  try {
-    await import(`dayjs/locale/${normalizedLocale}.js`)
-    dayjs.locale(normalizedLocale)
-  } catch (error) {
-    dayjs.locale('en')
-  }
+  await initDate(locale)
   const date = dayjs(dateString)
   return date.format(format)
+}
+
+/**
+ * 获取相对时间
+ * @param dateString - 日期字符串
+ * @returns 相对时间
+ * @example
+ * ```ta
+ * console.log(get_relative_time('2023-04-01 12:00:00')) // 输出 "1 小时前"
+ */
+export async function get_relative_time (dateString: string, locale:string): Promise<string> {
+  await initDate(locale)
+  dayjs.extend(relativeTime)
+  return dayjs(dateString).fromNow()
 }
 
 /**
