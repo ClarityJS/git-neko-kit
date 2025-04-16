@@ -63,7 +63,7 @@ export class Auth {
    * console.log(link) // https://github.com/login/oauth/authorize?client_id=<client_id>&state=<state_id>
    * ```
    */
-  public create_auth_link (state_id?: string): Promise<string> {
+  public async create_auth_link (state_id?: string): Promise<string> {
     try {
       const url = new URL('/login/oauth/authorize', this.BaseUrl)
       url.search = new URLSearchParams({

@@ -416,5 +416,5 @@ export type UserRepoListType = Array<RepoInfoResponseType & {
 
 export interface RepoVisibilityResponseType {
   /** * 仓库的可见性 */
-  visibility: 'public' | 'private';
+  visibility: string;
 }

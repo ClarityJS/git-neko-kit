@@ -321,6 +321,6 @@ export class Repo {
     if (req.data) {
       visibility = req.data?.visibility
     }
-    return visibility as RepoVisibilityResponseType['visibility']
+    return visibility
   }
 }
