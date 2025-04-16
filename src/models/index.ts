@@ -1,2 +1,2 @@
-export * as Base from '@/models/base/index'
-export * as GitHub from '@/models/github/index'
+export * from '@/models/base'
+export * from '@/models/github'

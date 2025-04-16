@@ -35,9 +35,12 @@ export function BaseUrl (type?: ApiType, proxyUrl?: ReverseProxyCommonUrlType): 
 
 /**
  * 生成一个用户唯一的标识符
- * @remarks 暂时先不导出，后续可能会用到，先留着
  * @returns 生成的唯一标识符
+ * @example
+ * ```ts
+ * const stateId = await create_state_id() // 输出 "34523452345234523452345234523452"
+ * ```
  */
-function create_state_id (): string {
-  return uuidv4().replace(/-/g, '')
+export async function create_state_id (): Promise<string> {
+  return Promise.resolve(uuidv4().replace(/-/g, ''))
 }
