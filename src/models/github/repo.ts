@@ -65,14 +65,17 @@ export class Repo {
       if (!options.org) {
         throw new Error(NotParamMsg)
       }
-      const params = {
-        type: options?.type,
-        sort: options?.sort,
-        direction: options?.direction,
-        per_page: options?.per_page,
-        page: options?.page
-      }
-      const req = await this.get(`/orgs/${options.org}/repos`, params)
+      const queryParams = new URLSearchParams()
+      if (options?.type) queryParams.set('type', options.type)
+      if (options?.sort) queryParams.set('sort', options.sort)
+      if (options?.direction) queryParams.set('direction', options.direction)
+      if (options?.per_page) queryParams.set('per_page', options.per_page.toString())
+      if (options?.page) queryParams.set('page', options.page.toString())
+      const queryString = queryParams.toString()
+      const url = queryString
+        ? `/orgs/${options.org}/repos?${queryString}`
+        : `/orgs/${options.org}/repos`
+      const req = await this.get(url)
       if (req.statusCode === 404) {
         throw new Error(NotOrgMsg)
       } else if (req.statusCode === 401) {
@@ -117,7 +120,9 @@ export class Repo {
       if (options?.page) queryParams.set('page', options.page.toString())
 
       const queryString = queryParams.toString()
-      const url = queryString ? `/user/repos?${queryString}` : '/uses/repos'
+      const url = queryString
+        ? `/user/repos?${queryString}`
+        : '/uses/repos'
       const req = await this.get(url)
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
@@ -165,7 +170,9 @@ export class Repo {
       if (options?.page) queryParams.set('page', options.page.toString())
 
       const queryString = queryParams.toString()
-      const url = queryString ? `/users/${options.username}/repos?${queryString}` : `/users/${options.username}/repos`
+      const url = queryString
+        ? `/users/${options.username}/repos?${queryString}`
+        : `/users/${options.username}/repos`
       const req = await this.get(url)
       if (req.statusCode === 404) {
         throw new Error(NotUserMsg)
