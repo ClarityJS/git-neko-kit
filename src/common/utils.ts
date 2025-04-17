@@ -67,7 +67,10 @@ export async function formatDate (
  * ```ta
  * console.log(await get_relative_time('2023-04-01 12:00:00')) // 输出 "1 小时前"
  */
-export async function get_relative_time (dateString: string, locale:string): Promise<string> {
+export async function get_relative_time (
+  dateString: string,
+  locale:string = 'zh-cn'):
+  Promise<string> {
   await initDate(locale)
   dayjs.extend(relativeTime)
   return dayjs(dateString).fromNow()
