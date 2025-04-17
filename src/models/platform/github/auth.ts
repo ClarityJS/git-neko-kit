@@ -9,7 +9,7 @@ import {
   NotRefreshTokenSuccessMsg,
   RefreshAccessTokenSuccessMsg
 } from '@/common'
-import type { Base } from '@/models/platform/github/base'
+import { Base } from '@/models/platform/github/base'
 import type {
   AccessCodeType,
   AccessTokenType,
@@ -21,20 +21,21 @@ import type {
 } from '@/types'
 
 /**
- * 授权类，用于获取 token 和验证 token 的状态
- * @class Auth
- * @property {Function} get - 封装的GET请求方法
- * @property {Function} post - 封装的POST请求方法
- * @property {string} BaseUrl - GitHub 基础URL
- * @property {string} ApiUrl - GitHub API端点URL
- * @property {string} Client_ID - GitHub App 的 Client ID
- * @property {string} Client_Secret - GitHub App 的 Client Secret
+ * GitHub OAuth 授权管理类
  *
+ * 提供完整的GitHub OAuth 2.0授权流程管理，包括：
+ * - 生成授权链接
+ * - 通过授权码(code)获取访问令牌(access_token)
+ * - 检查访问令牌状态
+ * - 刷新访问令牌
+ *
+ * @class Auth
+ * @extends Base GitHub基础操作类
  */
-export class Auth {
-  private readonly options: Base
+export class Auth extends Base {
   constructor (options: Base) {
-    this.options = options
+    super(options)
+    this.userToken = options.userToken
   }
 
   /**
@@ -50,9 +51,9 @@ export class Auth {
    */
   public async create_auth_link (state_id?: string): Promise<string> {
     try {
-      const url = new URL('/login/oauth/authorize', this.options.BaseUrl)
+      const url = new URL('/login/oauth/authorize', this.BaseUrl)
       url.search = new URLSearchParams({
-        client_id: this.options.Client_ID,
+        client_id: this.Client_ID,
         ...(state_id && { state: state_id })
       }).toString()
 
@@ -75,14 +76,14 @@ export class Auth {
    */
   public async get_token_by_code (options: AccessCodeType): Promise<ApiResponseType<GithubOauthTokenResponseType>> {
     if (!options.code) throw new Error(NotAccessCodeMsg)
-    this.options.setRequestConfig(
+    this.setRequestConfig(
       {
-        url: this.options.BaseUrl
+        url: this.BaseUrl
       })
     try {
-      const req = await this.options.post('login/oauth/access_token', {
-        client_id: this.options.Client_ID,
-        client_secret: this.options.Client_Secret,
+      const req = await this.post('login/oauth/access_token', {
+        client_id: this.Client_ID,
+        client_secret: this.Client_Secret,
         code: options.code
       }, { Accept: 'application/json' })
       return req
@@ -104,16 +105,16 @@ export class Auth {
    * console.log(status) // 输出token状态对象
    */
   public async check_token_status (options?: AccessTokenType): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
-    const access_token = options?.access_token ?? this.options.userToken
+    const access_token = options?.access_token ?? this.userToken
     if (!access_token) throw new Error(NotAccessTokenMsg)
     if (!access_token.startsWith('ghu_')) throw new Error(isNotAccessTokenMsg)
-    this.options.setRequestConfig({
-      url: this.options.ApiUrl,
+    this.setRequestConfig({
+      url: this.ApiUrl,
       tokenType: 'Basic',
-      token: `${this.options.Client_ID}:${this.options.Client_Secret}`
+      token: `${this.Client_ID}:${this.Client_Secret}`
     })
     try {
-      const req = await this.options.post(`/applications/${this.options.Client_ID}/token`, {
+      const req = await this.post(`/applications/${this.Client_ID}/token`, {
         access_token
       })
       const status = !((req.status === 'ok' && (req.statusCode === 404 || req.statusCode === 422)))
@@ -143,14 +144,14 @@ export class Auth {
   public async refresh_token (options: RefreshTokenType): Promise<ApiResponseType<GithubOauthRefreshTokenResponseType>> {
     if (!options.refresh_token) throw new Error(NotAccessCodeMsg)
     if (!options.refresh_token.startsWith('ghr_')) throw new Error(isNotRefreshTokenMsg)
-    this.options.setRequestConfig(
+    this.setRequestConfig(
       {
-        url: this.options.BaseUrl
+        url: this.BaseUrl
       })
     try {
-      const req = await this.options.post('login/oauth/access_token', {
-        client_id: this.options.Client_ID,
-        client_secret: this.options.Client_Secret,
+      const req = await this.post('login/oauth/access_token', {
+        client_id: this.Client_ID,
+        client_secret: this.Client_Secret,
         grant_type: 'refresh_token',
         refresh_token: options.refresh_token
       }, { Accept: 'application/json' })

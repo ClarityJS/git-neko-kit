@@ -8,7 +8,7 @@ import {
   NotUserMsg,
   NotUserParamMsg
 } from '@/common'
-import type { Base } from '@/models/platform/github/base'
+import { Base } from '@/models/platform/github/base'
 import {
   ApiResponseType,
   ContributionResult,
@@ -31,10 +31,10 @@ import {
  * @property {string} ApiUrl - GitHub API端点URL
  * @property {string} jwtToken - 认证令牌
  */
-export class User {
-  private readonly options: Base
+export class User extends Base {
   constructor (options: Base) {
-    this.options = options
+    super(options)
+    this.userToken = options.userToken
   }
 
   /**
@@ -48,11 +48,11 @@ export class User {
     if (!options.username) {
       throw new Error(NotOrgOrUserParamMsg)
     }
-    this.options.setRequestConfig({
-      token: this.options.userToken
+    this.setRequestConfig({
+      token: this.userToken
     })
     try {
-      const req = await this.options.get(`/users/${options.username}`)
+      const req = await this.get(`/users/${options.username}`)
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       } else if (req.statusCode === 404) {
@@ -80,11 +80,11 @@ export class User {
     if (!options.user_id) {
       throw new Error(NotUserParamMsg)
     }
-    this.options.setRequestConfig({
-      token: this.options.userToken
+    this.setRequestConfig({
+      token: this.userToken
     })
     try {
-      const req = await this.options.get(`/user/${options.user_id}`)
+      const req = await this.get(`/user/${options.user_id}`)
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       } else if (req.statusCode === 404) {
@@ -105,11 +105,11 @@ export class User {
    */
   public async get_user_info_by_token ():
   Promise<ApiResponseType<UserResponseType>> {
-    this.options.setRequestConfig({
-      token: this.options.userToken
+    this.setRequestConfig({
+      token: this.userToken
     })
     try {
-      const req = await this.options.get('/user')
+      const req = await this.get('/user')
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       } else if (req.statusCode === 404) {
@@ -141,10 +141,10 @@ export class User {
       if (userInfo.data.type === 'Organization') {
         throw new Error(`${isOrgMsg}获取贡献日历`)
       }
-      this.options.setRequestConfig({
-        url: this.options.BaseUrl
+      this.setRequestConfig({
+        url: this.BaseUrl
       })
-      const req = await this.options.get(`/${options.username}`, {
+      const req = await this.get(`/${options.username}`, {
         action: 'show',
         controller: 'profiles',
         tab: 'contributions',

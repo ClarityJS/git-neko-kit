@@ -6,7 +6,7 @@ import {
   NotPerrmissionMsg,
   parse_git_url
 } from '@/common'
-import type { Base } from '@/models/platform/github/base'
+import { Base } from '@/models/platform/github/base'
 import {
   ApiResponseType,
   CommitInfoParamType,
@@ -26,10 +26,12 @@ import {
  * @property {string} ApiUrl - GitHub API端点URL
  * @property {string} jwtToken - 认证令牌
  */
-export class Commit {
-  private readonly options: Base
+export class Commit extends Base {
   constructor (options: Base) {
-    this.options = options
+    super(options)
+    this.userToken = options.userToken
+    this.ApiUrl = options.ApiUrl
+    this.BaseUrl = options.BaseUrl
   }
 
   /**
@@ -46,7 +48,7 @@ export class Commit {
       let owner, repo, url, sha
       if ('url' in options) {
         url = options.url
-        const info = parse_git_url(url, this.options.BaseUrl)
+        const info = parse_git_url(url, this.BaseUrl)
         owner = info?.owner
         repo = info?.repo
       } else if ('owner' in options && 'repo' in options) {
@@ -56,12 +58,12 @@ export class Commit {
         throw new Error(NotParamMsg)
       }
       if (!options.sha) {
-        const req = await this.options.repo.get_repo_info({ owner, repo })
+        const req = await (await this.repo()).get_repo_info({ owner, repo })
         sha = req.data?.default_branch
       } else {
         sha = options.sha
       }
-      const req = await this.options.get(`/repos/${owner}/${repo}/commits/${sha}`)
+      const req = await this.get(`/repos/${owner}/${repo}/commits/${sha}`)
       if (req.statusCode === 404) {
         throw new Error(NotCommitOrRepoMsg)
       } else if (req.statusCode === 401) {

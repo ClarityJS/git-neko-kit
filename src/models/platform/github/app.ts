@@ -1,18 +1,24 @@
-import type { Base } from '@/models/platform/github/base'
+import { Base } from '@/models/platform/github/base'
 import type { ApiResponseType, GitHubAppInfoType } from '@/types'
 
 /**
- * 应用类，用于获取应用信息
+ * GitHub 应用管理类
+ *
+ * 提供对GitHub App的完整管理功能，包括：
+ * - 获取应用基本信息
+ * - 生成应用安装链接
+ * - 生成应用配置链接
+ *
  * @class App
- * @property {Function} get - 封装的GET请求方法
- * @property {string} ApiUrl - GitHub API端点URL
- * @property {string} jwtToken - 认证令牌
+ * @extends Base GitHub基础操作类
  *
  */
-export class App {
-  private readonly options: Base
+export class App extends Base {
   constructor (options: Base) {
-    this.options = options
+    super(options)
+    this.userToken = options.userToken
+    this.ApiUrl = options.ApiUrl
+    this.BaseUrl = options.BaseUrl
   }
 
   /**
@@ -21,12 +27,12 @@ export class App {
    */
   private async get_info (): Promise<ApiResponseType<GitHubAppInfoType>> {
     try {
-      this.options.setRequestConfig(
+      this.setRequestConfig(
         {
-          url: this.options.ApiUrl,
-          token: this.options.jwtToken
+          url: this.ApiUrl,
+          token: this.jwtToken
         })
-      return await this.options.get('/app')
+      return await this.get('/app')
     } catch (error) {
       throw new Error(`获取应用信息失败: ${(error as Error).message}`)
     }
@@ -41,7 +47,7 @@ export class App {
    */
   public async create_install_link (state_id?: string): Promise<string> {
     try {
-      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.options.BaseUrl)
+      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.BaseUrl)
       url.search = new URLSearchParams({
         ...(state_id && { state: state_id })
       }).toString()
@@ -63,7 +69,7 @@ export class App {
     */
   public async create_config_install_link (state_id?: string): Promise<string> {
     try {
-      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.options.BaseUrl)
+      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.BaseUrl)
       url.search = new URLSearchParams({
         ...(state_id && { state: state_id })
       }).toString()
@@ -85,3 +91,6 @@ export class App {
     return (await this.get_info()).data.name
   }
 }
+
+/** 注册 App 模块 */
+// Base.register('app', App)
