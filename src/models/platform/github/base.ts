@@ -51,7 +51,7 @@ export class Base {
   public ApiUrl: string
   public jwtToken: string
   public userToken: string | null
-  public readonly APP_ID: string
+  public readonly APP_ID: number
   public readonly Private_Key: string
   public readonly Client_ID: string
   public readonly Client_Secret: string
