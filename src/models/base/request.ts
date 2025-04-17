@@ -44,17 +44,15 @@ class Request {
       const httpsAddress = this.proxy.type === 'https' ? this.proxy.address : undefined
       const socksAddress = this.proxy.type === 'socks' ? this.proxy.address : undefined
 
-      /** HTTP代理配置 */
       if (httpAddress) {
+        /** HTTP代理配置 */
         config.httpAgent = new HttpProxyAgent(httpAddress)
         config.httpsAgent = new HttpsProxyAgent(httpAddress)
-      }
-      /** HTTPS代理配置 */
-      if (httpsAddress) {
+      } else if (httpsAddress) {
+        /** HTTPS代理配置 */
         config.httpsAgent = new HttpsProxyAgent(httpsAddress)
-      }
-      /** SOCKS代理配置 */
-      if (socksAddress) {
+      } else if (socksAddress) {
+        /** SOCKS代理配置 */
         const socksAgent = new SocksProxyAgent(socksAddress)
         config.httpAgent = socksAgent
         config.httpsAgent = socksAgent
