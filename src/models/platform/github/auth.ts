@@ -33,9 +33,11 @@ import type {
  * @extends Base GitHub基础操作类
  */
 export class Auth extends Base {
-  constructor (options: Base) {
-    super(options)
-    this.userToken = options.userToken
+  constructor (base: Base) {
+    super(base)
+    this.userToken = base.userToken
+    this.ApiUrl = base.ApiUrl
+    this.BaseUrl = base.BaseUrl
   }
 
   /**

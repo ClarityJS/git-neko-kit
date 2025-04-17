@@ -1,22 +1,29 @@
 import crypto from 'node:crypto'
 
-import { isNotWebHookSignatureMsg, NotParamMsg, NotWebHookSignatureMsg, WebHookSignatureSuccessMsg } from '@/common'
-import type { Base } from '@/models/platform/github/base'
+import {
+  isNotWebHookSignatureMsg,
+  NotParamMsg,
+  NotWebHookSignatureMsg,
+  WebHookSignatureSuccessMsg
+} from '@/common'
+import { Base } from '@/models/platform/github/base'
 import type { ApiResponseType, WebHookParamType } from '@/types'
 
 /**
- * WebHook类, 用于进行WebHook相关操作
- * 如获取WebHook信息等
- * @class WebHook
- * @property {Function} get - 封装的GET请求方法
- * @property {string} ApiUrl - GitHub API端点URL
- * @property {string} jwtToken - 认证令牌
+ * GitHub WebHook 处理类，提供WebHook相关操作功能
  *
+ * 该类继承自Base类，主要用于处理GitHub WebHook的签名验证等操作。
+ * 支持验证WebHook请求的签名有效性，确保请求来源可信。
+ *
+ * @class WebHook
+ * @extends Base
  */
-export class WebHook {
-  private readonly options: Base
-  constructor (options: Base) {
-    this.options = options
+export class WebHook extends Base {
+  constructor (base: Base) {
+    super(base)
+    this.userToken = base.userToken
+    this.ApiUrl = base.ApiUrl
+    this.BaseUrl = base.BaseUrl
   }
 
   /**
@@ -28,7 +35,7 @@ export class WebHook {
    * @returns 验证结果
    */
   public check_webhook_signature (options: WebHookParamType): ApiResponseType<boolean> {
-    const secret = options.secret ?? this.options.WebHook_Secret
+    const secret = options.secret ?? this.WebHook_Secret
     if (!secret || !options.payload || !options.signature) throw new Error(NotParamMsg)
     if (!options.signature.startsWith('sha256=')) throw new Error(isNotWebHookSignatureMsg)
 
@@ -65,6 +72,11 @@ export class WebHook {
     } catch (error) {
       throw new Error(`请求验证WebHook签名失败: ${(error as Error).message}`)
     }
-    return { status, statusCode, msg, data }
+    return {
+      status,
+      statusCode,
+      msg,
+      data
+    }
   }
 }

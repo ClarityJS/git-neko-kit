@@ -10,6 +10,7 @@ import { Auth } from '@/models/platform/github/auth'
 import { Commit } from '@/models/platform/github/commit'
 import { Repo } from '@/models/platform/github/repo'
 import { User } from '@/models/platform/github/user'
+import { WebHook } from '@/models/platform/github/webhook'
 import type {
   ApiResponseType,
   GitHubAuthType,
@@ -157,6 +158,19 @@ export class Base {
   public async get_repo (): Promise<Repo> {
     const { Repo } = await import('@/models/platform/github/repo')
     return new Repo(this)
+  }
+
+  /**
+   * 获取WebHook实例
+   * @returns WebHook实例
+   * @example
+   * ```ts
+   * const webhook = await base.webhook()
+   * ```
+   */
+  public async get_webhook (): Promise<WebHook> {
+    const { WebHook } = await import('@/models/platform/github/webhook')
+    return new WebHook(this)
   }
 
   /**

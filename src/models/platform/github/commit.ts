@@ -27,11 +27,11 @@ import {
  * @property {string} jwtToken - 认证令牌
  */
 export class Commit extends Base {
-  constructor (options: Base) {
-    super(options)
-    this.userToken = options.userToken
-    this.ApiUrl = options.ApiUrl
-    this.BaseUrl = options.BaseUrl
+  constructor (base: Base) {
+    super(base)
+    this.userToken = base.userToken
+    this.ApiUrl = base.ApiUrl
+    this.BaseUrl = base.BaseUrl
   }
 
   /**
