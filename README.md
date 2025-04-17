@@ -88,12 +88,18 @@ API 封装进度：
 ### 获取实例
 ```ts
 import { github } from "git-neko-kit";
-const gh = new github.base(options);
+const gh = new github.Base(options)
 ```
 
 ### 获取GitHub仓库信息
 ```ts
-const repo = await gh.repo.get_repo_info(owner, repo);
+const repo = await gh.get_repo() // 获取Repo仓库实例
+const info = await repo.get_repo_info() // 获取仓库信息
+```
+也可以直接使用或者直接实例化Repo类使用：
+```ts
+const repo = new github.Repo(options) // 创建Repo仓库实例
+const info = await repo.get_repo_info() // 获取仓库信息
 ```
 
 ::: tip

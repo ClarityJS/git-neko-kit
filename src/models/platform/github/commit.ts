@@ -58,7 +58,8 @@ export class Commit extends Base {
         throw new Error(NotParamMsg)
       }
       if (!options.sha) {
-        const req = await (await this.repo()).get_repo_info({ owner, repo })
+        const repoInfo = await this.get_repo()
+        const req = await repoInfo.get_repo_info({ owner, repo })
         sha = req.data?.default_branch
       } else {
         sha = options.sha

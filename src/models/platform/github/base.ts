@@ -115,7 +115,7 @@ export class Base {
    * const app = await base.app()
    * ```
    */
-  public async app (): Promise<App> {
+  public async get_app (): Promise<App> {
     const { App } = await import('@/models/platform/github/app')
     return new App(this)
   }
@@ -128,7 +128,7 @@ export class Base {
    * ```
    */
 
-  public async auth (): Promise<Auth> {
+  public async get_auth (): Promise<Auth> {
     const { Auth } = await import('@/models/platform/github/auth')
     return new Auth(this)
   }
@@ -141,7 +141,7 @@ export class Base {
    * const commit = await base.commit()
    * ```
    */
-  public async commit (): Promise<Commit> {
+  public async get_commit (): Promise<Commit> {
     const { Commit } = await import('@/models/platform/github/commit')
     return new Commit(this)
   }
@@ -154,7 +154,7 @@ export class Base {
    * ```
    */
 
-  public async repo (): Promise<Repo> {
+  public async get_repo (): Promise<Repo> {
     const { Repo } = await import('@/models/platform/github/repo')
     return new Repo(this)
   }
@@ -167,7 +167,7 @@ export class Base {
    * const user = await base.user()
    * ```
    */
-  public async user (): Promise<User> {
+  public async get_user (): Promise<User> {
     const { User } = await import('@/models/platform/github/user')
     return new User(this)
   }
