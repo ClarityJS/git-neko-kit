@@ -47,6 +47,12 @@ const type = 'github'
  */
 export class Base {
   // private static registry = new Map<string, new (base: Base) => any>()
+  declare app: App
+  declare auth: Auth
+  declare commit: Commit
+  declare repo: Repo
+  declare user: User
+  declare webhook: WebHook
   public BaseUrl: string
   public ApiUrl: string
   public jwtToken: string
@@ -118,7 +124,8 @@ export class Base {
    */
   public async get_app (): Promise<App> {
     const { App } = await import('@/models/platform/github/app')
-    return new App(this)
+    this.app = new App(this)
+    return this.app
   }
   /**
    * 获取Auth实例
@@ -131,7 +138,8 @@ export class Base {
 
   public async get_auth (): Promise<Auth> {
     const { Auth } = await import('@/models/platform/github/auth')
-    return new Auth(this)
+    this.auth = new Auth(this)
+    return this.auth
   }
 
   /**
@@ -144,7 +152,8 @@ export class Base {
    */
   public async get_commit (): Promise<Commit> {
     const { Commit } = await import('@/models/platform/github/commit')
-    return new Commit(this)
+    this.commit = new Commit(this)
+    return this.commit
   }
   /**
    * 获取Repo实例
@@ -157,7 +166,8 @@ export class Base {
 
   public async get_repo (): Promise<Repo> {
     const { Repo } = await import('@/models/platform/github/repo')
-    return new Repo(this)
+    this.repo = new Repo(this)
+    return this.repo
   }
 
   /**
@@ -170,7 +180,8 @@ export class Base {
    */
   public async get_webhook (): Promise<WebHook> {
     const { WebHook } = await import('@/models/platform/github/webhook')
-    return new WebHook(this)
+    this.webhook = new WebHook(this)
+    return this.webhook
   }
 
   /**
@@ -183,7 +194,8 @@ export class Base {
    */
   public async get_user (): Promise<User> {
     const { User } = await import('@/models/platform/github/user')
-    return new User(this)
+    this.user = new User(this)
+    return this.user
   }
 
   /**
