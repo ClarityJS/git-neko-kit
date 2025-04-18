@@ -77,12 +77,12 @@ export class Auth extends Base {
    * ```
    */
   public async get_token_by_code (options: AccessCodeType): Promise<ApiResponseType<GithubOauthTokenResponseType>> {
-    if (!options.code) throw new Error(NotAccessCodeMsg)
-    this.setRequestConfig(
-      {
-        url: this.BaseUrl
-      })
     try {
+      if (!options.code) throw new Error(NotAccessCodeMsg)
+      this.setRequestConfig(
+        {
+          url: this.BaseUrl
+        })
       const req = await this.post('login/oauth/access_token', {
         client_id: this.Client_ID,
         client_secret: this.Client_Secret,
@@ -107,15 +107,15 @@ export class Auth extends Base {
    * console.log(status) // 输出token状态对象
    */
   public async check_token_status (options?: AccessTokenType): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
-    const access_token = options?.access_token ?? this.userToken
-    if (!access_token) throw new Error(NotAccessTokenMsg)
-    if (!access_token.startsWith('ghu_')) throw new Error(isNotAccessTokenMsg)
-    this.setRequestConfig({
-      url: this.ApiUrl,
-      tokenType: 'Basic',
-      token: `${this.Client_ID}:${this.Client_Secret}`
-    })
     try {
+      const access_token = options?.access_token ?? this.userToken
+      if (!access_token) throw new Error(NotAccessTokenMsg)
+      if (!access_token.startsWith('ghu_')) throw new Error(isNotAccessTokenMsg)
+      this.setRequestConfig({
+        url: this.ApiUrl,
+        tokenType: 'Basic',
+        token: `${this.Client_ID}:${this.Client_Secret}`
+      })
       const req = await this.post(`/applications/${this.Client_ID}/token`, {
         access_token
       })
@@ -144,13 +144,13 @@ export class Auth extends Base {
    * ```
    */
   public async refresh_token (options: RefreshTokenType): Promise<ApiResponseType<GithubOauthRefreshTokenResponseType>> {
-    if (!options.refresh_token) throw new Error(NotAccessCodeMsg)
-    if (!options.refresh_token.startsWith('ghr_')) throw new Error(isNotRefreshTokenMsg)
-    this.setRequestConfig(
-      {
-        url: this.BaseUrl
-      })
     try {
+      if (!options.refresh_token) throw new Error(NotAccessCodeMsg)
+      if (!options.refresh_token.startsWith('ghr_')) throw new Error(isNotRefreshTokenMsg)
+      this.setRequestConfig(
+        {
+          url: this.BaseUrl
+        })
       const req = await this.post('login/oauth/access_token', {
         client_id: this.Client_ID,
         client_secret: this.Client_Secret,

@@ -106,10 +106,10 @@ export class Repo extends Base {
    * @returns 仓库详细信息
    */
   public async get_user_repos_list_by_token (options?: RepoListBaseParmsType) {
-    this.setRequestConfig({
-      token: this.userToken
-    })
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const queryParams = new URLSearchParams()
       if (options?.type) queryParams.set('type', options.type)
       if (options?.sort) queryParams.set('sort', options.sort)
@@ -153,13 +153,14 @@ export class Repo extends Base {
    * @param options.page - 页码 默认值：1
    * @returns 用户仓库列表
    */
-  public async get_user_repos_list (options: UserRepoListParmsType)
-    : Promise<ApiResponseType<UserRepoListParmsType>> {
-    if (!options.username) throw new Error(NotParamMsg)
-    this.setRequestConfig({
-      token: this.userToken
-    })
+  public async get_user_repos_list (
+    options: UserRepoListParmsType
+  ): Promise<ApiResponseType<UserRepoListParmsType>> {
     try {
+      if (!options.username) throw new Error(NotParamMsg)
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const queryParams = new URLSearchParams()
       if (options?.type) queryParams.set('type', options.type)
       if (options?.sort) queryParams.set('sort', options.sort)
@@ -202,24 +203,24 @@ export class Repo extends Base {
   public async get_repo_info (
     options: RepoInfoParamType
   ): Promise<ApiResponseType<RepoInfoResponseType>> {
-    this.setRequestConfig({
-      token: this.userToken
-    })
-    /* 解析仓库地址 */
-    let owner, repo, url
-    if ('url' in options) {
-      url = options?.url?.trim()
-      if (!url) throw new Error(NotParamMsg)
-      const info = parse_git_url(url, this.BaseUrl)
-      owner = info?.owner
-      repo = info?.repo
-    } else if ('owner' in options && 'repo' in options) {
-      owner = options?.owner
-      repo = options?.repo
-    } else {
-      throw new Error(NotParamMsg)
-    }
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      /* 解析仓库地址 */
+      let owner, repo, url
+      if ('url' in options) {
+        url = options?.url?.trim()
+        if (!url) throw new Error(NotParamMsg)
+        const info = parse_git_url(url, this.BaseUrl)
+        owner = info?.owner
+        repo = info?.repo
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options?.owner
+        repo = options?.repo
+      } else {
+        throw new Error(NotParamMsg)
+      }
       const req = await this.get(`/repos/${owner}/${repo}`)
       if (req.statusCode === 404) {
         throw new Error(NotOrgOrUserMsg)
@@ -310,22 +311,26 @@ export class Repo extends Base {
    * console.log(visibility.data.visibility) // 输出 public 或 private
    * ```
    */
-  public async get_repo_visibility (options: RepoInfoParamType): Promise<RepoVisibilityResponseType['visibility']> {
-    let owner, repo, url, req
-    if ('url' in options) {
-      url = options?.url?.trim()
-      req = await this.get_repo_info({ url })
-    } else if ('owner' in options && 'repo' in options) {
-      owner = options?.owner
-      repo = options?.repo
-      req = await this.get_repo_info({ owner, repo })
-    } else {
-      throw new Error(NotParamMsg)
+  public async get_repo_visibility (options: RepoInfoParamType): Promise<RepoVisibilityResponseType['visibility'] | null> {
+    try {
+      let owner, repo, url, req
+      if ('url' in options) {
+        url = options?.url?.trim()
+        req = await this.get_repo_info({ url })
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options?.owner
+        repo = options?.repo
+        req = await this.get_repo_info({ owner, repo })
+      } else {
+        throw new Error(NotParamMsg)
+      }
+      let visibility = 'public'
+      if (req.data) {
+        visibility = req.data?.visibility
+      }
+      return visibility
+    } catch (error) {
+      return null
     }
-    let visibility = 'public'
-    if (req.data) {
-      visibility = req.data?.visibility
-    }
-    return visibility
   }
 }

@@ -47,13 +47,13 @@ export class User extends Base {
    */
   public async get_user_info (options: UserNameParamType):
   Promise<ApiResponseType<UserResponseType>> {
-    if (!options.username) {
-      throw new Error(NotOrgOrUserParamMsg)
-    }
-    this.setRequestConfig({
-      token: this.userToken
-    })
     try {
+      if (!options.username) {
+        throw new Error(NotOrgOrUserParamMsg)
+      }
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const req = await this.get(`/users/${options.username}`)
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
@@ -79,13 +79,13 @@ export class User extends Base {
    */
   public async get_user_info_by_user_id (options: UserIdParamType):
   Promise<ApiResponseType<UserResponseType>> {
-    if (!options.user_id) {
-      throw new Error(NotUserParamMsg)
-    }
-    this.setRequestConfig({
-      token: this.userToken
-    })
     try {
+      if (!options.user_id) {
+        throw new Error(NotUserParamMsg)
+      }
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const req = await this.get(`/user/${options.user_id}`)
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
@@ -107,10 +107,10 @@ export class User extends Base {
    */
   public async get_user_info_by_token ():
   Promise<ApiResponseType<UserResponseType>> {
-    this.setRequestConfig({
-      token: this.userToken
-    })
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const req = await this.get('/user')
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
@@ -135,10 +135,10 @@ export class User extends Base {
    */
   public async get_user_contribution (options: UserNameParamType):
   Promise<ApiResponseType<ContributionResult>> {
-    if (!options.username) {
-      throw new Error(NotUserParamMsg)
-    }
     try {
+      if (!options.username) {
+        throw new Error(NotUserParamMsg)
+      }
       const userInfo = await this.get_user_info({ username: options.username })
       if (userInfo.data.type === 'Organization') {
         throw new Error(`${isOrgMsg}获取贡献日历`)
@@ -178,8 +178,12 @@ export class User extends Base {
    * const userId = await user.get_user_id()
    * console.log(userId)
    */
-  public async get_user_id (): Promise<number> {
-    return (await this.get_user_info_by_token()).data.id
+  public async get_user_id (): Promise<number | null> {
+    try {
+      return (await this.get_user_info_by_token()).data.id
+    } catch {
+      return null
+    }
   }
 
   /**
@@ -192,8 +196,12 @@ export class User extends Base {
    * console.log(username)
    * ```
    */
-  public async get_username (): Promise<string> {
-    return (await this.get_user_info_by_token()).data.login
+  public async get_username (): Promise<string | null> {
+    try {
+      return (await this.get_user_info_by_token()).data.login
+    } catch {
+      return null
+    }
   }
 
   /**
@@ -208,7 +216,11 @@ export class User extends Base {
    * ```
    */
   public async get_nickname (): Promise<string | null> {
-    return (await this.get_user_info_by_token()).data.name
+    try {
+      return (await this.get_user_info_by_token()).data.name
+    } catch {
+      return null
+    }
   }
 
   /**
@@ -222,7 +234,11 @@ export class User extends Base {
    * ```
    */
   public async get_user_email (): Promise<string | null> {
-    return (await this.get_user_info_by_token()).data.email
+    try {
+      return (await this.get_user_info_by_token()).data.email
+    } catch {
+      return null
+    }
   }
 
   /**
@@ -235,7 +251,11 @@ export class User extends Base {
    * console.log(avatarUrl)
    * ```
    */
-  public async get_avatar_url (): Promise<string> {
-    return (await this.get_user_info_by_token()).data.avatar_url
+  public async get_avatar_url (): Promise<string | null> {
+    try {
+      return (await this.get_user_info_by_token()).data.avatar_url
+    } catch {
+      return null
+    }
   }
 }

@@ -44,10 +44,10 @@ export class Commit extends Base {
   public async get_commit_info (
     options: CommitInfoParamType
   ): Promise<ApiResponseType<CommitInfoResponseType>> {
-    this.setRequestConfig({
-      token: this.userToken
-    })
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
       let owner, repo, url, sha
       if ('url' in options) {
         url = options.url
