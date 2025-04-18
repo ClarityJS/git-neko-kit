@@ -96,7 +96,7 @@ const gh = new github.Base(options)
 const repo = await gh.get_repo() // 获取Repo仓库实例
 const info = await repo.get_repo_info() // 获取仓库信息
 ```
-也可以直接使用或者直接实例化Repo类使用：
+或者直接实例化Repo类使用：
 ```ts
 const repo = new github.Repo(options) // 创建Repo仓库实例
 const info = await repo.get_repo_info() // 获取仓库信息

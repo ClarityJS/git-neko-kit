@@ -119,7 +119,7 @@ export class Base {
    * @returns App实例
    * @example
    * ```ts
-   * const app = await base.app()
+   * const app = await base.get_app()
    * ```
    */
   public async get_app (): Promise<App> {
@@ -132,7 +132,7 @@ export class Base {
    * @returns Auth实例
    * @example
    * ```ts
-   * const auth = await base.auth()
+   * const auth = await base.get_auth()
    * ```
    */
 
@@ -147,7 +147,7 @@ export class Base {
    * @returns Commit实例
    * @example
    * ```ts
-   * const commit = await base.commit()
+   * const commit = await base.get_commit()
    * ```
    */
   public async get_commit (): Promise<Commit> {
@@ -160,7 +160,7 @@ export class Base {
    * @returns Repo实例
    * @example
    * ```ts
-   * const repo = await base.repo()
+   * const repo = await base.get_repo()
    * ```
    */
 
@@ -171,31 +171,31 @@ export class Base {
   }
 
   /**
-   * 获取WebHook实例
-   * @returns WebHook实例
-   * @example
-   * ```ts
-   * const webhook = await base.webhook()
-   * ```
-   */
-  public async get_webhook (): Promise<WebHook> {
-    const { WebHook } = await import('@/models/platform/github/webhook')
-    this.webhook = new WebHook(this)
-    return this.webhook
-  }
-
-  /**
    * 获取User实例
    * @returns User实例
    * @example
    * ```ts
-   * const user = await base.user()
+   * const user = await base.get_user()
    * ```
    */
   public async get_user (): Promise<User> {
     const { User } = await import('@/models/platform/github/user')
     this.user = new User(this)
     return this.user
+  }
+
+  /**
+   * 获取WebHook实例
+   * @returns WebHook实例
+   * @example
+   * ```ts
+   * const webhook = await base.get_webhook()
+   * ```
+   */
+  public async get_webhook (): Promise<WebHook> {
+    const { WebHook } = await import('@/models/platform/github/webhook')
+    this.webhook = new WebHook(this)
+    return this.webhook
   }
 
   /**
