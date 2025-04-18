@@ -1,5 +1,76 @@
 # 变更日志
 
+## [0.3.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.2.0...v0.3.0) (2025-04-18)
+
+
+### ✨ 新功能
+
+* **auth:** 完善 Token 验证和错误处理 ([111d3e9](https://github.com/ClarityJS/git-neko-kit/commit/111d3e9ccaefbd2a1f876d53754c1b2c610484e8))
+* **commit:** 格式化提交信息中的日期 ([56d2b6b](https://github.com/ClarityJS/git-neko-kit/commit/56d2b6b35c389e3728b93cb0da9888dd065f1851))
+* **common:** 优化日期处理功能并添加相对时间功能 ([8c92b2b](https://github.com/ClarityJS/git-neko-kit/commit/8c92b2b2aeb3f03b78548297cfbc82f555524d49))
+* **github/user:** 添加通过用户id获取用户信息方法 ([ab78d8b](https://github.com/ClarityJS/git-neko-kit/commit/ab78d8b18d350d765b4f024707c8254771e35794))
+* **github:** 完善错误处理和消息提示 ([f94ed08](https://github.com/ClarityJS/git-neko-kit/commit/f94ed08e0455da236c06cc3cec382796666fd1a0))
+* **github:** 添加 WebHook 签名验证功能 ([2a6a928](https://github.com/ClarityJS/git-neko-kit/commit/2a6a928e8b27b0129f22dd9c777f3eb7930a6634))
+* **github:** 添加获取仓库可见性的功能 ([f422f7b](https://github.com/ClarityJS/git-neko-kit/commit/f422f7bfd9f94807aa1cfb7aacb6f0d35445e739))
+* **github:** 添加获取用户仓库列表功能 ([4efe253](https://github.com/ClarityJS/git-neko-kit/commit/4efe253d6f256d9edf9fd46a951145ce2e4569b2))
+* **models/github:** 添加 webhook 模型并更新配置 ([784bc8a](https://github.com/ClarityJS/git-neko-kit/commit/784bc8a30b16f9f70fdf0a84fc3e77a5d9b7325f))
+* **models:** 添加生成用户唯一标识符的功能并优化导出 ([da934a9](https://github.com/ClarityJS/git-neko-kit/commit/da934a9cb87fdb42c5a74b15aef38715b78c4486))
+* **src:** 导出日期格式化和相对时间函数 ([f83081d](https://github.com/ClarityJS/git-neko-kit/commit/f83081da28df9b911e30af0f9500508fdfb2d99d))
+* **user:** 添加快速获取用户信息的方法 ([97dd3df](https://github.com/ClarityJS/git-neko-kit/commit/97dd3df2af3bd080613650d12198b97c7417deca))
+
+
+### 🐛 错误修复
+
+* **dayjs:** 修复 dayjs 本地化文件导入路径 ([dd2d05c](https://github.com/ClarityJS/git-neko-kit/commit/dd2d05c56e539ba8679b96599a3c042c2bbe8c99))
+* **github:** 为获取 commit 信息设置正确的 token ([f7f2b8d](https://github.com/ClarityJS/git-neko-kit/commit/f7f2b8dfc2006fa8cfc2cdccd20e813c32b6597c))
+* **github:** 为获取 commit 信息设置正确的 token ([42aff21](https://github.com/ClarityJS/git-neko-kit/commit/42aff21e7739fbf747518caba60e5dbb26ea4736))
+* **github:** 优化用户仓库获取逻辑 ([472d591](https://github.com/ClarityJS/git-neko-kit/commit/472d591c8ccbfe92bd293976e0bdb8c6ead163d8))
+* **github:** 修复获取仓库列表的参数处理 ([93d16f5](https://github.com/ClarityJS/git-neko-kit/commit/93d16f5a689a9be1d95da358138db7a7ff3542cd))
+* **github:** 增加对 422 错误的处理 ([f57f284](https://github.com/ClarityJS/git-neko-kit/commit/f57f2848a1bfe12d4cc99fa1a28089efcfe73427))
+* **models:** 修复错误消息 ([e5899f0](https://github.com/ClarityJS/git-neko-kit/commit/e5899f0feeef98449e5fafecc544194fe797e6c9))
+* **platform/github:** 修复初始化实例APP_ID的类型 ([c33ee56](https://github.com/ClarityJS/git-neko-kit/commit/c33ee56a374c2464b11014cbace073ecf9c3814c))
+* **repo:** 修复获取组织仓库列表逻辑 ([aa2cd03](https://github.com/ClarityJS/git-neko-kit/commit/aa2cd038920b65a2993782fc4c6fa053e971cbfd))
+* **user:** 修复获取用户信息的异常输出 ([f422579](https://github.com/ClarityJS/git-neko-kit/commit/f4225791e2cb44abc49271e7770bddbaacf7bb4b))
+
+
+### 📝 文档更新
+
+* **README:** 更新 GitHub SDK 使用示例 ([3665148](https://github.com/ClarityJS/git-neko-kit/commit/3665148e02c557dd8a140ad201cbdfcb3cb7d405))
+* 初始化 VuePress 文档构建流程 ([45ff8a3](https://github.com/ClarityJS/git-neko-kit/commit/45ff8a3e08d4c10e396cb46dcac3116a5ac93835))
+
+
+### ♻️ 代码重构
+
+* **common:** 优化代码格式和错误处理 ([507d7fa](https://github.com/ClarityJS/git-neko-kit/commit/507d7fa484ca664aee68c43645ee21555f9e3540))
+* **common:** 优化语言包加载逻辑并统一代理设置 ([f185851](https://github.com/ClarityJS/git-neko-kit/commit/f185851dd7bb1d6837ea7be31244c5dd76f0f846))
+* **common:** 新增错误消息模块并优化错误处理 ([1323b13](https://github.com/ClarityJS/git-neko-kit/commit/1323b13088e7159d8395731c1c54e8d7cbd66703))
+* **date:** 重构日期格式化方法 ([3b0f68f](https://github.com/ClarityJS/git-neko-kit/commit/3b0f68f811883cea6af917f311317dfacb5e24cf))
+* **github:** 优化 GitHub 授权链接创建方法 ([a446f5e](https://github.com/ClarityJS/git-neko-kit/commit/a446f5ec8ce7ee8e530a4ef442b2a97139a21db0))
+* **github:** 优化 token 状态检查逻辑 ([b8d8fd7](https://github.com/ClarityJS/git-neko-kit/commit/b8d8fd738be72b7f3918ead4234c629d864469b5))
+* **github:** 优化仓库相关接口的参数处理和错误提示 ([b7592f6](https://github.com/ClarityJS/git-neko-kit/commit/b7592f690fa1819a2812e2c9e9c34d522fb3586f))
+* **github:** 优化提交信息获取功能 ([0b33dae](https://github.com/ClarityJS/git-neko-kit/commit/0b33daea44ab04bb5602002b0d6da07dcaa652f6))
+* **github:** 简化 get_repo_visibility 接口返回类型 ([ee077ee](https://github.com/ClarityJS/git-neko-kit/commit/ee077eeb12f78d8012a71876e87083f0a1bf9b49))
+* **github:** 重构 Base 类以优化模块导入和实例化 ([de77e08](https://github.com/ClarityJS/git-neko-kit/commit/de77e081dbaa7aa20e6d8b4b906e8c0b0097f465))
+* **github:** 重构 GitHub API 基础类 ([2f8ca1d](https://github.com/ClarityJS/git-neko-kit/commit/2f8ca1d33089dafbfbfc78f15fba8733935a75a7))
+* **github:** 重构 GitHub API 方法命名 ([10f4b63](https://github.com/ClarityJS/git-neko-kit/commit/10f4b63aff906eae0f6b4586952ae02a63e341ae))
+* **github:** 重构 GitHub 平台相关代码 ([8b54dd8](https://github.com/ClarityJS/git-neko-kit/commit/8b54dd8aeca72c060d74af6278e883954c0280f5))
+* **github:** 重构 GitHub 相关类的构造函数并优化 webhook 功能 ([7aed3ae](https://github.com/ClarityJS/git-neko-kit/commit/7aed3ae1e31af28bbdae257f3122a426bbe3f145))
+* **github:** 重构 WebHook 签名验证逻辑 ([a5f3d73](https://github.com/ClarityJS/git-neko-kit/commit/a5f3d7356b56832b102b83bb82a21afc636a384f))
+* **github:** 重构获取用户仓库列表逻辑 ([4a177cd](https://github.com/ClarityJS/git-neko-kit/commit/4a177cd8035796a862cec5ff89abe5ebea34ebf2))
+* **models:** 优化 GitHub App 和 Auth 类 ([ce19c01](https://github.com/ClarityJS/git-neko-kit/commit/ce19c01b1ff719a7a55d4a6de9532dc5d637cb2f))
+* **models:** 优化代理配置逻辑 ([01f036f](https://github.com/ClarityJS/git-neko-kit/commit/01f036f04209737a726b53924aec99415dab4635))
+* **models:** 将 GitHub 相关模型移至 platform 目录 ([8856493](https://github.com/ClarityJS/git-neko-kit/commit/8856493ef4a296465334294d56cdcc4789d710b2))
+* **models:** 将生成安装链接和配置链接的方法移至 App 类 ([a70695b](https://github.com/ClarityJS/git-neko-kit/commit/a70695b1be49d823482521a792df31ad00f30e0f))
+* **utils:** 为 get_relative_time 函数添加默认语言参数 ([0d4a000](https://github.com/ClarityJS/git-neko-kit/commit/0d4a000816aeafab376d3958eb73a012dfaea7f1))
+* 优化代码结构和类型定义 ([95b5202](https://github.com/ClarityJS/git-neko-kit/commit/95b52024564c43664e65779708986120f549274d))
+
+
+### 🎡 持续集成
+
+* **deploy:** 将部署目标从 GitHub Pages 更改为 Cloudflare Pages ([9d93129](https://github.com/ClarityJS/git-neko-kit/commit/9d93129c6a84c1a6ba4de29b5f701b0959c85238))
+* 更新 GitHub Actions 中私钥引用 ([0543e6a](https://github.com/ClarityJS/git-neko-kit/commit/0543e6a5c7a5683d6a705861345b5884e57a3f88))
+* 更新 GitHub Actions 中私钥引用 ([73c15d2](https://github.com/ClarityJS/git-neko-kit/commit/73c15d24eff242ef3fc9953b3d8a7a505aa5354a))
+
 ## [0.2.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.1.0...v0.2.0) (2025-04-10)
 
 
