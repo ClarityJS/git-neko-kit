@@ -66,6 +66,7 @@ export class App extends Base {
     * ```ts
     * const link = await app.create_config_install_link('state_id')
     * console.log(link) // https://github.com/apps/<app_name>/installations/new?state=<state_id></state_id>
+    * ```
     */
   public async create_config_install_link (state_id?: string): Promise<string> {
     try {

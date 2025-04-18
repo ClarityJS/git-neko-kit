@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 
 import { isNotAccessTokeMsg, NotProxyAddressMsg, RateLimitMsg } from '@/common'
 import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
-import Request from '@/models/base/request'
+import { Request } from '@/models/base/request'
 import { App } from '@/models/platform/github/app'
 import { Auth } from '@/models/platform/github/auth'
 import { Commit } from '@/models/platform/github/commit'
@@ -26,24 +26,20 @@ const type = 'github'
  * 此类作为GitHub API功能的入口点，封装了以下核心能力：
  * - JWT令牌生成与管理
  * - 请求代理配置
- * - 基础HTTP请求方法
+ * - 基础HTTP请求方法(GET/POST)
  * - 应用认证管理
+ * - 模块化服务(App/Auth/Commit/Repo/User/WebHook)
  *
- * @class Base
- * @property {string} BaseUrl - GitHub API基础URL (如: https://github.com)
- * @property {string} ApiUrl - GitHub API端点URL (如: https://api.github.com)
- * @property {string} jwtToken - 用于应用认证的JWT令牌
- * @property {string} userToken - 用户访问令牌(以ghu_开头)
- * @property {string} APP_ID - GitHub应用的唯一标识符
- * @property {string} Private_Key - 用于生成JWT的私钥
- * @property {string} Client_ID - OAuth应用的客户端ID
- * @property {string} Client_Secret - OAuth应用的客户端密钥
- * @property {string} WebHook_Secret - WebHook验证密钥
- * @method get - 执行GET请求
- * @method post - 执行POST请求
- * @method setProxy - 配置请求代理
- * @method setToken - 设置用户访问令牌
- * @method app - 获取App实例
+ * @example
+ * ```ts
+ * const base = new Base({
+ *   APP_ID: 12345,
+ *   Private_Key: '-----BEGIN PRIVATE KEY-----...',
+ *   Client_ID: 'Iv1.1234567890abcdef',
+ *   Client_Secret: 'abcdef1234567890abcdef1234567890abcdef12',
+ *   WebHook_Secret: 'webhook_secret'
+ * });
+ * ```
  */
 export class Base {
   // private static registry = new Map<string, new (base: Base) => any>()
@@ -252,7 +248,7 @@ export class Base {
    * @param options.Private_Key 私钥内容
    * @returns 返回生成的 JWT
    */
-  protected generate_jwt (): string {
+  private generate_jwt (): string {
     const Private_Key = this.Private_Key
     const payload = {
       exp: Math.floor(Date.now() / 1000) + (10 * 60),
@@ -278,7 +274,6 @@ export class Base {
 
   /**
    * 创建一个新的请求实例
-   * @protected - 仅在类内部访问
    * @returns 返回一个新的 Request 实例
    */
   private createRequest (): Request {

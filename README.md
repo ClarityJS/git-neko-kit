@@ -102,6 +102,5 @@ const repo = new github.Repo(options) // 创建Repo仓库实例
 const info = await repo.get_repo_info() // 获取仓库信息
 ```
 
-::: tip
-其他的使用方法一样
-:::
+> [!Tip]
+> 其他的使用方法一样

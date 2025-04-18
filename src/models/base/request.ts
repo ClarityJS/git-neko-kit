@@ -6,12 +6,22 @@ import { SocksProxyAgent } from 'socks-proxy-agent'
 import { pkg } from '@/common'
 import type { ProxyParamsType, RequestTokenType, ResponseType } from '@/types'
 
-class Request {
+/**
+ * HTTP请求客户端类，支持GET/POST请求、代理配置和多种认证方式
+ */
+export class Request {
   private readonly baseUrl: string
   private readonly tokenType: RequestTokenType
   private readonly authorization?: string
   private readonly proxy?: ProxyParamsType
 
+  /**
+   * 创建Request实例
+   * @param baseUrl - 基础URL
+   * @param tokenType - 认证类型，默认为'Bearer'
+   * @param authorization - 认证令牌
+   * @param proxy - 代理配置
+   */
   constructor (
     baseUrl: string,
     tokenType: RequestTokenType = 'Bearer',
@@ -24,6 +34,15 @@ class Request {
     this.tokenType = tokenType
   }
 
+  /**
+   * 执行HTTP请求
+   * @param method - HTTP方法 ('get' | 'post')
+   * @param path - 请求路径
+   * @param data - POST请求体数据
+   * @param params - URL查询参数
+   * @param customHeaders - 自定义请求头
+   * @returns 响应结果
+   */
   private async request (
     method: 'get' | 'post',
     path: string,
@@ -79,17 +98,32 @@ class Request {
     }
   }
 
+  /**
+   * 发送GET请求
+   * @param path - 请求路径
+   * @param params - URL查询参数
+   * @param customHeaders - 自定义请求头
+   * @returns 响应结果
+   */
   async get (path: string, params?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
     return this.request('get', path, undefined, params, customHeaders)
   }
 
+  /**
+   * 发送POST请求
+   * @param path - 请求路径
+   * @param data - 请求体数据
+   * @param customHeaders - 自定义请求头
+   * @returns 响应结果
+   */
   async post (path: string, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
     return this.request('post', path, data, undefined, customHeaders)
   }
 
   /**
    * 创建请求头
-   * @returns 请求头对象
+   * @param customHeaders - 自定义请求头
+   * @returns 包含基础头信息和认证信息的请求头对象
    */
   private createHeaders (customHeaders?: Record<string, string>) {
     const headers: Record<string, string> = {
@@ -114,5 +148,3 @@ class Request {
     return headers
   }
 }
-
-export default Request
