@@ -15,9 +15,10 @@ import type {
   OrgRepoListType,
   RepoInfoParamType,
   RepoInfoResponseType,
-  RepoListBaseParmsType,
   RepoVisibilityResponseType,
-  UserRepoListParmsType
+  UserByTokenRepoListParmsType,
+  UserRepoListParmsType,
+  UserRepoListType
 } from '@/types'
 
 /**
@@ -72,7 +73,6 @@ export class Repo extends Base {
       const url = queryString
         ? `/orgs/${options.org}/repos?${queryString}`
         : `/orgs/${options.org}/repos`
-      console.log(url)
       const req = await this.get(url)
       if (req.statusCode === 404) {
         throw new Error(NotOrgMsg)
@@ -105,7 +105,7 @@ export class Repo extends Base {
    * @param options.page - 页码 默认值：1
    * @returns 仓库详细信息
    */
-  public async get_user_repos_list_by_token (options?: RepoListBaseParmsType) {
+  public async get_user_repos_list_by_token (options?: UserByTokenRepoListParmsType): Promise<ApiResponseType<UserRepoListType>> {
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -155,7 +155,7 @@ export class Repo extends Base {
    */
   public async get_user_repos_list (
     options: UserRepoListParmsType
-  ): Promise<ApiResponseType<UserRepoListParmsType>> {
+  ): Promise<ApiResponseType<UserRepoListType>> {
     try {
       if (!options.username) throw new Error(NotParamMsg)
       this.setRequestConfig({

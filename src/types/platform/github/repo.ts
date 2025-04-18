@@ -2,8 +2,6 @@ import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType } from '@/types
 
 /** 仓库列表参数类型 */
 export interface RepoListBaseParmsType {
-  /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
-  type?: 'all' | 'public' | 'private' | 'forks' | 'sources' | 'member'
   /** 排序方式，可选created， updated， pushed， full_name， 默认为 full_name */
   sort?: 'created' | 'updated' | 'pushed' | 'full_name'
   /** 排序方式，可选asc， desc， 默认为 desc */
@@ -18,12 +16,24 @@ export interface RepoListBaseParmsType {
 export interface OrgRepoListParmsType extends RepoListBaseParmsType {
   /** 组织名称 */
   org: string
+  /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
+  type?: 'all' | 'public' | 'private' | 'forks' | 'sources' | 'member'
 }
 
 /** 用户仓库列表参数类型 */
 export interface UserRepoListParmsType extends RepoListBaseParmsType {
   /** 用户名 */
   username: string
+  /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
+  type?: 'all' | 'owner' | 'public' | 'private' | 'member'
+  /**
+   * 这个其实还有  visibility 和 affiliation 但它们和type的作用一样，所以就不写了
+   */
+}
+
+export interface UserByTokenRepoListParmsType extends RepoListBaseParmsType {
+  /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
+  type?: 'all' | 'owner' | 'member'
 }
 
 /** 仓库信息响应类型 */

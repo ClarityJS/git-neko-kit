@@ -15,11 +15,11 @@ export interface GithubOauthTokenResponseType {
   /** 用户访问令牌， 格式为 ghu_ 开头 */
   access_token: string;
   /** access_token 过期前的秒数，默认值为 28800（8小时） */
-  expires_in: number;
-  /** 刷新令牌，格式为 ghr_ 开头，可能为 undefined */
-  refresh_token: string | undefined;
-  /** refresh_token 过期前的秒数，默认值为 15897600（6个月），可能为 undefined */
-  refresh_token_expires_in: number | undefined;
+  expires_in: number | null;
+  /** 刷新令牌，格式为 ghr_ 开头，可能为 null */
+  refresh_token: `ghr_${string}` | null;
+  /** refresh_token 过期前的秒数，默认值为 15897600（6个月） */
+  refresh_token_expires_in: number | null;
   /** 令牌范围，默认是空字符串 */
   scope: string;
   /** 令牌类型，始终为 'bearer' */
@@ -35,11 +35,11 @@ export interface GithubOauthRefreshTokenResponseType {
   /** 用户访问令牌，格式为 ghu_ 开头 */
   access_token: string;
   /** access_token 过期前的秒数，默认值为 28800（8小时） */
-  expires_in: number;
-  /** 刷新令牌，格式为 ghr_ 开头，可能为 undefined */
-  refresh_token: string | undefined;
-  /** refresh_token 过期前的秒数，默认值为 15897600（6个月），可能为 undefined */
-  refresh_token_expires_in: number | undefined;
+  expires_in: number | null;
+  /** 刷新令牌，格式为 ghr_ 开头，可能为 null */
+  refresh_token: `ghr_${string}` | null;
+  /** refresh_token 过期前的秒数，默认值为 15897600（6个月），可能为 null */
+  refresh_token_expires_in: number | null;
   /** 令牌范围，默认是空字符串 */
   scope: string;
   /** 令牌类型，始终为 'bearer' */
