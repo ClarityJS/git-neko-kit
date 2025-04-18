@@ -2,7 +2,7 @@ import { URL } from 'node:url'
 
 import jwt from 'jsonwebtoken'
 
-import { isNotAccessTokeMsg, NotProxyAddressMsg } from '@/common'
+import { isNotAccessTokeMsg, NotProxyAddressMsg, RateLimitMsg } from '@/common'
 import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
 import Request from '@/models/base/request'
 import { App } from '@/models/platform/github/app'
@@ -295,13 +295,20 @@ export class Base {
    * @returns 请求结果
    */
   public async get (path: string, parms?: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
-    const request = this.createRequest()
-    const req = await request.get(path, parms, customHeaders)
-    return {
-      status: req.success ? 'ok' : 'error',
-      statusCode: req.statusCode,
-      msg: req.msg,
-      data: req.data
+    try {
+      const request = this.createRequest()
+      const req = await request.get(path, parms, customHeaders)
+      if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
+        throw new Error(RateLimitMsg)
+      }
+      return {
+        status: req.success ? 'ok' : 'error',
+        statusCode: req.statusCode,
+        msg: req.msg,
+        data: req.data
+      }
+    } catch (error) {
+      throw new Error(`GET 请求${path}失败: ${(error as Error).message}`)
     }
   }
 
@@ -313,13 +320,20 @@ export class Base {
    * @returns 请求结果
    */
   public async post (path: string, data: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
-    const request = this.createRequest()
-    const req = await request.post(path, data, customHeaders)
-    return {
-      status: req.success ? 'ok' : 'error',
-      statusCode: req.statusCode,
-      msg: req.msg,
-      data: req.data
+    try {
+      const request = this.createRequest()
+      const req = await request.post(path, data, customHeaders)
+      if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
+        throw new Error(RateLimitMsg)
+      }
+      return {
+        status: req.success ? 'ok' : 'error',
+        statusCode: req.statusCode,
+        msg: req.msg,
+        data: req.data
+      }
+    } catch (error) {
+      throw new Error(`POST 请求${path}失败: ${(error as Error).message}`)
     }
   }
 }
