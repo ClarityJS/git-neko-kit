@@ -24,15 +24,16 @@ export interface OrgRepoListParmsType extends RepoListBaseParmsType {
 export interface UserRepoListParmsType extends RepoListBaseParmsType {
   /** 用户名 */
   username: string
-  /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
-  type?: 'all' | 'owner' | 'public' | 'private' | 'member'
-  /**
-   * 这个其实还有  visibility 和 affiliation 但它们和type的作用一样，所以就不写了
-   */
+  /** 类型，可选all， owner， member， 默认为 all */
+  type?: 'all' | 'owner' | 'member'
 }
 
 export interface UserByTokenRepoListParmsType extends RepoListBaseParmsType {
-  /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
+  /** 仓库的可见性，可选all， public， private， 默认为 all */
+  visibility?: 'all' | 'public' | 'private'
+  /** 仓库的状态，可选all， public， private， 默认为 all */
+  affiliation?: 'owner' | 'collaborator' | 'organization_member'
+  /** 类型，可选all， owner， member， 默认为 all */
   type?: 'all' | 'owner' | 'member'
 }
 

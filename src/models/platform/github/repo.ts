@@ -98,7 +98,9 @@ export class Repo extends Base {
   /**
    * 查询仓库详细信息
    * @param options - 请求参数对象
-   * @param options.type - 仓库类型，可选值：'all' | 'public' | 'private' | 'forks' | 'sources' | 'member', 默认值：'all'
+   * @param options.type - 仓库类型，可选值：可选all， public， private
+   * @param options.visibility - 仓库可见性，可选值：'public' | 'private' | 'internal', 默认值：'all'
+   * @param options.affiliation - 仓库关联，可选值：'owner' | 'collaborator' | 'organization_member', 默认值：'owner,collaborator,organization_member'
    * @param options.sort - 排序字段，可选值：'created' | 'updated' | 'pushed' | 'full_name', 默认值：'created'
    * @param options.direction - 排序方向，可选值：'asc' | 'desc', 默认值：'desc'
    * @param options.per_page - 每页数量（1-100）, 默认值：30
@@ -111,7 +113,11 @@ export class Repo extends Base {
         token: this.userToken
       })
       const queryParams = new URLSearchParams()
-      if (options?.type) queryParams.set('type', options.type)
+      if (!options?.visibility && !options?.affiliation && options?.type) {
+        queryParams.set('type', options.type)
+      }
+      if (options?.visibility) queryParams.set('visibility', options.visibility)
+      if (options?.affiliation) queryParams.set('affiliation', options.affiliation)
       if (options?.sort) queryParams.set('sort', options.sort)
       if (options?.direction) queryParams.set('direction', options.direction)
       if (options?.per_page) queryParams.set('per_page', options.per_page.toString())
@@ -146,7 +152,7 @@ export class Repo extends Base {
    * @param options - 请求参数对象
    * @param options.username - 用户名
    * @remarks 优先获取授权用户仓库列表，若授权用户不存在则获取指定用户仓库列表
-   * @param options.type - 仓库类型，可选值：'all' | 'public' | 'private' | 'forks' | 'sources' | 'member', 默认值：'all'
+   * @param options.type - 仓库类型，可选值：all， owner， member，, 默认值：'all'
    * @param options.sort - 排序字段，可选值：'created' | 'updated' | 'pushed' | 'full_name', 默认值：'created'
    * @param options.direction - 排序方向，可选值：'asc' | 'desc', 默认值：'desc'
    * @param options.per_page - 每页数量（1-100）, 默认值：30
