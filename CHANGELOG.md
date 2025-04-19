@@ -1,5 +1,24 @@
 # 变更日志
 
+## [0.4.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.3.0...v0.4.0) (2025-04-19)
+
+
+### ✨ 新功能
+
+* **github:** 添加 GitHub Issue 相关操作支持 ([36449c7](https://github.com/ClarityJS/git-neko-kit/commit/36449c7ffe31eb26ffcad1960379bee472f3f73d))
+* **github:** 添加速率限制错误处理 ([e37e89a](https://github.com/ClarityJS/git-neko-kit/commit/e37e89a58ab24e28e10a80aad837a4f46c173e09))
+
+
+### 🐛 错误修复
+
+* **auth:** 修复一处类型错误 ([9b5aef2](https://github.com/ClarityJS/git-neko-kit/commit/9b5aef251b5edf29f60bcecbe68263cfca1dc025))
+
+
+### ♻️ 代码重构
+
+* **github:** 优化 GitHub API 调用和错误处理 ([c9510a0](https://github.com/ClarityJS/git-neko-kit/commit/c9510a00a8a495cf793b70292a80fa6019eb9f38))
+* **github:** 重构仓库列表接口参数 ([240565e](https://github.com/ClarityJS/git-neko-kit/commit/240565e35ace5d571c5ffadeabc397f1de68cb3e))
+
 ## [0.3.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.2.0...v0.3.0) (2025-04-18)
 
 
