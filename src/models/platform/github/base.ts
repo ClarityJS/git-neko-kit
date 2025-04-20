@@ -5,12 +5,13 @@ import jwt from 'jsonwebtoken'
 import { isNotAccessTokeMsg, NotProxyAddressMsg, RateLimitMsg } from '@/common'
 import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
 import { Request } from '@/models/base/request'
-import { App } from '@/models/platform/github/app'
-import { Auth } from '@/models/platform/github/auth'
-import { Commit } from '@/models/platform/github/commit'
-import { Repo } from '@/models/platform/github/repo'
-import { User } from '@/models/platform/github/user'
-import { WebHook } from '@/models/platform/github/webhook'
+import type { App } from '@/models/platform/github/app'
+import type { Auth } from '@/models/platform/github/auth'
+import type { Commit } from '@/models/platform/github/commit'
+import type { Issue } from '@/models/platform/github/issue'
+import type { Repo } from '@/models/platform/github/repo'
+import type { User } from '@/models/platform/github/user'
+import type { WebHook } from '@/models/platform/github/webhook'
 import type {
   ApiResponseType,
   GitHubAuthType,
@@ -49,6 +50,7 @@ export class Base {
   declare repo: Repo
   declare user: User
   declare webhook: WebHook
+  declare issue: Issue
   public BaseUrl: string
   public ApiUrl: string
   public jwtToken: string
@@ -150,6 +152,20 @@ export class Base {
     const { Commit } = await import('@/models/platform/github/commit')
     this.commit = new Commit(this)
     return this.commit
+  }
+
+  /**
+   * 获取Issue实例
+   * @returns Issue实例
+   * @example
+   * ```ts
+   * const issue = await base.get_issue()
+   * ```
+   */
+  public async get_issue (): Promise<Issue> {
+    const { Issue } = await import('@/models/platform/github/issue')
+    this.issue = new Issue(this)
+    return this.issue
   }
   /**
    * 获取Repo实例

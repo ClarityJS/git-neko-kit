@@ -40,6 +40,12 @@ export class Issue extends Base {
 
   /**
    * 获取Issue详情
+   * @param options 请求参数列表
+   * - url 仓库URL地址
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - issue_number Issue编号
+   * url参数和owner、repo参数传入其中的一种
    */
   public async get_issue_info (
     options: IssueInfoParamType
