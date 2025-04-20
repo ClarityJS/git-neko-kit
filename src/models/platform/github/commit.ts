@@ -35,11 +35,14 @@ export class Commit extends Base {
   }
 
   /**
-   * 获取提交信息
-   * @param options - 提交信息参数对象，必须包含以下组合之一：
-   * - {url: string, sha: string} 仓库URL和提交哈希
-   * - {owner: string, repo: string, sha: string} 仓库拥有者、名称和提交哈希
-   * - options.format - 可选，是否格式化提交信息, 默认为false
+   * 获取一个提交信息
+   * @param options - 提交信息参数对象
+   * - url 仓库URL地址
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * url参数和owner、repo参数传入其中的一种
+   * - sha 提交的SHA值，如果不提供，则默认获取仓库的默认分支的最新提交信息
+   * - format - 可选，是否格式化提交信息, 默认为false
    */
   public async get_commit_info (
     options: CommitInfoParamType

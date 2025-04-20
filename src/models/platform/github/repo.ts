@@ -203,8 +203,10 @@ export class Repo extends Base {
   /**
    * 获取仓库信息
    * @param options - 仓库信息参数对象，必须包含以下两种组合之一：
-   * - {url: string} 仓库URL地址
-   * - {owner: string, repo: string} 仓库拥有者和名称
+   * - options.url 仓库URL地址
+   * - options.owner 仓库拥有者
+   * - options.repo 仓库名称
+   * url参数和owner、repo参数传入其中的一种
    */
   public async get_repo_info (
     options: RepoInfoParamType
@@ -300,9 +302,9 @@ export class Repo extends Base {
   /**
    * 快速获取仓库可见性
    * @param options
-   * options.url 仓库URL地址
-   * options.owner 仓库拥有者
-   * options.repo 仓库名称
+   * - options.url 仓库URL地址
+   * - options.owner 仓库拥有者
+   * - options.repo 仓库名称
    * url参数和owner、repo参数传入其中的一种
    * @remarks 优先使用url参数，若url参数不存在则使用owner和repo参数
    * @returns 仓库可见性，

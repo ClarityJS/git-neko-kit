@@ -1,4 +1,5 @@
 import {
+  NotIssueTitleMsg,
   NotParamMsg,
   NotPerrmissionMsg,
   parse_git_url
@@ -7,7 +8,9 @@ import { Base } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
   issueListParamType,
-  IssueListResponseType
+  IssueListResponseType,
+  SendIssueParamType,
+  SendIssueResponseType
 } from '@/types'
 
 /**
@@ -32,6 +35,33 @@ export class Issue extends Base {
     this.BaseUrl = base.BaseUrl
   }
 
+  /**
+   * 获取仓库的Issue列表
+   * @param options 请求参数列表
+   * - url 仓库URL地址
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * url参数和owner、repo参数传入其中的一种
+   * - milestones 里程碑ID列表
+   * - state  Issue状态，可选 'open' | 'closed' | 'all', 默认为'all'
+   * - labels 标签名称列表
+   * - assignee  指派人用户名
+   * - type  问题类型
+   * - creator  创建者用户名
+   * - mentioned  提及的用户名
+   * - sort  排序方式，可选 'created' | 'updated' | 'comments', 默认为'created'
+   * - direction  排序方向，可选 'asc' | 'desc', 默认为'desc'
+   * - since  筛选此时间之后的问题
+   * - per_page  每页数量，可选，默认为30
+   * -page  页码，可选，默认为1
+   * @returns 包含Issue列表的响应对象
+   * @example
+   * ```ts
+   * const issue = get_issuc() // 获取issue实例
+   * const res = await issue.get_issue_list({ owner: 'owner', repo: 'repo' })
+   * console.log(res) // { data: IssueListResponseType[] }
+   * ```
+   */
   public async get_issue_list (
     options: issueListParamType
   ): Promise<ApiResponseType<IssueListResponseType>> {
@@ -60,6 +90,46 @@ export class Issue extends Base {
       return req
     } catch (error) {
       throw new Error(`获取仓库${owner}/${repo}的Issue列表失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 发送一个Issue
+   * @param options 发送Issue的参数对象
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - title 标题
+   * - body 内容
+   * - assignee 指派人
+   * - milestone 里程碑
+   * - labels 标签列表
+   * - type 问题类型
+   * @returns 包含Issue信息的响应对象
+   * @example
+   * ```ts
+   * const issue = get_issuc() // 获取issue实例
+   * const res = await issue.send_an_issue({ owner: 'owner', repo:'repo', title:'title', body:'body' })
+   * console.log(res) // { data: SendIssueResponseType }
+   * ```
+   */
+  public async send_an_issue (
+    options: SendIssueParamType
+  ): Promise<ApiResponseType<SendIssueResponseType>> {
+    try {
+      if (!options.owner || !options.repo) {
+        throw new Error(NotParamMsg)
+      }
+      if (!options.title) {
+        throw new Error(NotIssueTitleMsg)
+      }
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, ...IssueOptions } = options
+      const req = await this.post(`/repos/${owner}/${repo}/issues`, IssueOptions)
+      return req
+    } catch (error) {
+      throw new Error(`发送Issue失败: ${(error as Error).message}`)
     }
   }
 }

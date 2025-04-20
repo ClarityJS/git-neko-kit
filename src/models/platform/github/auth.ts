@@ -68,7 +68,7 @@ export class Auth extends Base {
   /**
    * 通过 code 获取 token
    * @param options - 获取 token 的参数
-   * @param options.code - Github 返回的 code
+   * - options.code - Github 返回的 code
    * @returns 返回 token
    * @example
    * ```ts
@@ -97,7 +97,7 @@ export class Auth extends Base {
   /**
    * 获取 token 的状态
    * @param options - 获取 token 的参数
-   * @param options.access_token - Github 返回的 access_token
+   * - options.access_token - Github 返回的 access_token
    * 上一步 `get_token_by_code` 生成的 token
    * @returns 返回 token 的状态
    * @returns info - 返回 token 的状态信息，'Token 有效' | 'Token 无效'
@@ -135,7 +135,7 @@ export class Auth extends Base {
   /**
    * 通过 refresh_token 获取 token
    * @param options - 获取 token 的参数
-   * @param options.refresh_token - Github 返回的 refresh_token
+   * - options.refresh_token - Github 返回的 refresh_token
    * @returns 返回 token
    * @example
    * ```

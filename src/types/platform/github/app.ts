@@ -10,7 +10,7 @@ export interface GitHubAppPermissions {
   /** 对部署的权限（例如读取、写入） */
   deployments: string;
 
-  /** 对问题的权限（例如写） */
+  /** 对议题的权限（例如写） */
   issues: string;
 
   /** 对检查的权限 */
