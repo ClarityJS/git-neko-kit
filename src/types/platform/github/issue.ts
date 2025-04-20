@@ -183,5 +183,5 @@ export type SendIssueParamType = RepoBaseParamType & {
   type?: string
 }
 
-/** 发送议题响应类型 */
-export type SendIssueResponseType = IssueListResponseType
+/** 创建议题响应类型 */
+export type CreateIssueResponseType = IssueListResponseType

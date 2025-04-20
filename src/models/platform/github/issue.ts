@@ -8,12 +8,12 @@ import {
 import { Base } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
+  CreateIssueResponseType,
   IssueInfoParamType,
   IssueInfoResponseType,
   issueListParamType,
   IssueListResponseType,
-  SendIssueParamType,
-  SendIssueResponseType
+  SendIssueParamType
 } from '@/types'
 
 /**
@@ -152,13 +152,13 @@ export class Issue extends Base {
    * @example
    * ```ts
    * const issue = get_issuc() // 获取issue实例
-   * const res = await issue.send_an_issue({ owner: 'owner', repo:'repo', title:'title', body:'body' })
-   * console.log(res) // { data: SendIssueResponseType }
+   * const res = await issue.create_issue({ owner: 'owner', repo:'repo', title:'title', body:'body' })
+   * console.log(res) // { data: CreateIssueResponseType }
    * ```
    */
-  public async send_an_issue (
+  public async create_issue (
     options: SendIssueParamType
-  ): Promise<ApiResponseType<SendIssueResponseType>> {
+  ): Promise<ApiResponseType<CreateIssueResponseType>> {
     try {
       if (!options.owner || !options.repo) {
         throw new Error(NotParamMsg)
