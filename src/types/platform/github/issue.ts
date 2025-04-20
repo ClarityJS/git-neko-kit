@@ -2,6 +2,11 @@ import { RepoUrlParamType } from '@/types/platform/github/base'
 import { RepoBaseParamType } from '@/types/platform/github/repo'
 import { UserResponseType } from '@/types/platform/github/user'
 
+/** 议题信息参数类型 */
+export type IssueInfoParamType = (RepoBaseParamType | RepoUrlParamType) & {
+  /** 议题ID */
+  issue_number: number
+}
 export type issueListParamType = (RepoBaseParamType | RepoUrlParamType) & {
   /** 里程碑，可以是字符串或数字 */
   milestone?: string | number,
@@ -97,8 +102,8 @@ export interface PullRequestType {
   url: string | null;
 }
 
-/** 议题列表响应类型 */
-export interface IssueListResponseType {
+/** 议题详情响应类型 */
+export interface IssueInfoResponseType {
   /** 议题ID */
   id: number;
   /** 节点ID */
@@ -155,6 +160,8 @@ export interface IssueListResponseType {
   closed_by?: UserResponseType | null;
 }
 
+/** 议题列表响应类型 */
+export type IssueListResponseType = IssueInfoResponseType[]
 /** 发送议题参数类型 */
 export type SendIssueParamType = RepoBaseParamType & {
   /** 标题 */

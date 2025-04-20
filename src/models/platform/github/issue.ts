@@ -1,4 +1,5 @@
 import {
+  NotIssueMsg,
   NotIssueTitleMsg,
   NotParamMsg,
   NotPerrmissionMsg,
@@ -7,6 +8,8 @@ import {
 import { Base } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
+  IssueInfoParamType,
+  IssueInfoResponseType,
   issueListParamType,
   IssueListResponseType,
   SendIssueParamType,
@@ -33,6 +36,41 @@ export class Issue extends Base {
     this.userToken = base.userToken
     this.ApiUrl = base.ApiUrl
     this.BaseUrl = base.BaseUrl
+  }
+
+  /**
+   * 获取Issue详情
+   */
+  public async get_issue_info (
+    options: IssueInfoParamType
+  ): Promise<ApiResponseType<IssueInfoResponseType>> {
+    let owner, repo
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      if ('url' in options) {
+        const url = options?.url?.trim()
+        const info = parse_git_url(url, this.BaseUrl)
+        owner = info?.owner
+        repo = info?.repo
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options?.owner
+        repo = options?.repo
+      } else {
+        throw new Error(NotParamMsg)
+      }
+      const req = await this.get(`/repos/${owner}/${repo}/issues/${options.issue_number}`)
+      switch (req.statusCode) {
+        case 404:
+          throw new Error(NotIssueMsg)
+        case 301:
+          throw new Error(NotIssueMsg)
+      }
+      return req
+    } catch (error) {
+      throw new Error(`获取Issue详情失败: ${(error as Error).message}`)
+    }
   }
 
   /**
@@ -65,7 +103,7 @@ export class Issue extends Base {
   public async get_issue_list (
     options: issueListParamType
   ): Promise<ApiResponseType<IssueListResponseType>> {
-    let owner, repo, url
+    let owner, repo
     try {
       this.setRequestConfig(
         {
@@ -73,7 +111,7 @@ export class Issue extends Base {
         })
       /* 解析仓库地址 */
       if ('url' in options) {
-        url = options?.url?.trim()
+        const url = options?.url?.trim()
         const info = parse_git_url(url, this.BaseUrl)
         owner = info?.owner
         repo = info?.repo
