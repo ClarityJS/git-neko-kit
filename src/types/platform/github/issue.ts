@@ -167,7 +167,7 @@ export type SendIssueParamType = RepoBaseParamType & {
   /** 标题 */
   title: string
   /** 正文内容 */
-  body?: string
+  body?: string | null
   /**
    * 分配的用户
    * @deprecated 已弃用，请使用 assignees 字段
@@ -184,4 +184,4 @@ export type SendIssueParamType = RepoBaseParamType & {
 }
 
 /** 创建议题响应类型 */
-export type CreateIssueResponseType = IssueListResponseType
+export type CreateIssueResponseType = IssueInfoResponseType
