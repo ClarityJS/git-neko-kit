@@ -216,10 +216,9 @@ export class Repo extends Base {
         token: this.userToken
       })
       /* 解析仓库地址 */
-      let owner, repo, url
+      let owner, repo
       if ('url' in options) {
-        url = options?.url?.trim()
-        if (!url) throw new Error(NotParamMsg)
+        const url = options.url.trim()
         const info = parse_git_url(url, this.BaseUrl)
         owner = info?.owner
         repo = info?.repo
@@ -321,17 +320,19 @@ export class Repo extends Base {
    */
   public async get_repo_visibility (options: RepoInfoParamType): Promise<RepoVisibilityResponseType['visibility'] | null> {
     try {
-      let owner, repo, url, req
+      let owner, repo
       if ('url' in options) {
-        url = options?.url?.trim()
-        req = await this.get_repo_info({ url })
+        const url = options.url.trim()
+        const info = parse_git_url(url, this.BaseUrl)
+        owner = info?.owner
+        repo = info?.repo
       } else if ('owner' in options && 'repo' in options) {
         owner = options?.owner
         repo = options?.repo
-        req = await this.get_repo_info({ owner, repo })
       } else {
         throw new Error(NotParamMsg)
       }
+      const req = await this.get_repo_info({ owner, repo })
       let visibility = 'public'
       if (req.data) {
         visibility = req.data?.visibility
