@@ -1,46 +1,42 @@
-export interface UserBaseType {
-  /** 用户登录名 */
+export interface AccountBaseType {
+  /** 账号登录名 */
   login: string;
-  /** 用户ID */
+  /** 账号ID */
   id: number;
-  /** 用户视图类型 */
+  /** 账号视图类型 */
   user_view_type: string;
-  /** 用户节点ID */
+  /** 账号节点ID */
   node_id: string;
-  /** 用户头像URL */
+  /** 账号头像URL */
   avatar_url: string;
   /** Gravatar ID */
   gravatar_id: string | null;
   /** 用户API URL */
   url: string;
-  /** 用户主页URL */
+  /** 账号主页URL */
   html_url: string;
-  /** 粉丝列表URL */
-  followers_url: string;
-  /** 关注列表URL */
-  following_url: string;
-  /** Gists列表URL */
-  gists_url: string;
-  /** 星标仓库URL */
-  starred_url: string;
-  /** 订阅列表URL */
-  subscriptions_url: string;
-  /** 组织列表URL */
-  organizations_url: string;
   /** 仓库列表URL */
   repos_url: string;
-  /** 事件列表URL */
-  events_url: string;
-  /** 接收事件列表URL */
-  received_events_url: string;
-  /** 用户类型 */
+  /** 账号类型 */
   type: string;
   /** 是否是站点管理员 */
   site_admin: boolean;
 }
 
+export interface UserPlanType {
+  /** 协作者数量 */
+  collaborators: number;
+  /** 计划名称 */
+  name: string;
+  /** 存储空间 */
+  space: number;
+  /** 私有仓库数量 */
+  private_repos: number;
+
+}
+
 /** GitHub用户详细信息 */
-export interface UserResponseType extends UserBaseType {
+export interface UserInfoResponseType extends AccountBaseType {
   /** 用户全名 */
   name: string | null;
   /** 公司 */
@@ -59,6 +55,22 @@ export interface UserResponseType extends UserBaseType {
   bio: string | null;
   /** Twitter用户名 */
   twitter_username: string | null;
+  /** 订阅列表URL */
+  subscriptions_url: string;
+  /** 组织列表URL */
+  organizations_url: string;
+  /** 事件列表URL */
+  events_url: string;
+  /** 接收事件列表URL */
+  received_events_url: string;
+  /** 粉丝列表URL */
+  followers_url: string;
+  /** 关注列表URL */
+  following_url: string;
+  /** Gists列表URL */
+  gists_url: string;
+  /** 星标仓库URL */
+  starred_url: string;
   /** 公开仓库数量 */
   public_repos: number;
   /** 公开Gists数量 */
@@ -84,16 +96,7 @@ export interface UserResponseType extends UserBaseType {
   /** 是否启用双重认证 */
   two_factor_authentication?: boolean;
   /** 订阅计划 */
-  plan?: {
-    /** 协作者数量 */
-    collaborators: number;
-    /** 计划名称 */
-    name: string;
-    /** 存储空间 */
-    space: number;
-    /** 私有仓库数量 */
-    private_repos: number;
-  };
+  plan?: UserPlanType
   /** 是否是商业增强版 */
   business_plus?: boolean;
   /** LDAP DN */

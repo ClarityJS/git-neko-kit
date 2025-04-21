@@ -1,5 +1,5 @@
 import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType, ShaParamType } from '@/types/platform/github/base'
-import { UserBaseType } from '@/types/platform/github/user'
+import { AccountBaseType } from '@/types/platform/github/user'
 
 export interface CommitInfoCommonParamType {
   /** 提交SHA */
@@ -134,9 +134,9 @@ export interface CommitInfoResponseType {
   /** 提交信息 */
   commit: Commit;
   /** 提交作者 */
-  author: UserBaseType | null;
+  author: AccountBaseType | null;
   /** 提交者 */
-  committer: UserBaseType | null;
+  committer: AccountBaseType | null;
   /** 父提交列表 */
   parents: ParentCommit[];
   /** 提交统计信息 */

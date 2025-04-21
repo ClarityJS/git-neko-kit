@@ -14,6 +14,10 @@ export interface UserNameParamType {
   /** 用户名 */
   username: string;
 }
+export interface OrganizationNameParamType {
+  /** 组织登录名 */
+  org: string;
+}
 export interface UserIdParamType {
   /** 用户id */
   user_id: number;

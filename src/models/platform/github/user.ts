@@ -13,8 +13,8 @@ import {
   ApiResponseType,
   ContributionResult,
   UserIdParamType,
-  UserNameParamType,
-  UserResponseType
+  UserInfoResponseType,
+  UserNameParamType
 } from '@/types'
 
 /**
@@ -39,7 +39,7 @@ export class User extends Base {
    * @param options.username - 用户名或组织名
    */
   public async get_user_info (options: UserNameParamType):
-  Promise<ApiResponseType<UserResponseType>> {
+  Promise<ApiResponseType<UserInfoResponseType>> {
     try {
       if (!options.username) {
         throw new Error(NotOrgOrUserParamMsg)
@@ -71,7 +71,7 @@ export class User extends Base {
    * @returns 用户信息
    */
   public async get_user_info_by_user_id (options: UserIdParamType):
-  Promise<ApiResponseType<UserResponseType>> {
+  Promise<ApiResponseType<UserInfoResponseType>> {
     try {
       if (!options.user_id) {
         throw new Error(NotUserParamMsg)
@@ -99,7 +99,7 @@ export class User extends Base {
    * 通过访问令牌获取用户信息
    */
   public async get_user_info_by_token ():
-  Promise<ApiResponseType<UserResponseType>> {
+  Promise<ApiResponseType<UserInfoResponseType>> {
     try {
       this.setRequestConfig({
         token: this.userToken

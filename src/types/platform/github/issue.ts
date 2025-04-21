@@ -1,6 +1,6 @@
 import { RepoUrlParamType } from '@/types/platform/github/base'
 import { RepoBaseParamType } from '@/types/platform/github/repo'
-import { UserResponseType } from '@/types/platform/github/user'
+import { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 议题信息参数类型 */
 export type IssueInfoParamType = (RepoBaseParamType | RepoUrlParamType) & {
@@ -73,7 +73,7 @@ export interface MilestoneType {
   /** 里程碑描述 */
   description: string | null;
   /** 里程碑创建者 */
-  creator: UserResponseType | null;
+  creator: UserInfoResponseType | null;
   /** 开放议题数 */
   open_issues: number;
   /** 关闭议题数 */
@@ -131,13 +131,13 @@ export interface IssueInfoResponseType {
   /** 议题正文内容 */
   body: string | null;
   /** 议题创建者用户信息 */
-  user: UserResponseType
+  user: UserInfoResponseType
   /** 议题标签 */
   labels: Array<IssueLabelType | string>;
   /** 议题指派人 */
-  assignee: UserResponseType | null;
+  assignee: UserInfoResponseType | null;
   /** 议题所有指派人列表 */
-  assignees: Array<UserResponseType> | null;
+  assignees: Array<UserInfoResponseType> | null;
   /** 议题所属里程碑 */
   milestone: MilestoneType | null;
   /** 是否锁定 */
@@ -157,7 +157,7 @@ export interface IssueInfoResponseType {
   /** 是否是草稿 */
   draft?: boolean;
   /** 关闭者信息 */
-  closed_by?: UserResponseType | null;
+  closed_by?: UserInfoResponseType | null;
 }
 
 /** 议题列表响应类型 */

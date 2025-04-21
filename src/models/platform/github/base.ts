@@ -9,6 +9,7 @@ import type { App } from '@/models/platform/github/app'
 import type { Auth } from '@/models/platform/github/auth'
 import type { Commit } from '@/models/platform/github/commit'
 import type { Issue } from '@/models/platform/github/issue'
+import type { Org } from '@/models/platform/github/org'
 import type { Repo } from '@/models/platform/github/repo'
 import type { User } from '@/models/platform/github/user'
 import type { WebHook } from '@/models/platform/github/webhook'
@@ -51,6 +52,7 @@ export class Base {
   declare user: User
   declare webhook: WebHook
   declare issue: Issue
+  declare org: Org
   public BaseUrl: string
   public ApiUrl: string
   public jwtToken: string
@@ -197,6 +199,20 @@ export class Base {
   }
 
   /**
+   * 获取Org实例
+   * @returns Org实例
+   * @example
+   * ```ts
+   * const org = await base.get_org()
+   * ```
+   */
+  public async get_org (): Promise<Org> {
+    const { Org } = await import('@/models/platform/github/org')
+    this.org = new Org(this)
+    return this.org
+  }
+
+  /**
    * 获取WebHook实例
    * @returns WebHook实例
    * @example
@@ -307,6 +323,11 @@ export class Base {
    */
   public async get (path: string, parms?: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
     try {
+      if (this.userToken) {
+        this.setRequestConfig({
+          token: this.userToken
+        })
+      }
       const request = this.createRequest()
       const req = await request.get(path, parms, customHeaders)
       if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
