@@ -30,9 +30,6 @@ import type {
  * - 仓库可见性检查
  * - 支持通过URL或owner/repo两种方式操作仓库
  *
- * @class Repo
- * @extends Base GitHub基础操作类
- *
  */
 export class Repo extends Base {
   constructor (base: Base) {

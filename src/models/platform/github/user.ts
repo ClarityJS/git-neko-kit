@@ -23,13 +23,6 @@ import {
  * 提供对GitHub用户的CRUD操作，包括：
  * - 获取用户信息
  * - 关注指定用户
- *
- * @class User
- * @property {Function} get - 封装的GET请求方法
- * @property {Function} post - 封装的POST请求方法
- * @property {string} BaseUrl - GitHub 基础URL
- * @property {string} ApiUrl - GitHub API端点URL
- * @property {string} jwtToken - 认证令牌
  */
 export class User extends Base {
   constructor (base: Base) {

@@ -16,15 +16,8 @@ import {
 /**
  * Base 提交操作类
  *
- * 提供Commit相关的操作方法，包括获取最新提交记录、获取指定的提交记录等。
-
- *
- * @class Commit
- * @property {Function} get - 封装的GET请求方法
- * @property {Function} post - 封装的POST请求方法
- * @property {string} BaseUrl - GitHub 基础URL
- * @property {string} ApiUrl - GitHub API端点URL
- * @property {string} jwtToken - 认证令牌
+ * 提供对GitHub Commit的CRUD操作，包括：
+ * - 获取一个提交信息
  */
 export class Commit extends Base {
   constructor (base: Base) {

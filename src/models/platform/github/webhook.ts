@@ -10,13 +10,10 @@ import { Base } from '@/models/platform/github/base'
 import type { ApiResponseType, WebHookParamType } from '@/types'
 
 /**
- * GitHub WebHook 处理类，提供WebHook相关操作功能
+ * Base WebHook操作类
  *
- * 该类继承自Base类，主要用于处理GitHub WebHook的签名验证等操作。
- * 支持验证WebHook请求的签名有效性，确保请求来源可信。
- *
- * @class WebHook
- * @extends Base
+ * 提供对GitHub WebHook的CRUD操作，包括：
+ * - 检查webhook签名是否正确
  */
 export class WebHook extends Base {
   constructor (base: Base) {

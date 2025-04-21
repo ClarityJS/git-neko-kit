@@ -9,9 +9,6 @@ import type { ApiResponseType, GitHubAppInfoType } from '@/types'
  * - 生成应用安装链接
  * - 生成应用配置链接
  *
- * @class App
- * @extends Base GitHub基础操作类
- *
  */
 export class App extends Base {
   constructor (base: Base) {
