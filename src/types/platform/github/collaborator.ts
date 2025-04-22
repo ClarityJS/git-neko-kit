@@ -1,11 +1,13 @@
 import {
-  RepoNameParamType,
-  RepoOwnerParamType,
   UserNameParamType
 } from '@/types/platform/github/base'
-import { RepoInfoResponseType } from '@/types/platform/github/repo'
+import {
+  RepoInfoParamType,
+  RepoInfoResponseType
+} from '@/types/platform/github/repo'
+
 /** 邀请协作者参数类型 */
-export interface ContributorParamType extends RepoOwnerParamType, RepoNameParamType, UserNameParamType {
+export type CollaboratorParamType = RepoInfoParamType & UserNameParamType & {
   /**
    * 协作者权限 ,可选 pull，triage, push, maintain, admin，默认pull
    * pull - 只读访问，协作者可以查看仓库内容。
@@ -18,7 +20,7 @@ export interface ContributorParamType extends RepoOwnerParamType, RepoNameParamT
 }
 
 /** 邀请协作者响应类型 */
-export interface ContributorResponseType {
+export interface CollaboratorResponseType {
   /** 邀请唯一id */
   id: number;
   /** 邀请节点id */

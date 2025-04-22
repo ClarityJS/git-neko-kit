@@ -78,9 +78,20 @@ export class Request {
       }
     }
     try {
-      const response = method === 'get'
-        ? await axios.get(url, config)
-        : await axios.post(url, data, config)
+      let response
+      switch (method) {
+        case 'get':
+          response = await axios.get(url, config)
+          break
+        case 'post':
+          response = await axios.post(url, data, config)
+          break
+        case 'put':
+          response = await axios.put(url, data, config)
+          break
+        default:
+          throw new Error(`不支持的请求方法: ${method}`)
+      }
 
       return {
         success: true,
@@ -122,9 +133,9 @@ export class Request {
 
   /**
    * 发送PUT请求
-   * @param path
-   * @param data
-   * @param customHeaders
+   * @param path - 请求路径
+   * @param data - 请求体数据
+   * @param customHeaders - 自定义请求头
    * @returns 响应结果
    */
   async put (path: string, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {

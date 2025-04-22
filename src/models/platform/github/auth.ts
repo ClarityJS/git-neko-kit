@@ -76,7 +76,9 @@ export class Auth extends Base {
    * console.log(token) // 输出token对象
    * ```
    */
-  public async get_token_by_code (options: AccessCodeType): Promise<ApiResponseType<GithubOauthTokenResponseType>> {
+  public async get_token_by_code (
+    options: AccessCodeType
+  ): Promise<ApiResponseType<GithubOauthTokenResponseType>> {
     try {
       if (!options.code) throw new Error(NotAccessCodeMsg)
       this.setRequestConfig(
@@ -106,7 +108,9 @@ export class Auth extends Base {
    * const status = await auth.check_token_status({ access_token: 'access_token' })
    * console.log(status) // 输出token状态对象
    */
-  public async check_token_status (options?: AccessTokenType): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
+  public async check_token_status (
+    options?: AccessTokenType
+  ): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
     try {
       const access_token = options?.access_token ?? this.userToken
       if (!access_token) throw new Error(NotAccessTokenMsg)
@@ -143,7 +147,9 @@ export class Auth extends Base {
    * console.log(token) // 输出token对象
    * ```
    */
-  public async refresh_token (options: RefreshTokenType): Promise<ApiResponseType<GithubOauthRefreshTokenResponseType>> {
+  public async refresh_token (
+    options: RefreshTokenType
+  ): Promise<ApiResponseType<GithubOauthRefreshTokenResponseType>> {
     try {
       if (!options.refresh_token) throw new Error(NotAccessCodeMsg)
       if (!options.refresh_token.startsWith('ghr_')) throw new Error(isNotRefreshTokenMsg)

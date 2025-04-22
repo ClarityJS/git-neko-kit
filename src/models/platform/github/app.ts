@@ -82,6 +82,7 @@ export class App extends Base {
    * @returns 返回 Github App 名称
    * @example
    * ```ts
+   * const app = base.get_app()
    * console.log(app.get_app_name()) // 输出AppName
    * ```
    */
