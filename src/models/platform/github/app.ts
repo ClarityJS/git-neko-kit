@@ -1,5 +1,11 @@
+import { NotParamMsg, parse_git_url } from '@/common'
 import { Base } from '@/models/platform/github/base'
-import type { ApiResponseType, GitHubAppInfoType } from '@/types'
+import type {
+  ApiResponseType,
+  GitHubAppInfoType,
+  GitHubAppRepoInfoResponseType,
+  RepoInfoParamType
+} from '@/types'
 
 /**
  * GitHub 应用管理类
@@ -74,6 +80,48 @@ export class App extends Base {
       return url.toString()
     } catch (error) {
       throw new Error(`生成应用配置链接失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取仓库的应用安装信息
+   * @param options - 仓库安装应用参数对象
+   * - owner 拥有者
+   * - repo 仓库名
+   * - url 仓库地址
+   * ownwe和repo与url只能二选一
+   * @returns 返回应用安装信息
+   * @example
+   * ```ts
+   * const app = base.get_app()
+   * console.log(app.get_app_installation_by_repo({owner: 'owner', repo: 'repo'})) // 输出仓库的应用信息
+   * ```
+   */
+
+  public async get_app_installation_by_repo (
+    options: RepoInfoParamType
+  ): Promise<ApiResponseType<GitHubAppRepoInfoResponseType>> {
+    let owner, repo
+    try {
+      this.setRequestConfig(
+        {
+          token: this.jwtToken
+        })
+      if ('url' in options) {
+        const url = options.url.trim()
+        const info = parse_git_url(url, this.BaseUrl)
+        owner = info?.owner
+        repo = info?.repo
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options?.owner
+        repo = options?.repo
+      } else {
+        throw new Error(NotParamMsg)
+      }
+      const res = await this.get(`/repos/${owner}/${repo}/installation`)
+      return res
+    } catch (error) {
+      throw new Error(`获取存储库安装应用信息失败: ${(error as Error).message}`)
     }
   }
 
