@@ -368,4 +368,29 @@ export class Base {
       throw new Error(`POST 请求${path}失败: ${(error as Error).message}`)
     }
   }
+
+  /**
+   * Github PUT 请求方法
+   * @param path - 请求路径
+   * @param data - 请求数据
+   * @param customHeaders - 请求头，选项
+   * @returns 请求结果
+   */
+  public async put (path: string, data: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
+    try {
+      const request = this.createRequest()
+      const req = await request.put(path, data, customHeaders)
+      if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
+        throw new Error(RateLimitMsg)
+      }
+      return {
+        status: req.success ? 'ok' : 'error',
+        statusCode: req.statusCode,
+        msg: req.msg,
+        data: req.data
+      }
+    } catch (error) {
+      throw new Error(`PUT 请求${path}失败: ${(error as Error).message}`)
+    }
+  }
 }

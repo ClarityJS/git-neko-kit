@@ -20,6 +20,12 @@ export class Org extends Base {
     this.BaseUrl = base.BaseUrl
   }
 
+  /**
+   * 获取组织信息
+   * @param options 组织参数
+   * - org 组织名称
+   * @returns 组织信息
+   */
   public async get_org_info (options: OrganizationNameParamType): Promise<ApiResponseType<OrganizationInfoType>> {
     try {
       if (!options.org) {

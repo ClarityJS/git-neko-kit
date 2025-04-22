@@ -36,7 +36,7 @@ export class Request {
 
   /**
    * 执行HTTP请求
-   * @param method - HTTP方法 ('get' | 'post')
+   * @param method - HTTP方法 ('get' | 'post' | 'put')
    * @param path - 请求路径
    * @param data - POST请求体数据
    * @param params - URL查询参数
@@ -44,7 +44,7 @@ export class Request {
    * @returns 响应结果
    */
   private async request (
-    method: 'get' | 'post',
+    method: 'get' | 'post' | 'put',
     path: string,
     data?: any,
     params?: any,
@@ -118,6 +118,17 @@ export class Request {
    */
   async post (path: string, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
     return this.request('post', path, data, undefined, customHeaders)
+  }
+
+  /**
+   * 发送PUT请求
+   * @param path
+   * @param data
+   * @param customHeaders
+   * @returns 响应结果
+   */
+  async put (path: string, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
+    return this.request('put', path, data, undefined, customHeaders)
   }
 
   /**

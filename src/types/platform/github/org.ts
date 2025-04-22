@@ -52,7 +52,7 @@ export interface OrgRepoCreateParamType extends RepoOwnerParamType {
 }
 
 /**
- * @description 组织的基本信息
+ * 组织的基本信息
  */
 export interface OrganizationBaseType extends AccountBaseType {
   /** 组织的名称 */
@@ -81,7 +81,7 @@ export interface OrganizationBaseType extends AccountBaseType {
   archived_at: string | null;
 }
 /**
- * @description 组织的计划信息
+ * 组织的计划信息
  */
 export interface OrganizationPlanType {
   name: string;
@@ -92,7 +92,7 @@ export interface OrganizationPlanType {
 }
 
 /**
- * @description 组织的 API URL 信息
+ * 组织的 API URL 信息
  */
 export interface OrganizationUrlType {
   /** 组织的 Webhook 列表 API URL */
@@ -106,7 +106,7 @@ export interface OrganizationUrlType {
 }
 
 /**
- * @description 组织的仓库和 Gists 信息
+ * 组织的仓库和 Gists 信息
  */
 export interface OrganizationRepositoryAndGistsType {
   /** 组织的公开仓库数量 */
@@ -124,7 +124,7 @@ export interface OrganizationRepositoryAndGistsType {
 }
 
 /**
- * @description 组织的成员信息
+ * 组织的成员信息
  */
 export interface OrganizationMemberType {
   /** 组织的关注者数量 */
@@ -136,7 +136,7 @@ export interface OrganizationMemberType {
 }
 
 /**
- * @description 组织的权限和配置信息
+ * 组织的权限和配置信息
  */
 export interface OrganizationPermissionsAndConfigType {
   /** 组织是否启用了组织项目 */
@@ -176,7 +176,7 @@ export interface OrganizationPermissionsAndConfigType {
 }
 
 /**
- * @description 组织的安全配置信息
+ *  组织的安全配置信息
  */
 export interface OrganizationSecurityConfigType {
   /** 对于新仓库和转移到此组织的仓库，是否启用了 GitHub Advanced Security */
@@ -198,7 +198,7 @@ export interface OrganizationSecurityConfigType {
 }
 
 /**
- * @description GitHub 组织的完整信息
+ * GitHub 组织的完整信息
  */
 export interface OrganizationInfoType
   extends OrganizationBaseType,
