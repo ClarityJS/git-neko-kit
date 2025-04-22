@@ -2,11 +2,16 @@ import { URL } from 'node:url'
 
 import jwt from 'jsonwebtoken'
 
-import { isNotAccessTokeMsg, NotProxyAddressMsg, RateLimitMsg } from '@/common'
+import {
+  isNotAccessTokeMsg,
+  NotProxyAddressMsg,
+  RateLimitMsg
+} from '@/common'
 import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
 import { Request } from '@/models/base/request'
 import type { App } from '@/models/platform/github/app'
 import type { Auth } from '@/models/platform/github/auth'
+import type { Collaborator } from '@/models/platform/github/collaborator'
 import type { Commit } from '@/models/platform/github/commit'
 import type { Issue } from '@/models/platform/github/issue'
 import type { Org } from '@/models/platform/github/org'
@@ -53,6 +58,7 @@ export class Base {
   declare webhook: WebHook
   declare issue: Issue
   declare org: Org
+  declare collaborator: Collaborator
   public BaseUrl: string
   public ApiUrl: string
   public jwtToken: string
@@ -224,6 +230,20 @@ export class Base {
     const { WebHook } = await import('@/models/platform/github/webhook')
     this.webhook = new WebHook(this)
     return this.webhook
+  }
+
+  /**
+   * 获取Collaborator实例
+   * @returns Collaborator实例
+   * @example
+   * ```ts
+   * const collaborator = await base.get_collaborator()
+   * ```
+   */
+  public async get_collaborator (): Promise<Collaborator> {
+    const { Collaborator } = await import('@/models/platform/github/collaborator')
+    this.collaborator = new Collaborator(this)
+    return this.collaborator
   }
 
   /**
