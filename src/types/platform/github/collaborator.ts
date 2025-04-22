@@ -7,10 +7,14 @@ import { RepoInfoResponseType } from '@/types/platform/github/repo'
 /** 邀请协作者参数类型 */
 export interface ContributorParamType extends RepoOwnerParamType, RepoNameParamType, UserNameParamType {
   /**
-     * 协作者权限 ,可选 pull，triage, push, maintain, admin
-     * pull - 仓库成员可以查看仓库
-     */
-  permission: 'pull' | 'triage' | 'push' | 'maintain' | 'admin'
+   * 协作者权限 ,可选 pull，triage, push, maintain, admin，默认pull
+   * pull - 只读访问，协作者可以查看仓库内容。
+   * triage - 允许管理议题和拉取请求，包括标记、分配和修改状态。
+   * push - 允许推送代码到仓库分支，同时拥有 pull 权限。
+   * maintain - 允许管理仓库中的代码和议题，但不能更改仓库设置。
+   * admin - 拥有仓库的完全控制权，包括更改设置和删除仓库。
+   */
+  permission?: 'pull' | 'triage' | 'push' | 'maintain' | 'admin';
 }
 
 /** 邀请协作者响应类型 */

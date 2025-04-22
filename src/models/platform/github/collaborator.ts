@@ -9,7 +9,8 @@ import type {
  * Base Collaborator操作类
  *
  * 提供对GitHub Collaborator的CRUD操作，包括：
- * - 检查webhook签名是否正确
+ * - 添加协作者
+ * - 删除协作者
  */
 export class Collaborator extends Base {
   constructor (base: Base) {
@@ -25,7 +26,7 @@ export class Collaborator extends Base {
    * - owner: 仓库拥有者
    * - repo: 仓库名称
    * - username: 要邀请协作者用户名
-   * - permission: 协作者权限，可选pull，triage, push, maintain, admin
+   * - permission: 协作者权限，可选pull，triage, push, maintain, admin，默认为pull
    * @returns 返回邀请协作者结果
    */
   public async add_contributor (
