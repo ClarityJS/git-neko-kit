@@ -1,4 +1,9 @@
-import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType } from '@/types/platform/github/base'
+import {
+  RepoNameParamType,
+  RepoOwnerParamType,
+  RepoUrlParamType,
+  UserNameParamType
+} from '@/types/platform/github/base'
 
 /** 仓库列表参数类型 */
 export interface RepoListBaseParmsType {
@@ -428,4 +433,23 @@ export type UserRepoListType = Array<RepoInfoResponseType & {
 export interface RepoVisibilityResponseType {
   /** * 仓库的可见性 */
   visibility: string;
+}
+
+/** 邀请协作者参数类型 */
+export interface ContributorParamType extends RepoOwnerParamType, RepoNameParamType, UserNameParamType {
+  /**
+   * 协作者权限 ,可选 pull，triage, push, maintain, admin
+   * pull - 仓库成员可以查看仓库
+   */
+  permission: 'pull' | 'triage' | 'push' | 'maintain' | 'admin'
+}
+
+/** 邀请协作者响应类型 */
+export interface ContributorResponseType {
+  /** 邀请唯一id */
+  id: number;
+  /** 邀请节点id */
+  node_id: string;
+  /** 邀请仓库信息 */
+  repository: RepoInfoResponseType;
 }

@@ -10,6 +10,8 @@ import {
 import { Base } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
+  ContributorParamType,
+  ContributorResponseType,
   OrgRepoCreateParamType,
   OrgRepoListParmsType,
   OrgRepoListType,
@@ -239,6 +241,22 @@ export class Repo extends Base {
       return req
     } catch (error) {
       throw new Error(`获取仓库信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  public async add_contributor (
+    options: ContributorParamType
+  ): Promise<ApiResponseType<ContributorResponseType>> {
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const req = await this.put(`/repos/${options.owner}/${options.repo}/contributors/${options.username}`, {
+        permission: options.permission ?? 'pull'
+      })
+      return req
+    } catch (error) {
+      throw new Error(`添加贡献者失败: ${(error as Error).message}`)
     }
   }
 
