@@ -6,6 +6,7 @@ import { Base } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
   CollaboratorListParamType,
+  CollaboratorListResponseType,
   CollaboratorParamType,
   CollaboratorResponseType
 } from '@/types'
@@ -43,7 +44,7 @@ export class Collaborator extends Base {
    * console.log(result)
    * ```
    */
-  public get_collaborator_list (options: CollaboratorListParamType): Promise<ApiResponseType<Collaborator>> {
+  public get_collaborator_list (options: CollaboratorListParamType): Promise<ApiResponseType<CollaboratorListResponseType>> {
     try {
       this.setRequestConfig({
         token: this.userToken

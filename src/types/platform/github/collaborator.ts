@@ -5,6 +5,7 @@ import {
   RepoInfoParamType,
   RepoInfoResponseType
 } from '@/types/platform/github/repo'
+import { AccountBaseType } from '@/types/platform/github/user'
 
 /** 邀请协作者参数类型 */
 export type CollaboratorParamType = RepoInfoParamType & UserNameParamType & {
@@ -52,3 +53,47 @@ export type CollaboratorListParamType = RepoInfoParamType & {
   /** 页码 */
   page?: number;
 }
+
+/** 协作者信息类型 */
+export interface CollaboratorInfo extends AccountBaseType {
+  /** 协作者邮箱 */
+  email: string | null;
+  /** 协作者姓名 */
+  name: string | null;
+  /** 粉丝URL */
+  followers_url: string;
+  /** 关注URL */
+  following_url: string;
+  /** Gists URL */
+  gists_url: string;
+  /** 标星URL */
+  starred_url: string;
+  /** 订阅URL */
+  subscriptions_url: string;
+  /** 组织URL */
+  organizations_url: string;
+  /** 仓库URL */
+  repos_url: string;
+  /** 事件URL */
+  events_url: string;
+  /** 接收事件URL */
+  received_events_url: string;
+  /** 权限设置 */
+  permissions: {
+    /** 拉取权限 */
+    pull: boolean;
+    /** 分类权限 */
+    triage: boolean;
+    /** 推送权限 */
+    push: boolean;
+    /** 维护权限 */
+    maintain: boolean;
+    /** 管理权限 */
+    admin: boolean;
+  };
+  /** 角色名称 */
+  role_name: string;
+}
+
+/** 协作者列表响应类型 */
+export type CollaboratorListResponseType = CollaboratorInfo[]
