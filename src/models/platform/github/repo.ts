@@ -216,7 +216,7 @@ export class Repo extends Base {
       let owner, repo
       if ('url' in options) {
         const url = options.url.trim()
-        const info = parse_git_url(url, this.BaseUrl)
+        const info = parse_git_url(url)
         owner = info?.owner
         repo = info?.repo
       } else if ('owner' in options && 'repo' in options) {
@@ -298,21 +298,16 @@ export class Repo extends Base {
   /**
    * 快速获取仓库可见性
    * @param options
-   * - options.url 仓库URL地址
-   * - options.owner 仓库拥有者
-   * - options.repo 仓库名称
+   * - url 仓库URL地址
+   * - owner 仓库拥有者
+   * - repo 仓库名称
    * url参数和owner、repo参数传入其中的一种
    * @remarks 优先使用url参数，若url参数不存在则使用owner和repo参数
    * @returns 仓库可见性，
    * @example
    * ```ts
    * const visibility = await repo.get_repo_visibility({url: 'https://github.com/ClarityJS/git-neko-kit'})
-   * console.log(visibility.data.visibility) // 输出 public 或 private
-   * ```
-   * @example
-   * ```ts
-   * const visibility = await repo.get_repo_visibility({owner: 'ClarityJS', repo: 'git-neko-kit'})
-   * console.log(visibility.data.visibility) // 输出 public 或 private
+   * console.log(visibility) // 输出 public 或 private
    * ```
    */
   public async get_repo_visibility (options: RepoInfoParamType): Promise<RepoVisibilityResponseType['visibility'] | null> {
@@ -320,7 +315,7 @@ export class Repo extends Base {
       let owner, repo
       if ('url' in options) {
         const url = options.url.trim()
-        const info = parse_git_url(url, this.BaseUrl)
+        const info = parse_git_url(url)
         owner = info?.owner
         repo = info?.repo
       } else if ('owner' in options && 'repo' in options) {

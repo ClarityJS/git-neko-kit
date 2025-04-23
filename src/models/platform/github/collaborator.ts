@@ -55,7 +55,7 @@ export class Collaborator extends Base {
       })
       if ('url' in options) {
         const url = options.url.trim()
-        const info = parse_git_url(url, this.BaseUrl)
+        const info = parse_git_url(url)
         owner = info?.owner
         repo = info?.repo
       } else if ('owner' in options && 'repo' in options) {

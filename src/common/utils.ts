@@ -79,19 +79,20 @@ export async function get_relative_time (
 /**
  * 解析 Git 仓库地址
  * @param url - Git 仓库地址
- * @param GitUrl - 原始Git 仓库地址
  * @returns Git 仓库信息
  */
-export function parse_git_url (url: string, GitUrl: string): RepoBaseParamType {
-  if (!url.startsWith(GitUrl)) {
-    const parsedUrl = new URL(url)
-    let path = parsedUrl.pathname
-    if (path.includes('://')) {
-      path = new URL(path.startsWith('/') ? path.substring(1) : path).pathname
+export function parse_git_url (url: string): RepoBaseParamType {
+  const encodedUrlRegex = /^https?:\/\/[^/]+\/(https?:\/\/[^/]+\/[^/]+\/[^/]+)/
+  const encodedMatch = url.match(encodedUrlRegex)
+  if (encodedMatch) {
+    url = encodedMatch[1]
+  } else {
+    const splitPathRegex = /^https?:\/\/[^/]+\/([^/]+)\/([^/]+)\/([^/]+)/
+    const splitMatch = url.match(splitPathRegex)
+    if (splitMatch) {
+      const [_, host, owner, repo] = splitMatch
+      url = `https://${host}/${owner}/${repo}`
     }
-    const baseUrl = GitUrl.endsWith('/') ? GitUrl : `${GitUrl}/`
-    path = path.replace(/^\//, '').replace(/\/$/, '')
-    url = baseUrl + path
   }
   const info = GitUrlParse(url)
   return {
@@ -99,6 +100,7 @@ export function parse_git_url (url: string, GitUrl: string): RepoBaseParamType {
     repo: info.name
   }
 }
+
 /**
  * 将数组按指定大小分割成二维数组
  * @param items - 要分割的数组

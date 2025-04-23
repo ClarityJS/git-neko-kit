@@ -47,7 +47,7 @@ export class Commit extends Base {
       let owner, repo, url, sha
       if ('url' in options) {
         url = options.url
-        const info = parse_git_url(url, this.BaseUrl)
+        const info = parse_git_url(url)
         owner = info?.owner
         repo = info?.repo
       } else if ('owner' in options && 'repo' in options) {
