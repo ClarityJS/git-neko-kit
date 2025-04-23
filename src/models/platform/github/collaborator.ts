@@ -5,6 +5,7 @@ import {
 import { Base } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
+  CollaboratorListParamType,
   CollaboratorParamType,
   CollaboratorResponseType
 } from '@/types'
@@ -22,6 +23,48 @@ export class Collaborator extends Base {
     this.userToken = base.userToken
     this.ApiUrl = base.ApiUrl
     this.BaseUrl = base.BaseUrl
+  }
+
+  /**
+   * 获取协作者列表
+   * @param options 获取协作者列表对象
+   * - owner: 仓库拥有者
+   * - repo: 仓库名称
+   * - url: 仓库地址
+   * url和owner、repo参数传入其中的一种
+   * - affiliation: 协作者类型，可选outside, direct, all，默认为all
+   * - permission: 协作者权限，可选pull，triage, push, maintain, admin，默认为pull
+   * - per_page: 每页数量，默认为30
+   * - page: 页码，默认为1
+   * @returns 返回获取协作者列表结果
+   * @example
+   * ```ts
+   * const result = await collaborator.get_collaborator_list(options)
+   * console.log(result)
+   * ```
+   */
+  public get_collaborator_list (options: CollaboratorListParamType): Promise<ApiResponseType<Collaborator>> {
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      let owner, repo
+      if ('url' in options) {
+        const url = options.url.trim()
+        const info = parse_git_url(url)
+        owner = info?.owner
+        repo = info?.repo
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options?.owner
+        repo = options?.repo
+      } else {
+        throw new Error(NotParamMsg)
+      }
+      const res = this.get(`/repos/${owner}/${repo}/collaborators`, { ...options })
+      return res
+    } catch (error) {
+      throw new Error(`获取仓库协作者列表失败: ${(error as Error).message}`)
+    }
   }
 
   /**
