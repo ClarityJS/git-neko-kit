@@ -63,7 +63,6 @@ export class Base {
   public ApiUrl: string
   public jwtToken: string
   public userToken: string | null
-  public readonly APP_ID: number
   public readonly Private_Key: string
   public readonly Client_ID: string
   public readonly Client_Secret: string
@@ -72,7 +71,6 @@ export class Base {
   private proxy?: ProxyParamsType | undefined
 
   constructor (options: GitHubAuthType) {
-    this.APP_ID = options.APP_ID
     this.Private_Key = options.Private_Key
     this.Client_ID = options.Client_ID
     this.Client_Secret = options.Client_Secret
@@ -305,7 +303,7 @@ export class Base {
     const payload = {
       exp: Math.floor(Date.now() / 1000) + (10 * 60),
       iat: Math.floor(Date.now() / 1000),
-      iss: this.APP_ID
+      iss: this.Client_ID
     }
     return jwt.sign(payload, Private_Key, { algorithm: 'RS256' })
   }

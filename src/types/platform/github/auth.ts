@@ -1,6 +1,4 @@
 export interface GitHubAuthType {
-  /** Base App ID */
-  APP_ID: number
   /** 私钥内容 */
   Private_Key: string
   /** Base App Client ID */
