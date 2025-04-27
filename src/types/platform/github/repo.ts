@@ -435,6 +435,11 @@ export interface RepoVisibilityResponseType {
   visibility: string;
 }
 
+export interface RepoDefaultBranchResponseType {
+  /** * 仓库的默认分支名称 */
+  default_branch: string;
+}
+
 /** 邀请协作者参数类型 */
 export type CollaboratorParamType = RepoInfoParamType & UserNameParamType & {
   /**

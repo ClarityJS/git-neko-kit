@@ -17,6 +17,7 @@ import type {
   OrgRepoCreateParamType,
   OrgRepoListParmsType,
   OrgRepoListType,
+  RepoDefaultBranchResponseType,
   RepoInfoParamType,
   RepoInfoResponseType,
   RepoVisibilityResponseType,
@@ -317,7 +318,9 @@ export class Repo extends Base {
    * console.log(result)
    * ```
    */
-  public get_collaborator_list (options: CollaboratorListParamType): Promise<ApiResponseType<CollaboratorListResponseType>> {
+  public get_collaborator_list (
+    options: CollaboratorListParamType
+  ): Promise<ApiResponseType<CollaboratorListResponseType>> {
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -387,7 +390,7 @@ export class Repo extends Base {
       })
       return req
     } catch (error) {
-      throw new Error(`添加贡献者${username}失败: ${(error as Error).message}`)
+      throw new Error(`添加协作者${username}失败: ${(error as Error).message}`)
     }
   }
 
@@ -428,6 +431,45 @@ export class Repo extends Base {
       return visibility
     } catch (error) {
       return null
+    }
+  }
+
+  /**
+   * 获取仓库默认分支
+   * @param options
+   * - url 仓库URL地址
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * url参数和owner、repo参数传入其中的一种
+   * @example
+   * ```ts
+   * const defaultBranch = await repo.get_repo_default_branch({url: 'https://github.com/ClarityJS/meme-plugin')}
+   * console.log(defaultBranch) // 输出 main
+   * ```ts
+   */
+  public async get_repo_default_branch (options: RepoInfoParamType): Promise<RepoDefaultBranchResponseType['default_branch']> {
+    try {
+      let owner, repo
+      if ('url' in options) {
+        const url = options.url.trim()
+        const info = parse_git_url(url)
+        owner = info?.owner
+        repo = info?.repo
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options?.owner
+        repo = options?.repo
+      } else {
+        throw new Error(NotParamMsg)
+      }
+      const req = await this.get_repo_info({ owner, repo })
+      let default_branch = 'main'
+      if (req.data) {
+        default_branch = req.data?.default_branch
+      }
+      return default_branch
+    } catch (error) {
+      console.error(error)
+      throw new Error(NotParamMsg)
     }
   }
 }
