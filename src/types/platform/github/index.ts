@@ -1,7 +1,6 @@
 export * from '@/types/platform/github/app'
 export * from '@/types/platform/github/auth'
 export * from '@/types/platform/github/base'
-export * from '@/types/platform/github/collaborator'
 export * from '@/types/platform/github/commit'
 export * from '@/types/platform/github/issue'
 export * from '@/types/platform/github/org'
