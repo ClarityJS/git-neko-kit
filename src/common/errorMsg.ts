@@ -31,5 +31,6 @@ export const isNotAccessTokeMsg = '喵呜~ 这个令牌似乎不是有效的'
 export const isNotSuccessAccessTokenMsg = '喵呜~ 访问令牌已过期'
 export const isOrgMsg = '喵呜~ 组织账号暂不支持'
 export const isNotWebHookSignatureMsg = '喵呜~ WebHook 签名格式不正确'
+export const isNotPerrmissionMsg = '喵呜~ 权限不正确，请检查权限'
 
 export const RateLimitMsg = '喵呜~ 访问速率受限啦 请等待1小时后再试 或 使用访问令牌提升限额'

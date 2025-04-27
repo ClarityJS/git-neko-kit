@@ -93,7 +93,7 @@ export interface Owner {
   /** * 是否是站点管理员 */
   site_admin: boolean;
   /** * 用户标星时间 */
-  starred_at?: string;
+  starred_at: string;
 }
 
 /** 许可证信息 */
@@ -216,10 +216,10 @@ export interface RepoInfoResponseType {
   name: string;
   /** * 仓库的完整名称，包含用户名或组织名 */
   full_name: string;
-  /** * 仓库是否私有 */
-  private: boolean;
   /** * 仓库拥有者的信息 */
   owner: Owner;
+  /** * 仓库是否私有 */
+  private: boolean;
   /** * 仓库的 HTML 页面 URL */
   html_url: string;
   /** * 仓库的描述信息 */
