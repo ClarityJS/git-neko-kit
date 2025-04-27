@@ -80,20 +80,23 @@ export async function get_relative_time (
  * 解析 Git 仓库地址
  * @param url - Git 仓库地址
  * @returns Git 仓库信息
+ * @example
+ * ```ts
+ * console.log(parse_git_url('https://github.com/user/repo.git')) // 输出 { owner: 'user', repo: 'repo' }
+ * // 其他原始git地址也支持解析
+ * console.log(parse_git_url('https://ghproxy.com/github.com/user/repo.git')) // 输出 { owner: 'user', repo: 'repo' }
+ * console.log(parse_git_url('https://ghproxy.com/https://github.com/user/repo.git')) // 输出 { owner: 'user', repo: 'repo' }
+ * // 代理地址解析只支持https协议
  */
 export function parse_git_url (url: string): RepoBaseParamType {
-  const encodedUrlRegex = /^https?:\/\/[^/]+\/(https?:\/\/[^/]+\/[^/]+\/[^/]+)/
-  const encodedMatch = url.match(encodedUrlRegex)
-  if (encodedMatch) {
-    url = encodedMatch[1]
-  } else {
-    const splitPathRegex = /^https?:\/\/[^/]+\/([^/]+)\/([^/]+)\/([^/]+)/
-    const splitMatch = url.match(splitPathRegex)
-    if (splitMatch) {
-      const [_, host, owner, repo] = splitMatch
-      url = `https://${host}/${owner}/${repo}`
-    }
+  const proxyRegex = /^https?:\/\/[^/]+\/(?:https?:\/\/)?([^/]+\/[^/]+\/[^/]+)/
+  const proxyMatch = url.match(proxyRegex)
+
+  if (proxyMatch) {
+    const path = proxyMatch[1]
+    url = path.startsWith('https') ? path : `https://${path}`
   }
+
   const info = GitUrlParse(url)
   return {
     owner: info.owner,
