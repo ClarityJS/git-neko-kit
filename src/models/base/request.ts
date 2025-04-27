@@ -44,7 +44,7 @@ export class Request {
    * @returns 响应结果
    */
   private async request (
-    method: 'get' | 'post' | 'put',
+    method: 'get' | 'post' | 'put' | 'delete',
     path: string,
     data?: any,
     params?: any,
@@ -88,6 +88,9 @@ export class Request {
           break
         case 'put':
           response = await axios.put(url, data, config)
+          break
+        case 'delete':
+          response = await axios.delete(url, config)
           break
         default:
           throw new Error(`不支持的请求方法: ${method}`)
@@ -140,6 +143,17 @@ export class Request {
    */
   async put (path: string, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
     return this.request('put', path, data, undefined, customHeaders)
+  }
+
+  /**
+   * 发送DELETE请求
+   * @param path - 请求路径
+   * @param params - URL查询参数
+   * @param customHeaders - 自定义请求头
+   * @returns 响应结果
+   */
+  async delete (path: string, params?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
+    return this.request('delete', path, undefined, params, customHeaders)
   }
 
   /**

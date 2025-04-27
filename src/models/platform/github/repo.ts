@@ -245,30 +245,30 @@ export class Repo extends Base {
   /**
    * 创建组织仓库
    * @param options 创建组织仓库参数
-   * @param options.owner - 组织名称
-   * @param options.name - 仓库名称
-   * @param options.description - 仓库描述
-   * @param options.homepage - 仓库主页URL
-   * @param options.visibility - 仓库可见性，可选值：'public' | 'private', 默认值：'public'
-   * @param options.has_issues - 是否启用issues功能, 默认值：true
-   * @param options.has_projects - 是否启用projects功能, 默认值：true
-   * @param options.has_wiki - 是否启用wiki功能, 默认值：true
-   * @param options.has_downloads - 是否启用下载功能 默认值：true
-   * @param options.is_template - 是否设置为模板仓库 默认值：false
-   * @param options.team_id - 关联团队ID（组织仓库专用）
-   * @param options.auto_init - 是否自动初始化仓库 默认值：false
-   * @param options.gitignore_template - gitignore模板名称（需配合auto_init使用）
-   * @param options.license_template - license模板名称（需配合auto_init使用）
-   * @param options.allow_squash_merge - 是否允许squash merge, 默认值：true
-   * @param options.allow_merge_commit - 是否允许普通合并, 默认值：true
-   * @param options.allow_rebase_merge - 是否允许rebase合并 默认值：true
-   * @param options.allow_auto_merge - 是否允许自动合并 默认值：false
-   * @param options.delete_branch_on_merge - 合并后是否自动删除分支 默认值：false
-   * @param options.squash_merge_commit_title - squash合并提交标题格式 默认值：'PR_TITLE'
-   * @param options.squash_merge_commit_message - squash合并提交信息格式 默认值：'PR_BODY'
-   * @param options.merge_commit_title - 合并提交标题格式 默认值：'PR_TITLE'
-   * @param options.merge_commit_message - 合并提交信息格式 默认值：'PR_BODY'
-   * @param options.custom_properties - 自定义键值对属性
+   * - owner: 组织名称
+   * - name: 仓库名称
+   * - description: 仓库描述
+   * - homepage: 仓库主页URL
+   * - visibility: 仓库可见性，可选值：'public' | 'private', 默认值：'public'
+   * - has_issues: 是否启用issues功能, 默认值：true
+   * - has_projects: 是否启用projects功能, 默认值：true
+   * - has_wiki: 是否启用wiki功能, 默认值：true
+   * - has_downloads: 是否启用下载功能 默认值：true
+   * - is_template: 是否设置为模板仓库 默认值：false
+   * - team_id: 关联团队ID（组织仓库专用）
+   * - auto_init: 是否自动初始化仓库 默认值：false
+   * - gitignore_template: gitignore模板名称（需配合auto_init使用）
+   * - license_template: license模板名称（需配合auto_init使用）
+   * - allow_squash_merge: 是否允许squash merge, 默认值：true
+   * - allow_merge_commit: 是否允许普通合并, 默认值：true
+   * - allow_rebase_merge: 是否允许rebase合并 默认值：true
+   * - allow_auto_merge: 是否允许自动合并 默认值：false
+   * - delete_branch_on_merge: 合并后是否自动删除分支 默认值：false
+   * - squash_merge_commit_title: squash合并提交标题格式 默认值：'PR_TITLE'
+   * - squash_merge_commit_message: squash合并提交信息格式 默认值：'PR_BODY'
+   * - merge_commit_title: 合并提交标题格式 默认值：'PR_TITLE'
+   * - merge_commit_message: 合并提交信息格式 默认值：'PR_BODY'
+   * - custom_properties: 自定义键值对属性
    * @returns 返回创建成功的仓库信息
    */
   public async create_org_repo (
