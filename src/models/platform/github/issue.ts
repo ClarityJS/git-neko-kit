@@ -138,7 +138,7 @@ export class Issue extends Base {
   }
 
   /**
-   * 发送一个Issue
+   * 创建一个Issue
    * @param options 发送Issue的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -173,7 +173,7 @@ export class Issue extends Base {
       const req = await this.post(`/repos/${owner}/${repo}/issues`, IssueOptions)
       return req
     } catch (error) {
-      throw new Error(`发送Issue失败: ${(error as Error).message}`)
+      throw new Error(`创建Issue失败: ${(error as Error).message}`)
     }
   }
 }

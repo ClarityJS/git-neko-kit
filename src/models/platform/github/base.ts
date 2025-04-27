@@ -341,11 +341,6 @@ export class Base {
    */
   public async get (path: string, parms?: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
     try {
-      if (this.userToken) {
-        this.setRequestConfig({
-          token: this.userToken
-        })
-      }
       const request = this.createRequest()
       const req = await request.get(path, parms, customHeaders)
       if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
