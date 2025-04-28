@@ -97,12 +97,14 @@ export class User extends Base {
 
   /**
    * 通过访问令牌获取用户信息
+   * @param token - 访问令牌,可在初始化实例中配置
    */
-  public async get_user_info_by_token ():
+  public async get_user_info_by_token (token?: string):
   Promise<ApiResponseType<UserInfoResponseType>> {
+    const access_token = token ?? this.userToken
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: access_token
       })
       const req = await this.get('/user')
       if (req.statusCode === 401) {
