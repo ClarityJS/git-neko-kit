@@ -10,6 +10,7 @@ import {
 } from '@/common'
 import { Base } from '@/models/platform/github/base'
 import {
+  AccessTokenType,
   ApiResponseType,
   ContributionResult,
   UserIdParamType,
@@ -97,11 +98,17 @@ export class User extends Base {
 
   /**
    * 通过访问令牌获取用户信息
-   * @param token - 访问令牌,可在初始化实例中配置
+   * @param options - 访问令牌配置参数对象
+   * - access_token - 访问令牌
+   * @example
+   * ```ts
+   * const userInfo = await user.get_user_info_by_token({ access_token: 'access_token' })
+   * console.log(userInfo)
+   * ```
    */
-  public async get_user_info_by_token (token?: string):
+  public async get_user_info_by_token (options?: AccessTokenType):
   Promise<ApiResponseType<UserInfoResponseType>> {
-    const access_token = token ?? this.userToken
+    const access_token = options?.access_token ?? this.userToken
     try {
       this.setRequestConfig({
         token: access_token
@@ -127,6 +134,11 @@ export class User extends Base {
    * @param options - 用户参数
    * @param options.username - 用户名
    * @returns 用户贡献数据
+   * @example
+   * ```ts
+   * const contribution = await user.get_user_contribution({ username: 'username' })
+   * console.log(contribution)
+   * ```
    */
   public async get_user_contribution (options: UserNameParamType):
   Promise<ApiResponseType<ContributionResult>> {
