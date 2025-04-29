@@ -5,6 +5,7 @@ import {
   NotOrgOrUserMsg,
   NotParamMsg,
   NotPerrmissionMsg,
+  NotRepoOrPerrmissionMsg,
   NotUserMsg,
   parse_git_url
 } from '@/common'
@@ -407,11 +408,13 @@ export class Repo extends Base {
       const req = await this.put(`/repos/${owner}/${repo}/collaborators/${username}`, {
         permission: options.permission ?? 'pull'
       })
+      if (req.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
       if (req.statusCode === 422 && req.data.message) {
         if (req.data.message.includes('is not a valid permission.')) {
           throw new Error(isNotPerrmissionMsg)
         }
       }
+
       return req
     } catch (error) {
       throw new Error(`添加协作者${username}失败: ${(error as Error).message}`)
