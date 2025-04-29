@@ -1,4 +1,5 @@
 import {
+  formatParamType,
   RepoNameParamType,
   RepoOwnerParamType,
   RepoUrlParamType,
@@ -6,7 +7,7 @@ import {
 } from '@/types/platform/github/base'
 import { AccountBaseType } from '@/types/platform/github/user'
 /** 仓库列表参数类型 */
-export interface RepoListBaseParmsType {
+export interface RepoListBaseParamType {
   /** 排序方式，可选created， updated， pushed， full_name， 默认为 full_name */
   sort?: 'created' | 'updated' | 'pushed' | 'full_name'
   /** 排序方式，可选asc， desc， 默认为 desc */
@@ -18,35 +19,44 @@ export interface RepoListBaseParmsType {
 }
 
 /** 组织仓库列表参数类型 */
-export interface OrgRepoListParmsType extends RepoListBaseParmsType {
+export interface OrgRepoListParmsType extends RepoListBaseParamType {
   /** 组织名称 */
   org: string
   /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
   type?: 'all' | 'public' | 'private' | 'forks' | 'sources' | 'member'
+  /** 是否格式化日期 */
+  format?: formatParamType['format']
 }
 
 /** 用户仓库列表参数类型 */
-export interface UserRepoListParmsType extends RepoListBaseParmsType {
+export interface UserRepoListParamType extends RepoListBaseParamType {
   /** 用户名 */
   username: string
   /** 类型，可选all， owner， member， 默认为 all */
   type?: 'all' | 'owner' | 'member'
+  /** 是否格式化日期 */
+  format?: formatParamType['format']
 }
 
-export interface UserByTokenRepoListParmsType extends RepoListBaseParmsType {
+export interface UserByTokenRepoListParamType extends RepoListBaseParamType {
   /** 仓库的可见性，可选all， public， private， 默认为 all */
   visibility?: 'all' | 'public' | 'private'
   /** 仓库的状态，可选all， public， private， 默认为 all */
   affiliation?: 'owner' | 'collaborator' | 'organization_member'
   /** 类型，可选all， owner， member， 默认为 all */
   type?: 'all' | 'owner' | 'member'
+  /** 是否格式化日期 */
+  format?: formatParamType['format']
 }
 
 /** 仓库信息响应类型 */
 export interface RepoBaseParamType extends RepoOwnerParamType, RepoNameParamType { }
 
 /** 仓库信息请求参数 */
-export type RepoInfoParamType = RepoBaseParamType | RepoUrlParamType
+export type RepoInfoParamType = (RepoBaseParamType | RepoUrlParamType) & {
+  /** 是否格式化日期 */
+  format?: formatParamType['format']
+}
 
 /** 拥有者信息 */
 export interface Owner {

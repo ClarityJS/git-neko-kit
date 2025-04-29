@@ -1,5 +1,5 @@
 export interface PkgInfoType {
-  /** 报名 */
+  /** 包名 */
   name: string
   /** 版本号 */
   version: string

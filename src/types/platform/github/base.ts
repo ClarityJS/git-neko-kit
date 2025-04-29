@@ -41,3 +41,21 @@ export interface ShaParamType {
   /** 仓库的SHA值 */
   sha: string;
 }
+
+export interface formatParamType {
+  /** 是否格式化 */
+  format: boolean;
+}
+/** guthub基础入口类型 */
+export interface GitHubAuthType {
+  /** 私钥内容 */
+  Private_Key: string
+  /** Base App Client ID */
+  Client_ID: string
+  /** Base App Client Secret */
+  Client_Secret: string
+  /** WebHook Secret */
+  WebHook_Secret: string
+  /** 是否格式化 */
+  format?: formatParamType['format']
+}

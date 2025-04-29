@@ -12,7 +12,7 @@ import type { ProxyParamsType, RequestTokenType, ResponseType } from '@/types'
 export class Request {
   private readonly baseUrl: string
   private readonly tokenType: RequestTokenType
-  private readonly authorization?: string
+  private readonly authorization?: string | null
   private readonly proxy?: ProxyParamsType
 
   /**
@@ -25,7 +25,7 @@ export class Request {
   constructor (
     baseUrl: string,
     tokenType: RequestTokenType = 'Bearer',
-    authorization?: string,
+    authorization?: string | null,
     proxy?: ProxyParamsType
   ) {
     this.baseUrl = baseUrl.replace(/\/$/, '')
@@ -59,9 +59,9 @@ export class Request {
 
     /** 代理配置 */
     if (this.proxy) {
-      const httpAddress = this.proxy.type === 'http' ? this.proxy.address : undefined
-      const httpsAddress = this.proxy.type === 'https' ? this.proxy.address : undefined
-      const socksAddress = this.proxy.type === 'socks' ? this.proxy.address : undefined
+      const httpAddress = this.proxy.type === 'http' ? this.proxy.address : null
+      const httpsAddress = this.proxy.type === 'https' ? this.proxy.address : null
+      const socksAddress = this.proxy.type === 'socks' ? this.proxy.address : null
 
       if (httpAddress) {
         /** HTTP代理配置 */
@@ -120,7 +120,7 @@ export class Request {
    * @returns 响应结果
    */
   async get (path: string, params?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
-    return this.request('get', path, undefined, params, customHeaders)
+    return this.request('get', path, null, params, customHeaders)
   }
 
   /**
@@ -131,7 +131,7 @@ export class Request {
    * @returns 响应结果
    */
   async post (path: string, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
-    return this.request('post', path, data, undefined, customHeaders)
+    return this.request('post', path, data, null, customHeaders)
   }
 
   /**
@@ -142,7 +142,7 @@ export class Request {
    * @returns 响应结果
    */
   async put (path: string, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
-    return this.request('put', path, data, undefined, customHeaders)
+    return this.request('put', path, data, null, customHeaders)
   }
 
   /**
@@ -153,7 +153,7 @@ export class Request {
    * @returns 响应结果
    */
   async delete (path: string, params?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
-    return this.request('delete', path, undefined, params, customHeaders)
+    return this.request('delete', path, null, params, customHeaders)
   }
 
   /**
@@ -164,7 +164,7 @@ export class Request {
   private createHeaders (customHeaders?: Record<string, string>) {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'User-Agent': pkg.name
+      'User-Agent': `${pkg.name}/v${pkg.version}`
     }
 
     if (this.authorization) {

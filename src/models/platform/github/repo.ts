@@ -22,8 +22,8 @@ import type {
   RepoInfoParamType,
   RepoInfoResponseType,
   RepoVisibilityResponseType,
-  UserByTokenRepoListParmsType,
-  UserRepoListParmsType,
+  UserByTokenRepoListParamType,
+  UserRepoListParamType,
   UserRepoListType
 } from '@/types'
 
@@ -82,15 +82,18 @@ export class Repo extends Base {
       } else if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
-      if (req.data) {
-        req.data = await Promise.all(
-          req.data.map(async (repo: RepoInfoResponseType) => ({
-            ...repo,
-            created_at: await formatDate(repo.created_at),
-            updated_at: await formatDate(repo.updated_at),
-            pushed_at: await formatDate(repo.pushed_at)
-          }))
-        )
+      const isFormat = options.format ?? this.format
+      if (isFormat) {
+        if (req.data) {
+          req.data = await Promise.all(
+            req.data.map(async (repo: RepoInfoResponseType) => ({
+              ...repo,
+              created_at: await formatDate(repo.created_at),
+              updated_at: await formatDate(repo.updated_at),
+              pushed_at: await formatDate(repo.pushed_at)
+            }))
+          )
+        }
       }
       return req
     } catch (error) {
@@ -110,7 +113,7 @@ export class Repo extends Base {
    * @param options.page - 页码 默认值：1
    * @returns 仓库详细信息
    */
-  public async get_user_repos_list_by_token (options?: UserByTokenRepoListParmsType): Promise<ApiResponseType<UserRepoListType>> {
+  public async get_user_repos_list_by_token (options?: UserByTokenRepoListParamType): Promise<ApiResponseType<UserRepoListType>> {
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -134,15 +137,18 @@ export class Repo extends Base {
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
-      if (req.data) {
-        req.data = await Promise.all(
-          req.data.map(async (repo: RepoInfoResponseType) => ({
-            ...repo,
-            created_at: await formatDate(repo.created_at),
-            updated_at: await formatDate(repo.updated_at),
-            pushed_at: await formatDate(repo.pushed_at)
-          }))
-        )
+      const isFormat = options?.format ?? this.format
+      if (isFormat) {
+        if (req.data) {
+          req.data = await Promise.all(
+            req.data.map(async (repo: RepoInfoResponseType) => ({
+              ...repo,
+              created_at: await formatDate(repo.created_at),
+              updated_at: await formatDate(repo.updated_at),
+              pushed_at: await formatDate(repo.pushed_at)
+            }))
+          )
+        }
       }
       return req
     } catch (error) {
@@ -163,7 +169,7 @@ export class Repo extends Base {
    * @returns 用户仓库列表
    */
   public async get_user_repos_list (
-    options: UserRepoListParmsType
+    options: UserRepoListParamType
   ): Promise<ApiResponseType<UserRepoListType>> {
     try {
       if (!options.username) throw new Error(NotParamMsg)
@@ -182,21 +188,26 @@ export class Repo extends Base {
         ? `/users/${options.username}/repos?${queryString}`
         : `/users/${options.username}/repos`
       const req = await this.get(url)
-      if (req.statusCode === 404) {
-        throw new Error(NotUserMsg)
-      } else if (req.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
+      switch (req.statusCode) {
+        case 404:
+          throw new Error(NotUserMsg)
+        case 401:
+          throw new Error(NotPerrmissionMsg)
       }
-      if (req.data) {
-        req.data = await Promise.all(
-          req.data.map(async (repo: RepoInfoResponseType) => ({
-            ...repo,
-            created_at: await formatDate(repo.created_at),
-            updated_at: await formatDate(repo.updated_at),
-            pushed_at: await formatDate(repo.pushed_at)
-          }))
-        )
+      const isFormat = options?.format ?? this.format
+      if (isFormat) {
+        if (req.data) {
+          req.data = await Promise.all(
+            req.data.map(async (repo: RepoInfoResponseType) => ({
+              ...repo,
+              created_at: await formatDate(repo.created_at),
+              updated_at: await formatDate(repo.updated_at),
+              pushed_at: await formatDate(repo.pushed_at)
+            }))
+          )
+        }
       }
+
       return req
     } catch (error) {
       throw new Error(`获取用户仓库列表失败: ${(error as Error).message}`)
@@ -232,15 +243,19 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       const req = await this.get(`/repos/${owner}/${repo}`)
-      if (req.statusCode === 404) {
-        throw new Error(NotOrgOrUserMsg)
-      } else if (req.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
+      switch (req.statusCode) {
+        case 401:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotOrgOrUserMsg)
       }
-      if (req.data) {
-        req.data.created_at = await formatDate(req.data.created_at)
-        req.data.updated_at = await formatDate(req.data.updated_at)
-        req.data.pushed_at = await formatDate(req.data.pushed_at)
+      const isFormat = options?.format ?? this.format
+      if (isFormat) {
+        if (req.data) {
+          req.data.created_at = await formatDate(req.data.created_at)
+          req.data.updated_at = await formatDate(req.data.updated_at)
+          req.data.pushed_at = await formatDate(req.data.pushed_at)
+        }
       }
       return req
     } catch (error) {
@@ -290,10 +305,13 @@ export class Repo extends Base {
       if (req.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
-      if (req.data) {
-        req.data.created_at = await formatDate(req.data.created_at)
-        req.data.updated_at = await formatDate(req.data.updated_at)
-        req.data.pushed_at = await formatDate(req.data.pushed_at)
+      const isFormat = options?.format ?? this.format
+      if (isFormat) {
+        if (req.data) {
+          req.data.created_at = await formatDate(req.data.created_at)
+          req.data.updated_at = await formatDate(req.data.updated_at)
+          req.data.pushed_at = await formatDate(req.data.pushed_at)
+        }
       }
       return req
     } catch (error) {

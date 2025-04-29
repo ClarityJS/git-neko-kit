@@ -1,4 +1,4 @@
-import { RepoOwnerParamType } from '@/types/platform/github/base'
+import { formatParamType, RepoOwnerParamType } from '@/types/platform/github/base'
 import { AccountBaseType } from '@/types/platform/github/user'
 
 /** 创建组织仓库请求参数 */
@@ -49,6 +49,8 @@ export interface OrgRepoCreateParamType extends RepoOwnerParamType {
   merge_commit_message?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
   /** 新存储库的自定义属性 */
   custom_properties?: { [key: string]: string };
+  /** 是否格式化日期 */
+  format: formatParamType['format']
 }
 
 /**
