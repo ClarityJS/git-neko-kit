@@ -59,22 +59,27 @@ export class Request {
 
     /** 代理配置 */
     if (this.proxy) {
-      const httpAddress = this.proxy.type === 'http' ? this.proxy.address : null
-      const httpsAddress = this.proxy.type === 'https' ? this.proxy.address : null
-      const socksAddress = this.proxy.type === 'socks' ? this.proxy.address : null
+      const proxyType = this.proxy.type
+      const proxyAddress = this.proxy.address
 
-      if (httpAddress) {
-        /** HTTP代理配置 */
-        config.httpAgent = new HttpProxyAgent(httpAddress)
-        config.httpsAgent = new HttpsProxyAgent(httpAddress)
-      } else if (httpsAddress) {
-        /** HTTPS代理配置 */
-        config.httpsAgent = new HttpsProxyAgent(httpsAddress)
-      } else if (socksAddress) {
+      switch (proxyType) {
+        case 'http':
+          /** HTTP代理配置 */
+          config.httpAgent = new HttpProxyAgent(proxyAddress)
+          config.httpsAgent = new HttpsProxyAgent(proxyAddress)
+          break
+        case 'https':
+          /** HTTPS代理配置 */
+          config.httpsAgent = new HttpsProxyAgent(proxyAddress)
+          break
+        case 'socks':
         /** SOCKS代理配置 */
-        const socksAgent = new SocksProxyAgent(socksAddress)
-        config.httpAgent = socksAgent
-        config.httpsAgent = socksAgent
+        {
+          const socksAgent = new SocksProxyAgent(proxyAddress)
+          config.httpAgent = socksAgent
+          config.httpsAgent = socksAgent
+          break
+        }
       }
     }
     try {
