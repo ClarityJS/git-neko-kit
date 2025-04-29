@@ -1,3 +1,17 @@
+import { AccessTokenType, formatParamType, UserNameParamType } from '@/types/platform/github/base'
+/** 用户信息参数对象类型 */
+export interface UserInfoParamType extends UserNameParamType {
+  /** 是否格式化日期 */
+  format?: formatParamType['format'];
+}
+
+/** 授权用户信息参数对象类型 */
+export interface UserInfoByTokenParamType extends AccessTokenType {
+  /** 是否格式化日期 */
+  format?: formatParamType['format'];
+}
+
+/** 账户基本信息 */
 export interface AccountBaseType {
   /** 账号登录名 */
   login: string;

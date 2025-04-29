@@ -1,13 +1,3 @@
-export interface GitHubAuthType {
-  /** 私钥内容 */
-  Private_Key: string
-  /** Base App Client ID */
-  Client_ID: string
-  /** Base App Client Secret */
-  Client_Secret: string
-  /** WebHook Secret */
-  WebHook_Secret: string
-}
 /** Github 授权令牌接口返回类型 */
 export interface GithubOauthTokenResponseType {
   /** 用户访问令牌， 格式为 ghu_ 开头 */

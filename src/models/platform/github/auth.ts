@@ -167,10 +167,13 @@ export class Auth extends Base {
       const isSuccess = req.status === 'ok' && req.statusCode === 200 && !req.data.error
 
       let errorMsg = NotRefreshTokenSuccessMsg
-      if (req.data.error === 'bad_refresh_token') {
-        errorMsg = isNotRefreshTokenMsg
-      } else if (req.data.error === 'unauthorized') {
-        errorMsg = NotPerrmissionMsg
+      switch (req.data.error) {
+        case 'bad_refresh_token':
+          errorMsg = isNotRefreshTokenMsg
+          break
+        case 'unauthorized':
+          errorMsg = NotPerrmissionMsg
+          break
       }
 
       if (!isSuccess) {

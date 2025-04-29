@@ -64,41 +64,42 @@ export class Commit extends Base {
         sha = options.sha
       }
       const req = await this.get(`/repos/${owner}/${repo}/commits/${sha}`)
-      if (req.statusCode === 404) {
-        throw new Error(NotCommitOrRepoMsg)
-      } else if (req.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
-      } else if (req.statusCode === 422) {
-        throw new Error(NotCommitMsg)
+      switch (req.statusCode) {
+        case 401:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotCommitOrRepoMsg)
+        case 422:
+          throw new Error(NotCommitMsg)
       }
 
-      if (req.data?.commit) {
-        req.data.commit = {
-          ...req.data.commit,
-          author: req.data.commit.author
-            ? {
-                ...req.data.commit.author,
-                date: await formatDate(req.data.commit.author.date)
-              }
-            : null,
-          committer: req.data.commit.committer
-            ? {
-                ...req.data.commit.committer,
-                date: await formatDate(req.data.commit.committer.date)
-              }
-            : null,
-          verification: req.data.commit.verification
-            ? {
-                ...req.data.commit.verification,
-                verified_at: req.data.commit.verification.verified_at
-                  ? await formatDate(req.data.commit.verification.verified_at)
-                  : null
-              }
-            : null
+      const isFormat = options.format ?? this.format
+      if (isFormat) {
+        if (req.data?.commit) {
+          req.data.commit = {
+            ...req.data.commit,
+            author: req.data.commit.author
+              ? {
+                  ...req.data.commit.author,
+                  date: await formatDate(req.data.commit.author.date)
+                }
+              : null,
+            committer: req.data.commit.committer
+              ? {
+                  ...req.data.commit.committer,
+                  date: await formatDate(req.data.commit.committer.date)
+                }
+              : null,
+            verification: req.data.commit.verification
+              ? {
+                  ...req.data.commit.verification,
+                  verified_at: req.data.commit.verification.verified_at
+                    ? await formatDate(req.data.commit.verification.verified_at)
+                    : null
+                }
+              : null
+          }
         }
-      }
-
-      if (options.format) {
         const message = req.data?.commit?.message ?? ''
         const [title, ...bodyParts] = message.split('\n')
         req.data = {

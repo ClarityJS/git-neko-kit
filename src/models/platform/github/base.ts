@@ -61,12 +61,13 @@ export class Base {
   public ApiUrl: string
   public jwtToken: string
   public userToken: string | null
+  public readonly format: boolean
   public readonly Private_Key: string
   public readonly Client_ID: string
   public readonly Client_Secret: string
   public readonly WebHook_Secret: string
   private currentRequestConfig: RequestConfigType
-  private proxy?: ProxyParamsType | undefined
+  private proxy?: ProxyParamsType | null
 
   constructor (options: GitHubAuthType) {
     this.Private_Key = options.Private_Key
@@ -82,6 +83,7 @@ export class Base {
       token: null,
       tokenType: 'Bearer'
     }
+    this.format = options.format ?? false
   }
 
   /**
@@ -312,8 +314,8 @@ export class Base {
    */
   private createRequest (): Request {
     const { url, token, tokenType } = this.currentRequestConfig
-    const proxyConfig = this.proxy?.type !== 'common' ? this.proxy : undefined
-    return new Request(url ?? this.ApiUrl, tokenType, token ?? undefined, proxyConfig)
+    const proxyConfig = this.proxy?.type !== 'common' ? this.proxy : null
+    return new Request(url!, tokenType, token ?? null, proxyConfig as ProxyParamsType)
   }
 
   /**

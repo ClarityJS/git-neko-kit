@@ -1,11 +1,11 @@
-import { RepoNameParamType, RepoOwnerParamType, RepoUrlParamType, ShaParamType } from '@/types/platform/github/base'
+import { formatParamType, RepoNameParamType, RepoOwnerParamType, RepoUrlParamType, ShaParamType } from '@/types/platform/github/base'
 import { AccountBaseType } from '@/types/platform/github/user'
 
 export interface CommitInfoCommonParamType {
   /** 提交SHA */
   sha?: ShaParamType['sha'];
-  /** 是否格式化消息 */
-  format: boolean;
+  /** 是否格式化消息和日期 */
+  format: formatParamType['format'];
 }
 
 /**
@@ -31,6 +31,7 @@ export interface GitUser {
   date: string;
 }
 
+/** 验证信息类型 */
 export interface Verification {
   /** 是否已验证 */
   verified: boolean;

@@ -14,6 +14,8 @@ import {
   ApiResponseType,
   ContributionResult,
   UserIdParamType,
+  UserInfoByTokenParamType,
+  UserInfoParamType,
   UserInfoResponseType,
   UserNameParamType
 } from '@/types'
@@ -39,7 +41,7 @@ export class User extends Base {
    * @param options - 用户参数
    * @param options.username - 用户名或组织名
    */
-  public async get_user_info (options: UserNameParamType):
+  public async get_user_info (options: UserInfoParamType):
   Promise<ApiResponseType<UserInfoResponseType>> {
     try {
       if (!options.username) {
@@ -106,22 +108,26 @@ export class User extends Base {
    * console.log(userInfo)
    * ```
    */
-  public async get_user_info_by_token (options?: AccessTokenType):
+  public async get_user_info_by_token (options?: UserInfoByTokenParamType):
   Promise<ApiResponseType<UserInfoResponseType>> {
-    const access_token = options?.access_token ?? this.userToken
+    const access_token = (options && options.access_token) ?? this.userToken
     try {
       this.setRequestConfig({
         token: access_token
       })
       const req = await this.get('/user')
-      if (req.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
-      } else if (req.statusCode === 404) {
-        throw new Error(NotUserMsg)
+      switch (req.statusCode) {
+        case 401:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotUserMsg)
       }
-      if (req.data) {
-        req.data.created_at = await formatDate(req.data.created_at)
-        req.data.updated_at = await formatDate(req.data.updated_at)
+      const isFormat = options?.format ?? this.format
+      if (isFormat) {
+        if (req.data) {
+          req.data.created_at = await formatDate(req.data.created_at)
+          req.data.updated_at = await formatDate(req.data.updated_at)
+        }
       }
       return req
     } catch (error) {
