@@ -62,10 +62,12 @@ export async function formatDate (
 /**
  * 获取相对时间
  * @param dateString - 日期字符串
+ * @param locale - 语言环境，默认为 'zh-cn'
  * @returns 相对时间
  * @example
  * ```ta
  * console.log(await get_relative_time('2023-04-01 12:00:00')) // 输出 "1 小时前"
+ * ```
  */
 export async function get_relative_time (
   dateString: string,
@@ -87,6 +89,7 @@ export async function get_relative_time (
  * console.log(parse_git_url('https://ghproxy.com/github.com/user/repo.git')) // 输出 { owner: 'user', repo: 'repo' }
  * console.log(parse_git_url('https://ghproxy.com/https://github.com/user/repo.git')) // 输出 { owner: 'user', repo: 'repo' }
  * // 代理地址解析只支持https协议
+ * ```
  */
 export function parse_git_url (url: string): RepoBaseParamType {
   const proxyRegex = /^https?:\/\/[^/]+\/(?:https?:\/\/)?([^/]+\/[^/]+\/[^/]+)/
