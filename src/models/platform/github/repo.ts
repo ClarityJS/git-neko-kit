@@ -183,19 +183,26 @@ export class Repo extends Base {
       if (options?.direction) queryParams.set('direction', options.direction)
       if (options?.per_page) queryParams.set('per_page', options.per_page.toString())
       if (options?.page) queryParams.set('page', options.page.toString())
-
+      const isFormat = options?.format ?? this.format
       const queryString = queryParams.toString()
-      const url = queryString
-        ? `/users/${options.username}/repos?${queryString}`
-        : `/users/${options.username}/repos`
-      const req = await this.get(url)
+      let req
+      try {
+        req = await this.get_user_repos_list_by_token({
+          ...options,
+          format: isFormat
+        })
+      } catch (error) {
+        const url = `/users/${options.username}/repos?${queryString}`
+        req = await this.get(url)
+      }
+
       switch (req.statusCode) {
         case 404:
           throw new Error(NotUserMsg)
         case 401:
           throw new Error(NotPerrmissionMsg)
       }
-      const isFormat = options?.format ?? this.format
+
       if (isFormat) {
         if (req.data) {
           req.data = await Promise.all(
