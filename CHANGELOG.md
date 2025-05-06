@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.4.1](https://github.com/ClarityJS/git-neko-kit/compare/v0.4.0...v0.4.1) (2025-05-06)
+
+
+### 🎡 持续集成
+
+* **release:** 优化发布流程并集成 pnpm ([2f5229f](https://github.com/ClarityJS/git-neko-kit/commit/2f5229f688d31e4a370028e2c58cdc1f80fe451d))
+
 ## [0.4.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.3.0...v0.4.0) (2025-05-06)
 
 
