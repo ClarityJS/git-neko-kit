@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.4.4](https://github.com/ClarityJS/git-neko-kit/compare/v0.4.3...v0.4.4) (2025-05-06)
+
+
+### 🎡 持续集成
+
+* **release:** 修复发布到 GitHub 包Registry的 token 密钥对 ([f3fef38](https://github.com/ClarityJS/git-neko-kit/commit/f3fef38ab42c6c7bbbd8e1a21bdb38dd6ae6cc8c))
+
 ## [0.4.3](https://github.com/ClarityJS/git-neko-kit/compare/v0.4.2...v0.4.3) (2025-05-06)
 
 
