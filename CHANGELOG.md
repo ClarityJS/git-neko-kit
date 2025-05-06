@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.4.2](https://github.com/ClarityJS/git-neko-kit/compare/v0.4.1...v0.4.2) (2025-05-06)
+
+
+### 🎡 持续集成
+
+* **release:** 更新 GitHub Actions 工作流 ([a1599bf](https://github.com/ClarityJS/git-neko-kit/commit/a1599bfb44ef5c6633d9d2c888d3086eece03bc2))
+
 ## [0.4.1](https://github.com/ClarityJS/git-neko-kit/compare/v0.4.0...v0.4.1) (2025-05-06)
 
 
