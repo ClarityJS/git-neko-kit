@@ -115,6 +115,12 @@ jobs:
           name: ${{ needs.build.outputs.package_name }}
           path: ./
 
+      - name: 设置 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.13.2
+          run_install: false
+
       - name: 发布到 NPM
         id: publish-to-npm
         uses: JS-DevTools/npm-publish@v3
@@ -126,7 +132,7 @@ jobs:
 
       - name: 设置包名
         run: |
-          pnpm pkg set name=@${{ github.repository_owner }}/${{ steps.publish-to-npm.outputs.package_name }}
+          pnpm pkg set name=@${{ github.repository_owner }}/${{ steps.publish-to-npm.outputs.name }}
 
       - name: 发布到 GitHub Packages
         id: publish-to-github
