@@ -46,8 +46,8 @@ export class Request {
   private async request (
     method: 'get' | 'post' | 'put' | 'delete',
     path: string,
-    data?: any,
     params?: any,
+    data?: any,
     customHeaders?: Record<string, string>
   ): Promise<ResponseType> {
     const url = `${this.baseUrl}/${path}`.replace(/\/+/g, '/')
@@ -124,30 +124,32 @@ export class Request {
    * @param customHeaders - 自定义请求头
    * @returns 响应结果
    */
-  async get (path: string, params?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
-    return this.request('get', path, null, params, customHeaders)
+  async get (path: string, params?: Record<string, string>, customHeaders?: Record<string, string>): Promise<ResponseType> {
+    return this.request('get', path, params, null, customHeaders)
   }
 
   /**
    * 发送POST请求
    * @param path - 请求路径
+   * @param params - URL查询参数
    * @param data - 请求体数据
    * @param customHeaders - 自定义请求头
    * @returns 响应结果
    */
-  async post (path: string, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
-    return this.request('post', path, data, null, customHeaders)
+  async post (path: string, params?: Record<string, string>, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
+    return this.request('post', path, params, data, customHeaders)
   }
 
   /**
    * 发送PUT请求
    * @param path - 请求路径
+   * @param params - URL查询参数
    * @param data - 请求体数据
    * @param customHeaders - 自定义请求头
    * @returns 响应结果
    */
-  async put (path: string, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
-    return this.request('put', path, data, null, customHeaders)
+  async put (path: string, params?: Record<string, string>, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
+    return this.request('put', path, params, data, customHeaders)
   }
 
   /**
@@ -157,8 +159,8 @@ export class Request {
    * @param customHeaders - 自定义请求头
    * @returns 响应结果
    */
-  async delete (path: string, params?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
-    return this.request('delete', path, null, params, customHeaders)
+  async delete (path: string, params?: Record<string, string>, customHeaders?: Record<string, string>): Promise<ResponseType> {
+    return this.request('delete', path, params, null, customHeaders)
   }
 
   /**

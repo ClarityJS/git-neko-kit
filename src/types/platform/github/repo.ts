@@ -450,7 +450,7 @@ export interface RepoDefaultBranchResponseType {
   default_branch: string;
 }
 
-/** 邀请协作者参数类型 */
+/** 协作者参数类型 */
 export type CollaboratorParamType = RepoInfoParamType & UserNameParamType & {
   /**
    * 协作者权限 ,可选 pull，triage, push, maintain, admin，默认pull
@@ -464,7 +464,7 @@ export type CollaboratorParamType = RepoInfoParamType & UserNameParamType & {
 }
 
 /** 邀请协作者响应类型 */
-export interface CollaboratorResponseType {
+export interface AddCollaboratorResponseType {
   /** 邀请唯一id */
   id: number;
   /** 邀请节点id */
@@ -540,3 +540,9 @@ export interface CollaboratorInfo extends AccountBaseType {
 
 /** 协作者列表响应类型 */
 export type CollaboratorListResponseType = CollaboratorInfo[]
+
+/** 移除协作者响应类型 */
+export interface RemoveCollaboratorResponseType {
+  /** 状态信息 */
+  info: string;
+}

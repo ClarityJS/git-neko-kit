@@ -11,14 +11,15 @@ import {
 } from '@/common'
 import { Base } from '@/models/platform/github/base'
 import type {
+  AddCollaboratorResponseType,
   ApiResponseType,
   CollaboratorListParamType,
   CollaboratorListResponseType,
   CollaboratorParamType,
-  CollaboratorResponseType,
   OrgRepoCreateParamType,
   OrgRepoListParmsType,
   OrgRepoListType,
+  RemoveCollaboratorResponseType,
   RepoDefaultBranchResponseType,
   RepoInfoParamType,
   RepoInfoResponseType,
@@ -345,7 +346,7 @@ export class Repo extends Base {
    * console.log(result)
    * ```
    */
-  public get_collaborator_list (
+  public async get_collaborator_list (
     options: CollaboratorListParamType
   ): Promise<ApiResponseType<CollaboratorListResponseType>> {
     try {
@@ -364,7 +365,7 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = this.get(`/repos/${owner}/${repo}/collaborators`, { ...options })
+      const res = await this.get(`/repos/${owner}/${repo}/collaborators`, { ...options })
       return res
     } catch (error) {
       throw new Error(`获取仓库协作者列表失败: ${(error as Error).message}`)
@@ -394,7 +395,7 @@ export class Repo extends Base {
      */
   public async add_collaborator (
     options: CollaboratorParamType
-  ): Promise<ApiResponseType<CollaboratorResponseType>> {
+  ): Promise<ApiResponseType<AddCollaboratorResponseType>> {
     let owner, repo, username
     try {
       this.setRequestConfig({
@@ -425,6 +426,62 @@ export class Repo extends Base {
       return req
     } catch (error) {
       throw new Error(`添加协作者${username}失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 删除协作者
+   * @param options 删除协作者对象
+   * - owner: 仓库拥有者
+   * - repo: 仓库名称
+   * - url: 仓库地址
+   * owner和repo或者url选择一个即可
+   * - username: 要删除协作者用户名
+   * @returns 返回删除协作者结果
+   * @example
+   * ```ts
+   * const result = await collaborator.remove_collaborator({
+   *  owner: 'owner',
+   *  repo:'repo',
+   *  username: 'username'
+   * })
+   * console.log(result)
+   * ```
+   */
+  public async remove_collaborator (
+    options: CollaboratorParamType
+  ): Promise<ApiResponseType<RemoveCollaboratorResponseType>> {
+    let owner, repo, username
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      if ('url' in options) {
+        const url = options.url.trim()
+        const info = parse_git_url(url)
+        owner = info?.owner
+        repo = info?.repo
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options?.owner
+        repo = options?.repo
+      } else {
+        throw new Error(NotParamMsg)
+      }
+      username = options?.username
+      const req = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`)
+      if (req.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
+      if (req.status && req.statusCode === 204) {
+        req.data = {
+          info: `删除协作者${username}成功`
+        }
+      } else {
+        req.data = {
+          info: `删除协作者${username}失败`
+        }
+      }
+      return req
+    } catch (error) {
+      throw new Error(`删除协作者${username}失败: ${(error as Error).message}`)
     }
   }
 

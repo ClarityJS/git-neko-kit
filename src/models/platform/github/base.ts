@@ -235,7 +235,7 @@ export class Base {
    * @param proxy 代理参数
    * @example
    * ```ts
-   *  base.setProxy({
+   *  setProxy({
    *    type: 'http',
    *    address: 'http://127.0.0.1:7890'
    * })
@@ -396,14 +396,14 @@ export class Base {
   /**
    * Github DELETE 请求方法
    * @param path - 请求路径
-   * @param data - 请求数据
+   * @param params - URL查询参数
    * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
-  public async delete (path: string, data: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
+  public async delete (path: string, params?: Record<string, string>, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
     try {
       const request = this.createRequest()
-      const req = await request.delete(path, data, customHeaders)
+      const req = await request.delete(path, params, customHeaders)
       if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
         throw new Error(RateLimitMsg)
       }
