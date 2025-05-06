@@ -7,9 +7,9 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
-  pull-requests: write
+  packages: write
 
 jobs:
   release:
