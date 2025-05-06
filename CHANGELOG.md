@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.4.3](https://github.com/ClarityJS/git-neko-kit/compare/v0.4.2...v0.4.3) (2025-05-06)
+
+
+### 🎡 持续集成
+
+* 调整 GitHub Actions 权限设置 ([af03fe9](https://github.com/ClarityJS/git-neko-kit/commit/af03fe993fbbd4067685d06e297224d960d181bd))
+
 ## [0.4.2](https://github.com/ClarityJS/git-neko-kit/compare/v0.4.1...v0.4.2) (2025-05-06)
 
 
