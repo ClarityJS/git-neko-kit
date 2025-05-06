@@ -93,7 +93,7 @@ jobs:
           pnpm build
           pnpm pkg delete devDependencies
           mkdir -p ${{ runner.temp }}/temp/
-          cp -r package.json README.md CHANGELOG.md dist ${{ runner.temp }}/temp/
+          cp -r package.json README.md dist ${{ runner.temp }}/temp/
 
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
@@ -168,7 +168,7 @@ jobs:
           pr-number: ${{ github.event.pull_request.number }}
           message: |
             🎉 🎉 🎉 **构建完成！**
-            该版本是基于 `${{ github.event.pull_request.head.ref || github.ref_name }` 分支的快照 [**`${{ needs.beta-version.outputs.short_commit_hash }}`**](https://github.com/${{ github.repository }}/commit/${{ needs.beta-version.outputs.short_commit_hash }}) 所构建的。
+            该版本是基于 `${{ github.event.pull_request.head.ref || github.ref_name }}` 分支的快照 [**`${{ needs.beta-version.outputs.short_commit_hash }}`**](https://github.com/${{ github.repository }}/commit/${{ needs.beta-version.outputs.short_commit_hash }}) 所构建的。
 
             你可以通过以下命令安装该版本：
             ```

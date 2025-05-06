@@ -2,34 +2,47 @@
   "name": "git-neko-kit",
   "version": "0.3.0",
   "description": "Github, Gitee, GitCode API封装库",
-  "author": "wuliya",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ClarityJS/git-neko-kit.git"
-  },
-  "scripts": {
-    "build": "tsc --noEmit && tsup --config tsup.config.ts",
-    "build:typedoc": "typedoc --options typedoc.json",
-    "build:pages": "vitepress build docs",
-    "build:docs": "pnpm run build:typedoc && pnpm run docs:build",
-    "start": "node dist/index.js",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "dev": "tsx src/index.ts",
-    "test": "tsx test/index.ts",
-    "docs:dev": "vuepress dev docs --port 5500",
-    "docs:build": "vuepress build docs"
-  },
   "keywords": [
     "git",
     "github",
     "gitee",
     "gitcode"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ClarityJS/git-neko-kit.git"
+  },
   "license": "GNU AGPL-3.0",
+  "author": "wuliya",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/*",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc --noEmit && tsup --config tsup.config.ts",
+    "build:docs": "pnpm run build:typedoc && pnpm run docs:build",
+    "build:pages": "vitepress build docs",
+    "build:typedoc": "typedoc --options typedoc.json",
+    "dev": "tsx src/index.ts",
+    "docs:build": "vuepress build docs",
+    "docs:dev": "vuepress dev docs --port 5500",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "sort": "sort-package-json",
+    "start": "node dist/index.js",
+    "test": "tsx test/index.ts"
+  },
   "dependencies": {
     "axios": "^1.8.4",
     "dayjs": "^1.11.13",
@@ -47,7 +60,7 @@
     "@typescript-eslint/eslint-plugin": "^8.28.0",
     "@typescript-eslint/parser": "^8.28.0",
     "@vuepress/bundler-vite": "2.0.0-rc.20",
-    "eslint": "^9.25.0",
+    "eslint": "^9.26.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-tsdoc": "^0.4.0",
     "globals": "^16.0.0",
@@ -64,19 +77,6 @@
     "vue": "^3.5.13",
     "vuepress": "2.0.0-rc.20",
     "vuepress-theme-plume": "1.0.0-rc.140"
-  },
-  "files": [
-    "dist/*",
-    "package.json",
-    "README.md",
-    "CHANGELOG.md"
-  ],
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.cjs"
-    }
   },
   "packageManager": "pnpm@9.13.2"
 }
