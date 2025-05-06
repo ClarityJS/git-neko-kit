@@ -1,5 +1,72 @@
 # 变更日志
 
+## [0.4.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.3.0...v0.4.0) (2025-05-06)
+
+
+### ✨ 新功能
+
+* **collaborator:** 添加获取协作者列表功能 ([9152618](https://github.com/ClarityJS/git-neko-kit/commit/91526183d05b11c909db270d5373f47a4104583f))
+* **github:** 添加 GitHub Issue 相关操作支持 ([36449c7](https://github.com/ClarityJS/git-neko-kit/commit/36449c7ffe31eb26ffcad1960379bee472f3f73d))
+* **github:** 添加删除协作者功能并优化请求方法 ([aac526d](https://github.com/ClarityJS/git-neko-kit/commit/aac526d184c03110a821891f44761f4e1edbe248))
+* **github:** 添加获取Issue详情的功能 ([02aea42](https://github.com/ClarityJS/git-neko-kit/commit/02aea42e9f2086c9f0fa7448c8d03bd172d38924))
+* **github:** 添加获取仓库默认分支功能 ([2ecdab3](https://github.com/ClarityJS/git-neko-kit/commit/2ecdab38ca2289e11d8047333d4e0200a8e3d637))
+* **github:** 添加通过仓库获取应用安装信息的功能 ([d95a1e0](https://github.com/ClarityJS/git-neko-kit/commit/d95a1e02f2581757a4a809ec7308b4031eb1634b))
+* **github:** 添加速率限制错误处理 ([e37e89a](https://github.com/ClarityJS/git-neko-kit/commit/e37e89a58ab24e28e10a80aad837a4f46c173e09))
+* **github:** 添加邀请协作者接口及相应类型定义 ([036290f](https://github.com/ClarityJS/git-neko-kit/commit/036290fa90e516c46b514ca5238c4e1eb88c4a73))
+* **github:** 重构 GitHub API 并添加格式化功能 ([0f8bd31](https://github.com/ClarityJS/git-neko-kit/commit/0f8bd31c5c78d9d03f234593a69f03f068b96fd5))
+* **issue:** 添加发送Issue功能并优化Issue列表获取 ([6d0a3c5](https://github.com/ClarityJS/git-neko-kit/commit/6d0a3c5646f38bc18d321dd661e3482ce9768900))
+* **platform/github:** 新增协作者管理功能 ([be3069e](https://github.com/ClarityJS/git-neko-kit/commit/be3069e5405818f30b7ee7b621487b3540445903))
+* **platform/github:** 添加 Issue 功能模块并优化类型导入 ([f121c71](https://github.com/ClarityJS/git-neko-kit/commit/f121c71dfa4f609855817465a061b5bebc790e91))
+* **request:** 添加 DELETE 请求方法 ([9950ae0](https://github.com/ClarityJS/git-neko-kit/commit/9950ae033aeb791b25af872f05f2903f251a9d9c))
+* **request:** 添加 PUT 请求方法 ([4c0f88c](https://github.com/ClarityJS/git-neko-kit/commit/4c0f88c4f03eafdd07fcc91ce4c544675e0c7f8e))
+
+
+### 🐛 错误修复
+
+* **auth:** 修复一处类型错误 ([9b5aef2](https://github.com/ClarityJS/git-neko-kit/commit/9b5aef251b5edf29f60bcecbe68263cfca1dc025))
+* **models:** 修复添加协作者时的权限验证问题 ([a238008](https://github.com/ClarityJS/git-neko-kit/commit/a238008d923bd9fc73ffa54114d5af7375660227))
+* **models:** 修复添加协作者时的错误处理 ([b8866ef](https://github.com/ClarityJS/git-neko-kit/commit/b8866ef41c5e2b2387e610766397cf75f4f38c9c))
+* **platform:** 在 get 请求中添加用户 token 配置 ([a32eb28](https://github.com/ClarityJS/git-neko-kit/commit/a32eb2848b8953b4e3067eaf8954bf1c8ac65605))
+* **platform:** 在 get 请求中添加用户 token 配置 ([b37645a](https://github.com/ClarityJS/git-neko-kit/commit/b37645a621e468dba4b4b6a9a04ded3737628c7d))
+* 修复类型错误，都怪狐狐 ([4d290d6](https://github.com/ClarityJS/git-neko-kit/commit/4d290d61e05e489aa2876a7f75b74aba844147ad))
+
+
+### ⚡️ 性能优化
+
+* **models:** 优化 GitHub 协作者邀请功能 ([8709168](https://github.com/ClarityJS/git-neko-kit/commit/8709168d1364c8cc505b8a169550039571f01487))
+
+
+### ♻️ 代码重构
+
+* **collaborator:** 优化协作者列表接口返回类型定义 ([383638d](https://github.com/ClarityJS/git-neko-kit/commit/383638d89957bafd9b534ff9d938961aab1d8a87))
+* **common:** 优化 GitHub 代理 URL 的解析逻辑 ([9d73cee](https://github.com/ClarityJS/git-neko-kit/commit/9d73cee415ee79b98f6290b2bebbc8e587763d25))
+* **common:** 重构 parse_git_url 函数 ([512cf91](https://github.com/ClarityJS/git-neko-kit/commit/512cf911753e586911fda1b27585a649f4731d8b))
+* **github:** 优化 GitHub API 调用和错误处理 ([c9510a0](https://github.com/ClarityJS/git-neko-kit/commit/c9510a00a8a495cf793b70292a80fa6019eb9f38))
+* **github:** 优化仓库信息获取逻辑 ([56ea0eb](https://github.com/ClarityJS/git-neko-kit/commit/56ea0eb6330159337d5579753206cee32926877e))
+* **github:** 优化用户仓库列表获取方式 ([79e40ef](https://github.com/ClarityJS/git-neko-kit/commit/79e40ef74f6a6cdbd1eb2d62623e3c1cc80d1e1f))
+* **github:** 优化通过访问令牌获取用户信息的方法 ([8eca6cb](https://github.com/ClarityJS/git-neko-kit/commit/8eca6cbf86931f78510ac8129ab7dd2f919c256e))
+* **github:** 更新协作者权限类型定义并添加默认值说明 ([46c7c1a](https://github.com/ClarityJS/git-neko-kit/commit/46c7c1adad9921fad3dce3b55ad35f5bbe20569c))
+* **github:** 移除 APP_ID 字段并使用 Client_ID 生成 JWT ([691629b](https://github.com/ClarityJS/git-neko-kit/commit/691629b08e5225f8d203298c24562769e22061bb))
+* **github:** 移除 Collaborator 类并整合到 Repo 类 ([4be3449](https://github.com/ClarityJS/git-neko-kit/commit/4be3449fc5168a015337a4d92bb4b6c3e795bde4))
+* **github:** 重构仓库列表接口参数 ([240565e](https://github.com/ClarityJS/git-neko-kit/commit/240565e35ace5d571c5ffadeabc397f1de68cb3e))
+* **github:** 重构议题创建功能 ([bebe6f7](https://github.com/ClarityJS/git-neko-kit/commit/bebe6f7c54f7abce8577ea585d71ba7660e3d171))
+* **models:** 优化 GitHub 相关模型的文档注释 ([e90fc87](https://github.com/ClarityJS/git-neko-kit/commit/e90fc87a169e9b4b00baed9690179fdb3acc8882))
+* **models:** 移除 GitHub 请求中的重复代码 ([1c5e2bd](https://github.com/ClarityJS/git-neko-kit/commit/1c5e2bdd0a32b9d10349e19a00cc5b3a74aeab6d))
+* **src/common/utils.ts:** 优化代码注释和函数定义 ([96e7ee2](https://github.com/ClarityJS/git-neko-kit/commit/96e7ee2fc504bda6525de1c795c6b479683b30b4))
+* **src:** 优化 GitHub 用户模型方法 ([ffa7fc5](https://github.com/ClarityJS/git-neko-kit/commit/ffa7fc5f80e0e4280e4ff3626b5a0bb4f3a03a8b))
+* **src:** 优化代理配置设置逻辑 ([92fb30b](https://github.com/ClarityJS/git-neko-kit/commit/92fb30bbe0ee28a999ddd70ec364f77faeea6617))
+
+
+### 📦️ 构建系统
+
+* **deps:** 更新 ESLint 至 9.25.0 版本 ([5d2245c](https://github.com/ClarityJS/git-neko-kit/commit/5d2245cdde8cd5769a82a48fd18a3e0d30d84da1))
+
+
+### 🎡 持续集成
+
+* **release:** 更新发布流程并移除 CHANGELOG.md ([dcc8ea9](https://github.com/ClarityJS/git-neko-kit/commit/dcc8ea9cecfed8078c7ff133708f2f694cf074a7))
+* 优化预览版发布工作流 ([d35d192](https://github.com/ClarityJS/git-neko-kit/commit/d35d192c0caba806e1961a747f568854c607f980))
+
 ## [0.3.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.2.0...v0.3.0) (2025-04-18)
 
 
