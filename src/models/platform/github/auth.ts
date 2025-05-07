@@ -85,12 +85,12 @@ export class Auth extends Base {
         {
           url: this.BaseUrl
         })
-      const req = await this.post('login/oauth/access_token', {
+      const res = await this.post('login/oauth/access_token', {
         client_id: this.Client_ID,
         client_secret: this.Client_Secret,
         code: options.code
       }, { Accept: 'application/json' })
-      return req
+      return res
     } catch (error) {
       throw new Error(`请求获取访问令牌失败: ${(error as Error).message}`)
     }
@@ -120,12 +120,12 @@ export class Auth extends Base {
         tokenType: 'Basic',
         token: `${this.Client_ID}:${this.Client_Secret}`
       })
-      const req = await this.post(`/applications/${this.Client_ID}/token`, {
+      const res = await this.post(`/applications/${this.Client_ID}/token`, {
         access_token
       })
-      const status = !((req.status === 'ok' && (req.statusCode === 404 || req.statusCode === 422)))
+      const status = !((res.status === 'ok' && (res.statusCode === 404 || res.statusCode === 422)))
       return {
-        ...req,
+        ...res,
         data: {
           success: status,
           info: status ? AccessTokenSuccessMsg : isNotSuccessAccessTokenMsg
@@ -157,17 +157,17 @@ export class Auth extends Base {
         {
           url: this.BaseUrl
         })
-      const req = await this.post('login/oauth/access_token', {
+      const res = await this.post('login/oauth/access_token', {
         client_id: this.Client_ID,
         client_secret: this.Client_Secret,
         grant_type: 'refresh_token',
         refresh_token: options.refresh_token
       }, { Accept: 'application/json' })
 
-      const isSuccess = req.status === 'ok' && req.statusCode === 200 && !req.data.error
+      const isSuccess = res.status === 'ok' && res.statusCode === 200 && !res.data.error
 
       let errorMsg = NotRefreshTokenSuccessMsg
-      switch (req.data.error) {
+      switch (res.data.error) {
         case 'bad_refresh_token':
           errorMsg = isNotRefreshTokenMsg
           break
@@ -181,11 +181,11 @@ export class Auth extends Base {
       }
 
       return {
-        ...req,
+        ...res,
         data: {
           success: isSuccess,
           info: RefreshAccessTokenSuccessMsg,
-          ...req.data
+          ...res.data
         }
       }
     } catch (error) {

@@ -34,8 +34,8 @@ export class Org extends Base {
       this.setRequestConfig({
         token: this.userToken
       })
-      const req = await this.get(`/orgs/${options.org}`)
-      return req
+      const res = await this.get(`/orgs/${options.org}`)
+      return res
     } catch (error) {
       throw new Error(`获取组织信息失败: ${(error as Error).message}`)
     }

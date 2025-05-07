@@ -78,17 +78,17 @@ export class Repo extends Base {
       const url = queryString
         ? `/orgs/${options.org}/repos?${queryString}`
         : `/orgs/${options.org}/repos`
-      const req = await this.get(url)
-      if (req.statusCode === 404) {
+      const res = await this.get(url)
+      if (res.statusCode === 404) {
         throw new Error(NotOrgMsg)
-      } else if (req.statusCode === 401) {
+      } else if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
       const isFormat = options.format ?? this.format
       if (isFormat) {
-        if (req.data) {
-          req.data = await Promise.all(
-            req.data.map(async (repo: RepoInfoResponseType) => ({
+        if (res.data) {
+          res.data = await Promise.all(
+            res.data.map(async (repo: RepoInfoResponseType) => ({
               ...repo,
               created_at: await formatDate(repo.created_at),
               updated_at: await formatDate(repo.updated_at),
@@ -97,7 +97,7 @@ export class Repo extends Base {
           )
         }
       }
-      return req
+      return res
     } catch (error) {
       throw new Error(`获取组织仓库列表失败: ${(error as Error).message}`)
     }
@@ -135,15 +135,15 @@ export class Repo extends Base {
       const url = queryString
         ? `/user/repos?${queryString}`
         : '/uses/repos'
-      const req = await this.get(url)
-      if (req.statusCode === 401) {
+      const res = await this.get(url)
+      if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
       const isFormat = options?.format ?? this.format
       if (isFormat) {
-        if (req.data) {
-          req.data = await Promise.all(
-            req.data.map(async (repo: RepoInfoResponseType) => ({
+        if (res.data) {
+          res.data = await Promise.all(
+            res.data.map(async (repo: RepoInfoResponseType) => ({
               ...repo,
               created_at: await formatDate(repo.created_at),
               updated_at: await formatDate(repo.updated_at),
@@ -152,7 +152,7 @@ export class Repo extends Base {
           )
         }
       }
-      return req
+      return res
     } catch (error) {
       throw new Error(`获取授权用户仓库列表失败: ${(error as Error).message}`)
     }
@@ -186,18 +186,18 @@ export class Repo extends Base {
       if (options?.page) queryParams.set('page', options.page.toString())
       const isFormat = options?.format ?? this.format
       const queryString = queryParams.toString()
-      let req
+      let res
       try {
-        req = await this.get_user_repos_list_by_token({
+        res = await this.get_user_repos_list_by_token({
           ...options,
           format: isFormat
         })
       } catch (error) {
         const url = `/users/${options.username}/repos?${queryString}`
-        req = await this.get(url)
+        res = await this.get(url)
       }
 
-      switch (req.statusCode) {
+      switch (res.statusCode) {
         case 404:
           throw new Error(NotUserMsg)
         case 401:
@@ -205,9 +205,9 @@ export class Repo extends Base {
       }
 
       if (isFormat) {
-        if (req.data) {
-          req.data = await Promise.all(
-            req.data.map(async (repo: RepoInfoResponseType) => ({
+        if (res.data) {
+          res.data = await Promise.all(
+            res.data.map(async (repo: RepoInfoResponseType) => ({
               ...repo,
               created_at: await formatDate(repo.created_at),
               updated_at: await formatDate(repo.updated_at),
@@ -217,7 +217,7 @@ export class Repo extends Base {
         }
       }
 
-      return req
+      return res
     } catch (error) {
       throw new Error(`获取用户仓库列表失败: ${(error as Error).message}`)
     }
@@ -251,8 +251,8 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const req = await this.get(`/repos/${owner}/${repo}`)
-      switch (req.statusCode) {
+      const res = await this.get(`/repos/${owner}/${repo}`)
+      switch (res.statusCode) {
         case 401:
           throw new Error(NotPerrmissionMsg)
         case 404:
@@ -260,13 +260,13 @@ export class Repo extends Base {
       }
       const isFormat = options?.format ?? this.format
       if (isFormat) {
-        if (req.data) {
-          req.data.created_at = await formatDate(req.data.created_at)
-          req.data.updated_at = await formatDate(req.data.updated_at)
-          req.data.pushed_at = await formatDate(req.data.pushed_at)
+        if (res.data) {
+          res.data.created_at = await formatDate(res.data.created_at)
+          res.data.updated_at = await formatDate(res.data.updated_at)
+          res.data.pushed_at = await formatDate(res.data.pushed_at)
         }
       }
-      return req
+      return res
     } catch (error) {
       throw new Error(`获取仓库信息失败: ${(error as Error).message}`)
     }
@@ -310,19 +310,19 @@ export class Repo extends Base {
         name,
         ...repoOptions
       }
-      const req = await this.post(`/orgs/${owner}/repos`, body)
-      if (req.statusCode === 401) {
+      const res = await this.post(`/orgs/${owner}/repos`, body)
+      if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
       const isFormat = options?.format ?? this.format
       if (isFormat) {
-        if (req.data) {
-          req.data.created_at = await formatDate(req.data.created_at)
-          req.data.updated_at = await formatDate(req.data.updated_at)
-          req.data.pushed_at = await formatDate(req.data.pushed_at)
+        if (res.data) {
+          res.data.created_at = await formatDate(res.data.created_at)
+          res.data.updated_at = await formatDate(res.data.updated_at)
+          res.data.pushed_at = await formatDate(res.data.pushed_at)
         }
       }
-      return req
+      return res
     } catch (error) {
       throw new Error(`创建组织仓库失败: ${(error as Error).message}`)
     }
@@ -413,17 +413,17 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       username = options?.username
-      const req = await this.put(`/repos/${owner}/${repo}/collaborators/${username}`, {
+      const res = await this.put(`/repos/${owner}/${repo}/collaborators/${username}`, {
         permission: options.permission ?? 'pull'
       })
-      if (req.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
-      if (req.statusCode === 422 && req.data.message) {
-        if (req.data.message.includes('is not a valid permission.')) {
+      if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
+      if (res.statusCode === 422 && res.data.message) {
+        if (res.data.message.includes('is not a valid permission.')) {
           throw new Error(isNotPerrmissionMsg)
         }
       }
 
-      return req
+      return res
     } catch (error) {
       throw new Error(`添加协作者${username}失败: ${(error as Error).message}`)
     }
@@ -468,18 +468,18 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       username = options?.username
-      const req = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`)
-      if (req.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
-      if (req.status && req.statusCode === 204) {
-        req.data = {
+      const res = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`)
+      if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
+      if (res.status && res.statusCode === 204) {
+        res.data = {
           info: `删除协作者${username}成功`
         }
       } else {
-        req.data = {
+        res.data = {
           info: `删除协作者${username}失败`
         }
       }
-      return req
+      return res
     } catch (error) {
       throw new Error(`删除协作者${username}失败: ${(error as Error).message}`)
     }
@@ -514,10 +514,10 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const req = await this.get_repo_info({ owner, repo })
+      const res = await this.get_repo_info({ owner, repo })
       let visibility = 'public'
-      if (req.data) {
-        visibility = req.data?.visibility
+      if (res.data) {
+        visibility = res.data?.visibility
       }
       return visibility
     } catch (error) {
@@ -552,10 +552,10 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const req = await this.get_repo_info({ owner, repo })
+      const res = await this.get_repo_info({ owner, repo })
       let default_branch = 'main'
-      if (req.data) {
-        default_branch = req.data?.default_branch
+      if (res.data) {
+        default_branch = res.data?.default_branch
       }
       return default_branch
     } catch (error) {

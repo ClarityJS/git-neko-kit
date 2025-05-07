@@ -162,8 +162,8 @@ export interface IssueInfoResponseType {
 
 /** 议题列表响应类型 */
 export type IssueListResponseType = IssueInfoResponseType[]
-/** 发送议题参数类型 */
-export type SendIssueParamType = RepoBaseParamType & {
+/** 创建议题参数类型 */
+export type CreteIssueParamType = RepoBaseParamType & {
   /** 标题 */
   title: string
   /** 正文内容 */
@@ -185,3 +185,71 @@ export type SendIssueParamType = RepoBaseParamType & {
 
 /** 创建议题响应类型 */
 export type CreateIssueResponseType = IssueInfoResponseType
+
+/** 更新议题参数类型 */
+export interface UpdateIssueParamType extends Omit<CreteIssueParamType, 'title' | 'type'> {
+  /** 议题ID */
+  issue_number: number
+  /** 问题的名称 */
+  title?: string | null
+  /** 问题的内容 */
+  body?: string | null
+  /** 要分配给此问题的用户名（已弃用） */
+  assignee?: string | null
+  /** 问题的状态：open/closed */
+  state?: 'open' | 'closed'
+  /** 状态更改的原因 */
+  state_reason?: 'completed' | 'not_planned' | 'reopened' | null
+  /** 与此问题关联的里程碑 */
+  milestone?: number | string | null
+  /** 与此问题关联的标签数组 */
+  labels?: string[]
+  /** 要分配给此问题的用户名数组 */
+  assignees?: string[]
+  /** 问题类型 */
+  type?: string | null
+}
+
+/** 更新议题响应类型 */
+export type UpdateIssueResponseType = IssueInfoResponseType
+
+/** 打开议题参数类型 */
+export interface OpenIssueParamType extends RepoBaseParamType {
+  /** 议题ID */
+  issue_number: number
+}
+/** 打开议题响应类型 */
+export type OpenIssueResponseType = IssueInfoResponseType
+
+/** 关闭议题参数类型 */
+export interface CloseIssueParamType extends OpenIssueParamType {
+  /** 关闭原因 */
+  state_reason?: IssueInfoResponseType['state_reason']
+}
+/** 关闭议题响应类型 */
+export type CloseIssueResponseType = IssueInfoResponseType
+
+/** 锁定议题参数类型 */
+export interface LockIssueParamType extends RepoBaseParamType {
+  /** 议题ID */
+  issue_number: number
+  /**
+   * 锁定原因
+   * 可以是以下之一：
+   * - off-topic：锁定议题，因为该议题与仓库无关
+   * - too heated：锁定议题，因为讨论过于激烈
+   * - resolved：锁定议题，因为该议题已解决
+   * - spam：锁定议题，因为该议题是垃圾邮件
+   */
+  lock_reason?: 'off-topic' | 'too heated' | 'resolved' | 'spam'
+}
+/** 锁定议题响应类型 */
+export interface LockIssueResponseType {
+  /** 锁定状态信息 */
+  info: string
+}
+
+/** 解锁议题参数类型 */
+export type UnLockIssueParamType = Omit<LockIssueParamType, 'lock_reason'>
+/** 解锁议题响应类型 */
+export type UnLockIssueResponseType = LockIssueResponseType

@@ -44,7 +44,7 @@ export class Request {
    * @returns 响应结果
    */
   private async request (
-    method: 'get' | 'post' | 'put' | 'delete',
+    method: 'get' | 'post' | 'patch' | 'put' | 'delete',
     path: string,
     params?: any,
     data?: any,
@@ -90,6 +90,9 @@ export class Request {
           break
         case 'post':
           response = await axios.post(url, data, config)
+          break
+        case 'patch':
+          response = await axios.patch(url, data, config)
           break
         case 'put':
           response = await axios.put(url, data, config)
@@ -138,6 +141,18 @@ export class Request {
    */
   async post (path: string, params?: Record<string, string>, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
     return this.request('post', path, params, data, customHeaders)
+  }
+
+  /**
+   * 发送PATCH请求
+   * @param path - 请求路径
+   * @param params - URL查询参数
+   * @param data - 请求体数据
+   * @param customHeaders - 自定义请求头
+   * @returns 响应结果
+   */
+  async patch (path: string, params?: Record<string, string>, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
+    return this.request('patch', path, params, data, customHeaders)
   }
 
   /**

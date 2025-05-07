@@ -58,13 +58,13 @@ export class Commit extends Base {
       }
       if (!options.sha) {
         const repoInfo = await this.get_repo()
-        const req = await repoInfo.get_repo_info({ owner, repo })
-        sha = req.data?.default_branch
+        const res = await repoInfo.get_repo_info({ owner, repo })
+        sha = res.data?.default_branch
       } else {
         sha = options.sha
       }
-      const req = await this.get(`/repos/${owner}/${repo}/commits/${sha}`)
-      switch (req.statusCode) {
+      const res = await this.get(`/repos/${owner}/${repo}/commits/${sha}`)
+      switch (res.statusCode) {
         case 401:
           throw new Error(NotPerrmissionMsg)
         case 404:
@@ -75,43 +75,43 @@ export class Commit extends Base {
 
       const isFormat = options.format ?? this.format
       if (isFormat) {
-        if (req.data?.commit) {
-          req.data.commit = {
-            ...req.data.commit,
-            author: req.data.commit.author
+        if (res.data?.commit) {
+          res.data.commit = {
+            ...res.data.commit,
+            author: res.data.commit.author
               ? {
-                  ...req.data.commit.author,
-                  date: await formatDate(req.data.commit.author.date)
+                  ...res.data.commit.author,
+                  date: await formatDate(res.data.commit.author.date)
                 }
               : null,
-            committer: req.data.commit.committer
+            committer: res.data.commit.committer
               ? {
-                  ...req.data.commit.committer,
-                  date: await formatDate(req.data.commit.committer.date)
+                  ...res.data.commit.committer,
+                  date: await formatDate(res.data.commit.committer.date)
                 }
               : null,
-            verification: req.data.commit.verification
+            verification: res.data.commit.verification
               ? {
-                  ...req.data.commit.verification,
-                  verified_at: req.data.commit.verification.verified_at
-                    ? await formatDate(req.data.commit.verification.verified_at)
+                  ...res.data.commit.verification,
+                  verified_at: res.data.commit.verification.verified_at
+                    ? await formatDate(res.data.commit.verification.verified_at)
                     : null
                 }
               : null
           }
         }
-        const message = req.data?.commit?.message ?? ''
+        const message = res.data?.commit?.message ?? ''
         const [title, ...bodyParts] = message.split('\n')
-        req.data = {
-          ...req.data,
+        res.data = {
+          ...res.data,
           commit: {
-            ...req.data.commit,
+            ...res.data.commit,
             title: title.trim(),
             body: bodyParts.join('\n').trim()
           }
         }
       }
-      return req
+      return res
     } catch (error) {
       throw new Error(`获取提交信息失败: ${(error as Error).message}`)
     }

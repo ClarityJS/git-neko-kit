@@ -50,17 +50,17 @@ export class User extends Base {
       this.setRequestConfig({
         token: this.userToken
       })
-      const req = await this.get(`/users/${options.username}`)
-      if (req.statusCode === 401) {
+      const res = await this.get(`/users/${options.username}`)
+      if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
-      } else if (req.statusCode === 404) {
+      } else if (res.statusCode === 404) {
         throw new Error(NotOrgOrUserMsg)
       }
-      if (req.data) {
-        req.data.created_at = await formatDate(req.data.created_at)
-        req.data.updated_at = await formatDate(req.data.updated_at)
+      if (res.data) {
+        res.data.created_at = await formatDate(res.data.created_at)
+        res.data.updated_at = await formatDate(res.data.updated_at)
       }
-      return req
+      return res
     } catch (error) {
       throw new Error(`获取用户或组织信息失败: ${(error as Error).message}`)
     }
@@ -82,17 +82,17 @@ export class User extends Base {
       this.setRequestConfig({
         token: this.userToken
       })
-      const req = await this.get(`/user/${options.user_id}`)
-      if (req.statusCode === 401) {
+      const res = await this.get(`/user/${options.user_id}`)
+      if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
-      } else if (req.statusCode === 404) {
+      } else if (res.statusCode === 404) {
         throw new Error(NotUserMsg)
       }
-      if (req.data) {
-        req.data.created_at = await formatDate(req.data.created_at)
-        req.data.updated_at = await formatDate(req.data.updated_at)
+      if (res.data) {
+        res.data.created_at = await formatDate(res.data.created_at)
+        res.data.updated_at = await formatDate(res.data.updated_at)
       }
-      return req
+      return res
     } catch (error) {
       throw new Error(`通过用户id获取用户${options.user_id}信息失败: ${(error as Error).message}`)
     }
@@ -115,8 +115,8 @@ export class User extends Base {
       this.setRequestConfig({
         token: access_token
       })
-      const req = await this.get('/user')
-      switch (req.statusCode) {
+      const res = await this.get('/user')
+      switch (res.statusCode) {
         case 401:
           throw new Error(NotPerrmissionMsg)
         case 404:
@@ -124,12 +124,12 @@ export class User extends Base {
       }
       const isFormat = options?.format ?? this.format
       if (isFormat) {
-        if (req.data) {
-          req.data.created_at = await formatDate(req.data.created_at)
-          req.data.updated_at = await formatDate(req.data.updated_at)
+        if (res.data) {
+          res.data.created_at = await formatDate(res.data.created_at)
+          res.data.updated_at = await formatDate(res.data.updated_at)
         }
       }
-      return req
+      return res
     } catch (error) {
       throw new Error(`获取授权用户信息失败: ${(error as Error).message}`)
     }
@@ -159,7 +159,7 @@ export class User extends Base {
       this.setRequestConfig({
         url: this.BaseUrl
       })
-      const req = await this.get(`/${options.username}`, {
+      const res = await this.get(`/${options.username}`, {
         action: 'show',
         controller: 'profiles',
         tab: 'contributions',
@@ -168,14 +168,14 @@ export class User extends Base {
         'X-Requested-With': 'XMLHttpRequest'
       })
 
-      if (req.statusCode === 404) {
+      if (res.statusCode === 404) {
         throw new Error(NotUserParamMsg)
       }
 
-      const res = await getContributionData(req.data)
+      const ContributionData = await getContributionData(res.data)
       return {
-        ...req,
-        data: res
+        ...res,
+        data: ContributionData
       }
     } catch (error) {
       throw new Error(`获取用户${options.username}贡献信息失败: ${(error as Error).message}`)
