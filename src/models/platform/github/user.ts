@@ -10,7 +10,6 @@ import {
 } from '@/common'
 import { Base } from '@/models/platform/github/base'
 import {
-  AccessTokenType,
   ApiResponseType,
   ContributionResult,
   UserIdParamType,

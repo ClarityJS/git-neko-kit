@@ -138,6 +138,3 @@ export class App extends Base {
     return (await this.get_info()).data.name
   }
 }
-
-/** 注册 App 模块 */
-// Base.register('app', App)

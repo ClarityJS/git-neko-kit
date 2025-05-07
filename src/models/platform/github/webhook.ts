@@ -30,6 +30,14 @@ export class WebHook extends Base {
    * - payload: 要验证的签名主体
    * - signature: 要验证的签名
    * @returns 验证结果
+   * @example
+   * ```ts
+   * const res = await check_webhook_signature({
+   *   secret: 'your_secret',
+   *   payload: 'your_payload',
+   *   signature: 'your_signature'
+   * })
+   * ```
    */
   public async check_webhook_signature (options: WebHookParamType):
   Promise<ApiResponseType<boolean>> {

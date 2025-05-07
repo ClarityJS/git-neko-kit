@@ -48,7 +48,6 @@ const type = 'github'
  * ```
  */
 export class Base {
-  // private static registry = new Map<string, new (base: Base) => any>()
   declare app: App
   declare auth: Auth
   declare commit: Commit
@@ -85,38 +84,6 @@ export class Base {
     }
     this.format = options.format ?? false
   }
-
-  /**
-   * 注册模块
-   * @param name 模块名称
-   * @param ctor 模块构造函数
-   * @example
-   * ```ts
-   * Base.register('app', App)
-   * ```
-   */
-  // public static register<T extends Base> (
-  //   name: string,
-  //   ctor: new (base: Base) => T
-  // ): void {
-  //   Base.registry.set(name, ctor)
-  // }
-
-  /**
-   * 获取模块实例
-   * @param name 模块名称
-   * @returns 模块实例
-   * @example
-   * ```ts
-   * const app = Base.getRegister<App>('app')
-   */
-  // public getRegister<T> (name: string): T {
-  //   const Ctor = Base.registry.get(name)
-  //   if (!Ctor) {
-  //     throw new Error(`未注册的服务: ${name}`)
-  //   }
-  //   return new Ctor(this)
-  // }
 
   /**
    * 获取App实例
