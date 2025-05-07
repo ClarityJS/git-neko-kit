@@ -1,4 +1,6 @@
 import {
+  NotIssueCommentMsg,
+  NotIssueCommentNumberMsg,
   NotIssueMsg,
   NotIssueNumberMsg,
   NotIssueTitleMsg,
@@ -13,6 +15,10 @@ import type {
   CloseIssueResponseType,
   CreateIssueResponseType,
   CreteIssueParamType,
+  IssueCommentInfoResponseType,
+  IssueCommentListParamType,
+  IssueCommentListResponseType,
+  IssueCommentParamType,
   IssueInfoParamType,
   IssueInfoResponseType,
   issueListParamType,
@@ -39,7 +45,6 @@ import type {
  * - 评论Issue
  *
  * @class Issue
- * @extends Base
  */
 export class Issue extends Base {
   constructor (base: Base) {
@@ -115,7 +120,7 @@ export class Issue extends Base {
    * - direction  排序方向，可选 'asc' | 'desc', 默认为'desc'
    * - since  筛选此时间之后的问题
    * - per_page  每页数量，可选，默认为30
-   * -page  页码，可选，默认为1
+   * - page  页码，可选，默认为1
    * @returns 包含Issue列表的响应对象
    * @example
    * ```ts
@@ -145,7 +150,25 @@ export class Issue extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get(`/repos/${owner}/${repo}/issues`)
+
+      const queryParams = new URLSearchParams()
+
+      if (options.milestone) queryParams.append('milestone', options.milestone.toString())
+      if (options.state) queryParams.append('state', options.state)
+      if (options.assignee) queryParams.append('assignee', options.assignee)
+      if (options.creator) queryParams.append('creator', options.creator)
+      if (options.mentioned) queryParams.append('mentioned', options.mentioned)
+      if (options.labels) queryParams.append('labels', options.labels)
+      if (options.sort) queryParams.append('sort', options.sort)
+      if (options.direction) queryParams.append('direction', options.direction)
+      if (options.since) queryParams.append('since', options.since)
+      if (options.per_page) queryParams.append('per_page', options.per_page.toString())
+      if (options.page) queryParams.append('page', options.page.toString())
+
+      const queryString = queryParams.toString()
+      const apiPath = `/repos/${owner}/${repo}/issues${queryString ? `?${queryString}` : ''}`
+
+      const res = await this.get(apiPath)
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
@@ -408,6 +431,95 @@ export class Issue extends Base {
       return res
     } catch (error) {
       throw new Error(`解锁Issue失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取一个Issue的评论列表
+   * @param options 获取Issue评论列表的参数对象
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - sort 排序方式 可选 'created' | 'updated'
+   * - direction 排序方向 可选 'asc' | 'desc'，当sort不存在时此参数会被忽略
+   * - since 评论时间
+   * - per_page 每页评论数量
+   * - page 页码
+   * @returns 包含Issue评论列表的响应对象
+   * @example
+   * ```ts
+   * const issue = get_issue() // 获取issue实例
+   * const res = await issue.get_issue_comment_list({ owner: 'owner', repo:'repo', issue_number:1 })
+   * console.log(res) // { data: IssueCommentListResponseType[] }
+   * ```
+   */
+  public async get_issue_comment_list (
+    options: IssueCommentListParamType
+  ): Promise<ApiResponseType<IssueCommentListResponseType>> {
+    if (!options.owner || !options.repo) {
+      throw new Error(NotParamMsg)
+    }
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, ...queryOptions } = options
+
+      const queryParams = new URLSearchParams()
+
+      if (queryOptions.sort) queryParams.append('sort', queryOptions.sort)
+      if (queryOptions.sort && queryOptions.direction) queryParams.append('direction', queryOptions.direction)
+      if (queryOptions.since) queryParams.append('since', queryOptions.since)
+      if (queryOptions.per_page) queryParams.append('per_page', queryOptions.per_page.toString())
+      if (queryOptions.page) queryParams.append('page', queryOptions.page.toString())
+
+      const queryString = queryParams.toString()
+      const apiPath = `/repos/${owner}/${repo}/issues/comments/${queryString ? `?${queryString}` : ''}`
+
+      const res = await this.get(apiPath)
+      if (res.statusCode === 404) {
+        throw new Error(NotIssueCommentMsg)
+      }
+      return res
+    } catch (error) {
+      throw new Error(`获取Issue评论列表失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取Issue评论信息
+   * @param options 获取Issue评论信息的参数对象
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - comment_id 评论ID
+   * @returns Issue评论信息
+   * @example
+   * ```ts
+   * const issue = get_issue() // 获取issue实例
+   * const res = await issue.get_issue_comment({ owner: 'owner', repo:'repo', comment_id:1 })
+   * console.log(res) // { data: IssueCommentInfoResponseType }
+   * ```
+   */
+  public async get_issue_comment (
+    options: IssueCommentParamType
+  ): Promise<ApiResponseType<IssueCommentInfoResponseType>> {
+    if (!options.owner || !options.repo) {
+      throw new Error(NotParamMsg)
+    }
+    if (!options.comment_id) {
+      throw new Error(NotIssueCommentNumberMsg)
+    }
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, comment_id } = options
+      const res = await this.get(`/repos/${owner}/${repo}/issues/comments/${comment_id}`)
+      if (res.statusCode === 404) {
+        throw new Error(NotIssueCommentMsg)
+      }
+      return res
+    } catch (error) {
+      throw new Error(`获取Issue评论信息失败: ${(error as Error).message}`)
     }
   }
 }

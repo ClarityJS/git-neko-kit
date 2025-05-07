@@ -1,3 +1,4 @@
+import { GitHubAppInfoType } from '@/types/platform/github/app'
 import { RepoUrlParamType } from '@/types/platform/github/base'
 import { RepoBaseParamType } from '@/types/platform/github/repo'
 import { UserInfoResponseType } from '@/types/platform/github/user'
@@ -7,31 +8,95 @@ export type IssueInfoParamType = (RepoBaseParamType | RepoUrlParamType) & {
   /** 议题ID */
   issue_number: number
 }
+/** 议题列表参数类型 */
 export type issueListParamType = (RepoBaseParamType | RepoUrlParamType) & {
-  /** 里程碑，可以是字符串或数字 */
-  milestone?: string | number,
-  /** 问题状态：全部/打开/关闭 */
-  state?: 'all' | 'open' | 'closed'
-  /** 指派人用户名 */
-  assignee?: string,
-  /** 议题类型 */
-  type?: string,
-  /** 创建者用户名 */
-  creator?: string,
-  /** 提及的用户名 */
-  mentioned?: string,
-  /** 标签，以逗号分隔的标签名称列表 */
-  labels?: string,
-  /** 排序方式：创建时间/更新时间/评论数 */
-  sort?: 'created' | 'updated' | 'comments',
-  /** 排序方向：升序/降序 */
-  direction?: 'asc' | 'desc',
-  /** 筛选此时间之后的议题 */
-  since?: string,
-  /** 每页数量 */
-  per_page?: number,
-  /** 页码 */
-  page?: number
+  /**
+   * 里程碑筛选
+   * @default undefined
+   * - 传入数字时：按里程碑编号筛选
+   * - 传入 "*"：接受任何里程碑的议题
+   * - 传入 "none"：返回没有里程碑的议题
+   */
+  milestone?: string | number;
+
+  /**
+   * 议题状态
+   * @default "open"
+   * @enum {string}
+   * - open: 打开的议题
+   * - closed: 关闭的议题
+   * - all: 所有议题
+   */
+  state?: 'all' | 'open' | 'closed';
+
+  /**
+   * 指派人用户名
+   * - 传入用户名：返回指派给该用户的议题
+   * - 传入 "none"：返回未指派的议题
+   * - 传入 "*"：返回已指派给任何用户的议题
+   */
+  assignee?: string;
+
+  /**
+   * 议题类型
+   * - 传入类型名：返回指定类型的议题
+   * - 传入 "*"：接受任何类型的议题
+   * - 传入 "none"：返回没有类型的议题
+   */
+  type?: string;
+
+  /** 创建者用户名，筛选由特定用户创建的议题 */
+  creator?: string;
+
+  /** 提及的用户名，筛选提及特定用户的议题 */
+  mentioned?: string;
+
+  /**
+   * 标签列表
+   * 以逗号分隔的标签名称列表
+   * @example "bug,ui,@high"
+   */
+  labels?: string;
+
+  /**
+   * 排序方式
+   * @default "created"
+   * @enum {string}
+   * - created: 按创建时间排序
+   * - updated: 按更新时间排序
+   * - comments: 按评论数排序
+   */
+  sort?: 'created' | 'updated' | 'comments';
+
+  /**
+   * 排序方向
+   * @default "desc"
+   * @enum {string}
+   * - asc: 升序
+   * - desc: 降序
+   */
+  direction?: 'asc' | 'desc';
+
+  /**
+   * 筛选此时间之后更新的议题
+   * 仅显示在指定时间之后更新的结果
+   * 格式为 ISO 8601: YYYY-MM-DDTHH:MM:SSZ
+   * @example "2023-01-01T00:00:00Z"
+   */
+  since?: string;
+
+  /**
+   * 每页结果数量
+   * @default 30
+   * @maximum 100
+   */
+  per_page?: number;
+
+  /**
+   * 页码
+   * @default 1
+   */
+  page?: number;
 }
 
 /** 议题标签类型 */
@@ -131,7 +196,7 @@ export interface IssueInfoResponseType {
   /** 议题正文内容 */
   body: string | null;
   /** 议题创建者用户信息 */
-  user: UserInfoResponseType
+  user: UserInfoResponseType | null;
   /** 议题标签 */
   labels: Array<IssueLabelType | string>;
   /** 议题指派人 */
@@ -253,3 +318,89 @@ export interface LockIssueResponseType {
 export type UnLockIssueParamType = Omit<LockIssueParamType, 'lock_reason'>
 /** 解锁议题响应类型 */
 export type UnLockIssueResponseType = LockIssueResponseType
+
+/** 议题评论参数类型 */
+export interface IssueCommentParamType extends RepoBaseParamType {
+  /** 评论id,评论唯一标识符 */
+  comment_id: string
+}
+/** 议题评论信息响应类型 */
+export interface IssueCommentInfoResponseType {
+  /** 评论ID */
+  id: number;
+  /** 评论节点ID */
+  node_id: string;
+  /** 评论URL */
+  url: string;
+  /** 评论内容 */
+  body: string;
+  /** 评论纯文本内容 */
+  body_text: string;
+  /** 评论HTML内容 */
+  body_html: string;
+  /** 评论HTML页面URL */
+  html_url: string;
+  /** 评论用户信息 */
+  user: UserInfoResponseType | null;
+  /** 创建时间 */
+  created_at: string;
+  /** 更新时间 */
+  updated_at: string;
+  /** 议题URL */
+  issue_url: string;
+  /** 作者关联类型 */
+  author_association: 'COLLABORATOR' | 'CONTRIBUTOR' | 'FIRST_TIMER' | 'FIRST_TIME_CONTRIBUTOR' | 'MANNEQUIN' | 'MEMBER' | 'NONE' | 'OWNER';
+  /** 通过GitHub App执行的操作信息 */
+  performed_via_github_app: GitHubAppInfoType | null;
+}
+
+/** 议题评论列表参数类型 */
+export interface IssueCommentListParamType extends RepoBaseParamType {
+  /**
+   * 排序依据
+   * 用于指定结果的排序属性
+   * @default created
+   * @enum {string}
+   * - created: 按创建时间排序
+   * - updated: 按更新时间排序
+   */
+  sort?: 'created' | 'updated';
+
+  /**
+   * 排序方向
+   * 指定结果的排序方向
+   * 注意：如果没有指定 sort 参数，此参数将被忽略
+   * @default desc 当 sort 参数存在时
+   * @enum {string}
+   * - asc: 升序
+   * - desc: 降序
+   */
+  direction?: 'asc' | 'desc';
+
+  /**
+   * 筛选此时间之后更新的评论
+   * 仅显示在指定时间之后更新的结果
+   * 格式为 ISO 8601: YYYY-MM-DDTHH:MM:SSZ
+   * @example "2023-01-01T00:00:00Z"
+   */
+  since?: string;
+
+  /**
+   * 每页结果数量
+   * 指定每页返回的结果数
+   * @default 30
+   * @minimum 1
+   * @maximum 100
+   */
+  per_page?: number;
+
+  /**
+   * 页码
+   * 指定要获取的结果页码
+   * @default 1
+   * @minimum 1
+   */
+  page?: number;
+}
+/** 议题评论列表响应类型 */
+export type IssueCommentListResponseType = IssueCommentInfoResponseType[]
