@@ -19,6 +19,7 @@ import type {
   OrgRepoCreateParamType,
   OrgRepoListParmsType,
   OrgRepoListType,
+  RemoveCollaboratorParamType,
   RemoveCollaboratorResponseType,
   RepoDefaultBranchResponseType,
   RepoInfoParamType,
@@ -449,7 +450,7 @@ export class Repo extends Base {
    * ```
    */
   public async remove_collaborator (
-    options: CollaboratorParamType
+    options: RemoveCollaboratorParamType
   ): Promise<ApiResponseType<RemoveCollaboratorResponseType>> {
     let owner, repo, username
     try {
@@ -559,8 +560,7 @@ export class Repo extends Base {
       }
       return default_branch
     } catch (error) {
-      console.error(error)
-      throw new Error(NotParamMsg)
+      throw new Error(`获取仓库默认分支失败: ${(error as Error).message}`)
     }
   }
 }

@@ -1,9 +1,11 @@
 import {
+  NotIssueCommentBodyMsg,
   NotIssueCommentMsg,
   NotIssueCommentNumberMsg,
   NotIssueMsg,
   NotIssueNumberMsg,
   NotIssueTitleMsg,
+  NotOwnerOrRepoParamMsg,
   NotParamMsg,
   NotPerrmissionMsg,
   parse_git_url
@@ -14,11 +16,12 @@ import type {
   CloseIssueParamType,
   CloseIssueResponseType,
   CreateIssueResponseType,
+  CreteIssueCommentParamType,
+  CreteIssueCommentResponseType,
   CreteIssueParamType,
+  IssueCommentInfoParamType,
   IssueCommentInfoResponseType,
   IssueCommentListParamType,
-  IssueCommentListResponseType,
-  IssueCommentParamType,
   IssueInfoParamType,
   IssueInfoResponseType,
   issueListParamType,
@@ -27,8 +30,14 @@ import type {
   LockIssueResponseType,
   OpenIssueParamType,
   OpenIssueResponseType,
+  RemoveCollaboratorResponseType,
+  RemoveIssueCommentParamType,
+  RepoCommentListParamType,
+  RepoCommentListResponseType,
   UnLockIssueParamType,
   UnLockIssueResponseType,
+  UpdateIssueCommentParamType,
+  UpdateIssueCommentResponseType,
   UpdateIssueParamType,
   UpdateIssueResponseType
 } from '@/types'
@@ -44,6 +53,7 @@ import type {
  * - 关闭Issue
  * - 评论Issue
  *
+ * @remarks 每个拉取请求都是一个议题，但并非每个议题都是拉取请求。
  * @class Issue
  */
 export class Issue extends Base {
@@ -201,7 +211,7 @@ export class Issue extends Base {
     options: CreteIssueParamType
   ): Promise<ApiResponseType<CreateIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotParamMsg)
+      throw new Error(NotOwnerOrRepoParamMsg)
     }
     if (!options.title) {
       throw new Error(NotIssueTitleMsg)
@@ -242,7 +252,7 @@ export class Issue extends Base {
     options: UpdateIssueParamType
   ): Promise<ApiResponseType<UpdateIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotParamMsg)
+      throw new Error(NotOwnerOrRepoParamMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueNumberMsg)
@@ -277,7 +287,7 @@ export class Issue extends Base {
     options: OpenIssueParamType
   ): Promise<ApiResponseType<OpenIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotParamMsg)
+      throw new Error(NotOwnerOrRepoParamMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueNumberMsg)
@@ -297,7 +307,10 @@ export class Issue extends Base {
     }
   }
 
-  /** @deprecated 请使用 open_issue 方法代替 */
+  /**
+   * 重新打开一个议题
+   * @deprecated 请使用 open_issue 方法代替
+   */
   public async reopen_issue (options: OpenIssueParamType): Promise<ApiResponseType<OpenIssueResponseType>> {
     return this.open_issue(options)
   }
@@ -321,7 +334,7 @@ export class Issue extends Base {
     options: CloseIssueParamType
   ): Promise<ApiResponseType<CloseIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotParamMsg)
+      throw new Error(NotOwnerOrRepoParamMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueNumberMsg)
@@ -363,7 +376,7 @@ export class Issue extends Base {
     options: LockIssueParamType
   ): Promise<ApiResponseType<LockIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotParamMsg)
+      throw new Error(NotOwnerOrRepoParamMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueNumberMsg)
@@ -409,7 +422,7 @@ export class Issue extends Base {
     options: UnLockIssueParamType
   ): Promise<ApiResponseType<UnLockIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotParamMsg)
+      throw new Error(NotOwnerOrRepoParamMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueNumberMsg)
@@ -435,7 +448,7 @@ export class Issue extends Base {
   }
 
   /**
-   * 获取一个Issue的评论列表
+   * 获取一个仓库下Issue的评论列表
    * @param options 获取Issue评论列表的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -452,11 +465,11 @@ export class Issue extends Base {
    * console.log(res) // { data: IssueCommentListResponseType[] }
    * ```
    */
-  public async get_issue_comment_list (
-    options: IssueCommentListParamType
-  ): Promise<ApiResponseType<IssueCommentListResponseType>> {
+  public async get_repo_comment_list (
+    options: RepoCommentListParamType
+  ): Promise<ApiResponseType<RepoCommentListResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotParamMsg)
+      throw new Error(NotOwnerOrRepoParamMsg)
     }
     try {
       this.setRequestConfig({
@@ -474,6 +487,56 @@ export class Issue extends Base {
 
       const queryString = queryParams.toString()
       const apiPath = `/repos/${owner}/${repo}/issues/comments/${queryString ? `?${queryString}` : ''}`
+
+      const res = await this.get(apiPath)
+      if (res.statusCode === 404) {
+        throw new Error(NotIssueCommentMsg)
+      }
+      return res
+    } catch (error) {
+      throw new Error(`获取仓库评论列表失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取一个Issue下的评论列表
+   * @param options 获取Issue评论列表的参数对象
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - issue_number Issue编号
+   * - since 评论时间
+   * - per_page 每页评论数量
+   * - page 页码
+   * @returns 包含Issue评论列表的响应对象
+   * @example
+   * ```ts
+   * const issue = get_issue() // 获取issue实例
+   * const res = await issue.get_issue_comment_list({ owner: 'owner', repo:'repo', issue_number:1 })
+   * console.log(res) // { data: IssueCommentListResponseType[] }
+   * ```
+   */
+  public async get_issue_comment_list (
+    options: IssueCommentListParamType
+  ): Promise<ApiResponseType<IssueCommentListParamType>> {
+    if (!options.owner || !options.repo) {
+      throw new Error(NotOwnerOrRepoParamMsg)
+    }
+    if (!options.issue_number) {
+      throw new Error(NotIssueNumberMsg)
+    }
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, issue_number, ...queryOptions } = options
+      const queryParams = new URLSearchParams()
+
+      if (queryOptions.since) queryParams.append('since', queryOptions.since)
+      if (queryOptions.per_page) queryParams.append('per_page', queryOptions.per_page.toString())
+      if (queryOptions.page) queryParams.append('page', queryOptions.page.toString())
+
+      const queryString = queryParams.toString()
+      const apiPath = `/repos/${owner}/${repo}/issues/${issue_number}/comments/${queryString ? `?${queryString}` : ''}`
 
       const res = await this.get(apiPath)
       if (res.statusCode === 404) {
@@ -499,11 +562,11 @@ export class Issue extends Base {
    * console.log(res) // { data: IssueCommentInfoResponseType }
    * ```
    */
-  public async get_issue_comment (
-    options: IssueCommentParamType
+  public async get_issue_comment_info (
+    options: IssueCommentInfoParamType
   ): Promise<ApiResponseType<IssueCommentInfoResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotParamMsg)
+      throw new Error(NotOwnerOrRepoParamMsg)
     }
     if (!options.comment_id) {
       throw new Error(NotIssueCommentNumberMsg)
@@ -521,5 +584,141 @@ export class Issue extends Base {
     } catch (error) {
       throw new Error(`获取Issue评论信息失败: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 创建一个Issue评论
+   * @param options 创建Issue评论的参数对象
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - issue_number Issue编号
+   * - body 评论内容
+   * @returns 创建的Issue评论信息
+   * @example
+   * ```ts
+   * const issue = get_issue() // 获取issue实例
+   * const res = await issue.create_issue_comment({ owner: 'owner', repo:'repo', issue_number:1, body:'comment' })
+   * console.log(res) // { data: CreteIssueCommentResponseType }
+   * ```
+   */
+  public async create_issue_comment (
+    options: CreteIssueCommentParamType
+  ): Promise<ApiResponseType<CreteIssueCommentResponseType>> {
+    if (!options.owner || !options.repo) {
+      throw new Error(NotOwnerOrRepoParamMsg)
+    }
+    if (!options.issue_number) {
+      throw new Error(NotIssueCommentMsg)
+    }
+    if (!options.body) {
+      throw new Error(NotIssueCommentBodyMsg)
+    }
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, issue_number, body } = options
+      const res = await this.post(`/repos/${owner}/${repo}/issues/${issue_number}/comments`, {
+        body
+      })
+      if (res.statusCode === 404) {
+        throw new Error(NotIssueCommentMsg)
+      }
+      return res
+    } catch (error) {
+      throw new Error(`创建Issue评论失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 更新Issue评论信息
+   * @param options 更新Issue评论信息的参数对象
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - comment_id 评论ID
+   * - body 评论内容
+   * @returns 更新后的Issue评论信息
+   * @example
+   * ```ts
+   * const issue = get_issue() // 获取issue实例
+   * const res = await issue.update_issue_comment({ owner: 'owner', repo:'repo', comment_id:1, body:'body' })
+   * console.log(res) // { data: UpdateIssueCommentResponseType }
+   * ```
+   */
+  public async update_issue_comment (
+    options: UpdateIssueCommentParamType
+  ): Promise<ApiResponseType<UpdateIssueCommentResponseType>> {
+    if (!options.owner || !options.repo) {
+      throw new Error(NotOwnerOrRepoParamMsg)
+    }
+    if (!options.comment_id) {
+      throw new Error(NotIssueCommentNumberMsg)
+    }
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, comment_id, ...updateData } = options
+      const res = await this.patch(`/repos/${owner}/${repo}/issues/comments/${comment_id}`, updateData)
+      if (res.statusCode === 404) {
+        throw new Error(NotIssueCommentMsg)
+      }
+      return res
+    } catch (error) {
+      throw new Error(`更新Issue评论信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 删除Issue评论信息
+   * @param options 删除Issue评论信息的参数对象
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - comment_id 评论ID
+   * @returns 删除结果信息
+   * @example
+   * ```ts
+   * const issue = get_issue() // 获取issue实例
+   * const res = awaitissue.remove_issue_comment()
+   * console.log(res) // { data: RemoveIssueCommentResponseType }
+   * ```
+   */
+  public async remove_issue_comment (
+    options: RemoveIssueCommentParamType
+  ): Promise<ApiResponseType<RemoveCollaboratorResponseType>> {
+    if (!options.owner || !options.repo) {
+      throw new Error(NotOwnerOrRepoParamMsg)
+    }
+    if (!options.comment_id) {
+      throw new Error(NotIssueCommentNumberMsg)
+    }
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, comment_id } = options
+      const res = await this.delete(`/repos/${owner}/${repo}/issues/comments/${comment_id}`)
+      if (res.statusCode === 404) {
+        throw new Error(NotIssueCommentMsg)
+      }
+      if (res.statusCode === 204) {
+        res.data = {
+          info: '删除成功'
+        }
+      }
+      return res
+    } catch (error) {
+      throw new Error(`删除Issue评论信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 删除Issue评论信息
+   * @deprecated 请使用 remove_issue_comment 方法代替
+   */
+  public async delete_issue_comment (
+    options: RemoveIssueCommentParamType
+  ): Promise<ApiResponseType<RemoveCollaboratorResponseType>> {
+    return this.remove_issue_comment(options)
   }
 }

@@ -541,6 +541,8 @@ export interface CollaboratorInfo extends AccountBaseType {
 /** 协作者列表响应类型 */
 export type CollaboratorListResponseType = CollaboratorInfo[]
 
+/** 移除协作者参数类型 */
+export type RemoveCollaboratorParamType = (RepoBaseParamType | RepoUrlParamType) & UserNameParamType
 /** 移除协作者响应类型 */
 export interface RemoveCollaboratorResponseType {
   /** 状态信息 */

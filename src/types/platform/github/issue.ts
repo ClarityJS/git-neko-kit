@@ -88,7 +88,7 @@ export type issueListParamType = (RepoBaseParamType | RepoUrlParamType) & {
   /**
    * 每页结果数量
    * @default 30
-   * @maximum 100
+   * @remarks 取值范围：1-100
    */
   per_page?: number;
 
@@ -319,8 +319,8 @@ export type UnLockIssueParamType = Omit<LockIssueParamType, 'lock_reason'>
 /** 解锁议题响应类型 */
 export type UnLockIssueResponseType = LockIssueResponseType
 
-/** 议题评论参数类型 */
-export interface IssueCommentParamType extends RepoBaseParamType {
+/** 议题评论信息参数类型 */
+export interface IssueCommentInfoParamType extends RepoBaseParamType {
   /** 评论id,评论唯一标识符 */
   comment_id: string
 }
@@ -354,8 +354,8 @@ export interface IssueCommentInfoResponseType {
   performed_via_github_app: GitHubAppInfoType | null;
 }
 
-/** 议题评论列表参数类型 */
-export interface IssueCommentListParamType extends RepoBaseParamType {
+/** 仓库评论列表参数类型 */
+export interface RepoCommentListParamType extends RepoBaseParamType {
   /**
    * 排序依据
    * 用于指定结果的排序属性
@@ -389,8 +389,7 @@ export interface IssueCommentListParamType extends RepoBaseParamType {
    * 每页结果数量
    * 指定每页返回的结果数
    * @default 30
-   * @minimum 1
-   * @maximum 100
+   * @remarks 取值范围：1-100
    */
   per_page?: number;
 
@@ -398,9 +397,68 @@ export interface IssueCommentListParamType extends RepoBaseParamType {
    * 页码
    * 指定要获取的结果页码
    * @default 1
-   * @minimum 1
+   * @remarks 必须大于等于1
+   */
+  page?: number;
+}
+/** 仓库评论列表响应类型 */
+export type RepoCommentListResponseType = IssueCommentInfoResponseType[]
+
+/** 议题评论列表参数类型 */
+export interface IssueCommentListParamType extends RepoBaseParamType {
+  /** 议题ID */
+  issue_number: number;
+
+  /**
+   * 筛选此时间之后更新的评论
+   * 仅显示在指定时间之后更新的结果
+   * 格式为 ISO 8601: YYYY-MM-DDTHH:MM:SSZ
+   * @example "2023-01-01T00:00:00Z"
+   */
+  since?: string;
+
+  /**
+   * 每页结果数量
+   * @default 30
+   * @remarks 取值范围：1-100
+   */
+  per_page?: number;
+
+  /**
+   * 页码
+   * @default 1
+   * @remarks 取值范围：1-100
    */
   page?: number;
 }
 /** 议题评论列表响应类型 */
 export type IssueCommentListResponseType = IssueCommentInfoResponseType[]
+
+/** 创建议题评论参数类型 */
+export interface CreteIssueCommentParamType extends RepoBaseParamType {
+  /** 议题ID */
+  issue_number: number;
+  /** 评论内容 */
+  body: string;
+}
+/** 创建议题评论响应类型 */
+export type CreteIssueCommentResponseType = IssueCommentInfoResponseType
+
+/** 更新议题评论参数类型 */
+export interface UpdateIssueCommentParamType extends IssueCommentInfoParamType {
+  /** 评论内容 */
+  body: string
+}
+/** 更新议题评论响应类型 */
+export type UpdateIssueCommentResponseType = IssueCommentInfoResponseType
+
+/** 删除议题评论参数类型 */
+export interface RemoveIssueCommentParamType extends RepoBaseParamType {
+  /** 评论ID */
+  comment_id: string;
+}
+/** 删除议题评论响应类型 */
+export interface RemoveIssueCommentResponseType {
+/** 删除状态信息 */
+  info: string
+}
