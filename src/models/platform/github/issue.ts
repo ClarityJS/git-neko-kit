@@ -24,7 +24,7 @@ import type {
   IssueCommentListParamType,
   IssueInfoParamType,
   IssueInfoResponseType,
-  issueListParamType,
+  IssueListParamType,
   IssueListResponseType,
   LockIssueParamType,
   LockIssueResponseType,
@@ -140,7 +140,7 @@ export class Issue extends Base {
    * ```
    */
   public async get_issue_list (
-    options: issueListParamType
+    options: IssueListParamType
   ): Promise<ApiResponseType<IssueListResponseType>> {
     let owner, repo
     try {

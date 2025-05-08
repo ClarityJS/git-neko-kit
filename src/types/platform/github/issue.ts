@@ -9,7 +9,7 @@ export type IssueInfoParamType = (RepoBaseParamType | RepoUrlParamType) & {
   issue_number: number
 }
 /** 议题列表参数类型 */
-export type issueListParamType = (RepoBaseParamType | RepoUrlParamType) & {
+export type IssueListParamType = (RepoBaseParamType | RepoUrlParamType) & {
   /**
    * 里程碑筛选
    * @default undefined
