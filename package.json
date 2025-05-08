@@ -1,5 +1,5 @@
 {
-  "name": "git-neko-kit",
+  "name": "@clarityjs/git-neko-kit",
   "version": "0.4.4",
   "description": "Github, Gitee, GitCode API封装库",
   "keywords": [
@@ -13,7 +13,7 @@
     "url": "git+https://github.com/ClarityJS/git-neko-kit.git"
   },
   "license": "GNU AGPL-3.0",
-  "author": "wuliya",
+  "author": "ClarityJS",
   "type": "module",
   "exports": {
     ".": {
