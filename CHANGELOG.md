@@ -1,5 +1,38 @@
 # 变更日志
 
+## [0.5.0](https://github.com/ClarityJS/git-neko-kit/compare/v0.4.4...v0.5.0) (2025-05-08)
+
+
+### ✨ 新功能
+
+* **issue:** 添加 Issue 更新、关闭、打开、锁定和解锁功能 ([0444bf0](https://github.com/ClarityJS/git-neko-kit/commit/0444bf0bc82a8a1eed714617d4cb048c2564c46d))
+* **issue:** 添加 Issue 评论相关方法并优化错误提示 ([5ad66ff](https://github.com/ClarityJS/git-neko-kit/commit/5ad66ffc237b55f5b9baca41922c2b52757da6e7))
+* **issue:** 添加子议题相关功能并优化议题评论接口 ([76eecc8](https://github.com/ClarityJS/git-neko-kit/commit/76eecc87620db8114e1b697d799586ea49c7f7ba))
+* **issue:** 添加获取 Issue 评论相关功能 ([d781d98](https://github.com/ClarityJS/git-neko-kit/commit/d781d98e4362839f167426b74561d79f7a43adfa))
+
+
+### 🐛 错误修复
+
+* **org:** 修复组织信息获取功能 ([6ac03a5](https://github.com/ClarityJS/git-neko-kit/commit/6ac03a5e31a9982db9b6b75acd130c646a92df52))
+
+
+### 📝 文档更新
+
+* **models:** 更新排序子议题接口文档 ([ee2445f](https://github.com/ClarityJS/git-neko-kit/commit/ee2445fe0f41819413e903bff9e9f81192e15299))
+* 优化函数描述 ([0c27d48](https://github.com/ClarityJS/git-neko-kit/commit/0c27d48c9cd15bd62e3fba41ec4a886fee8bac73))
+* 完善 GitHub API 权限说明和代码示例 ([a969aa6](https://github.com/ClarityJS/git-neko-kit/commit/a969aa6d996270d86811e24874ed7202f244f53f))
+
+
+### ♻️ 代码重构
+
+* **github:** 修正议题列表参数类型定义 ([7b1c51d](https://github.com/ClarityJS/git-neko-kit/commit/7b1c51d413c7ee32c586bd30912544cda8d60bce))
+* **models:** 移除 GitHub App 模块的注册功能 ([2bc9fdc](https://github.com/ClarityJS/git-neko-kit/commit/2bc9fdc727155dff8b5c73e0b0d09a8798b3f0d4))
+
+
+### 🎡 持续集成
+
+* **release:** 更新发布流程并修改包名 ([d4ae445](https://github.com/ClarityJS/git-neko-kit/commit/d4ae4455fee5e31229513c05f77c323ab4bba492))
+
 ## [0.4.4](https://github.com/ClarityJS/git-neko-kit/compare/v0.4.3...v0.4.4) (2025-05-06)
 
 
