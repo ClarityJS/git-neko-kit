@@ -8,10 +8,13 @@ import {
   NotOwnerOrRepoParamMsg,
   NotParamMsg,
   NotPerrmissionMsg,
+  NotSubIssueNumberMsg,
   parse_git_url
 } from '@/common'
 import { Base } from '@/models/platform/github/base'
 import type {
+  AddSubIssueParamType,
+  AddSubIssueResponseType,
   ApiResponseType,
   CloseIssueParamType,
   CloseIssueResponseType,
@@ -31,9 +34,15 @@ import type {
   OpenIssueResponseType,
   RemoveCollaboratorResponseType,
   RemoveIssueCommentParamType,
+  RemoveSubIssueParamType,
+  RemoveSubIssueResponseType,
   RepoCommentListParamType,
   RepoCommentListResponseType,
   RepoIssueListParamType,
+  ReprioritizeSubIssueParamType,
+  ReprioritizeSubIssueResponseType,
+  SubIssueListParamType,
+  SubIssueListResponseType,
   UnLockIssueParamType,
   UnLockIssueResponseType,
   UpdateIssueCommentParamType,
@@ -48,10 +57,10 @@ import type {
  * 提供完整的GitHub Issue管理，包括：
  * - 获取Issue列表
  * - 获取Issue详情
- * - 创建Issue
- * - 更新Issue
- * - 关闭Issue
- * - 评论Issue
+ * - 创建/更新/关闭/打开/锁定/解锁Issue
+ * - 获取仓库评论列表
+ * - 获取/创建/更新/删除Issue评论
+ * - 管理子Issue
  *
  * @remarks 每个拉取请求都是一个议题，但并非每个议题都是拉取请求。
  * @class Issue
@@ -163,24 +172,22 @@ export class Issue extends Base {
         throw new Error(NotParamMsg)
       }
 
-      const queryParams = new URLSearchParams()
+      const { ...queryOptions } = options
+      const params: Record<string, string> = {}
+      if (queryOptions.milestone) params.milestone = queryOptions.milestone.toString()
+      if (queryOptions.state) params.state = queryOptions.state
+      if (queryOptions.assignee) params.assignee = queryOptions.assignee
+      if (queryOptions.creator) params.creator = queryOptions.creator
+      if (queryOptions.mentioned) params.mentioned = queryOptions.mentioned
+      if (queryOptions.labels) params.labels = queryOptions.labels
+      if (queryOptions.sort) params.sort = queryOptions.sort
+      if (queryOptions.direction) params.direction = queryOptions.direction
+      if (queryOptions.since) params.since = queryOptions.since
+      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.page) params.page = queryOptions.page.toString()
 
-      if (options.milestone) queryParams.append('milestone', options.milestone.toString())
-      if (options.state) queryParams.append('state', options.state)
-      if (options.assignee) queryParams.append('assignee', options.assignee)
-      if (options.creator) queryParams.append('creator', options.creator)
-      if (options.mentioned) queryParams.append('mentioned', options.mentioned)
-      if (options.labels) queryParams.append('labels', options.labels)
-      if (options.sort) queryParams.append('sort', options.sort)
-      if (options.direction) queryParams.append('direction', options.direction)
-      if (options.since) queryParams.append('since', options.since)
-      if (options.per_page) queryParams.append('per_page', options.per_page.toString())
-      if (options.page) queryParams.append('page', options.page.toString())
-
-      const queryString = queryParams.toString()
-      const apiPath = `/repos/${owner}/${repo}/issues${queryString ? `?${queryString}` : ''}`
-
-      const res = await this.get(apiPath)
+      const apiPath = `/repos/${owner}/${repo}/issues`
+      const res = await this.get(apiPath, params)
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
@@ -269,7 +276,7 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, issue_number, ...updateData } = options
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`, updateData)
+      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`, null, updateData)
       return res
     } catch (error) {
       throw new Error(`更新Issue失败: ${(error as Error).message}`)
@@ -308,7 +315,7 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, issue_number } = options
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`, {
+      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`, null, {
         state: 'open',
         state_reason: 'reopened'
       })
@@ -363,7 +370,7 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, issue_number, state_reason } = options
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`, {
+      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`, null, {
         state: 'closed',
         state_reason
       })
@@ -508,18 +515,16 @@ export class Issue extends Base {
       })
       const { owner, repo, ...queryOptions } = options
 
-      const queryParams = new URLSearchParams()
+      const params: Record<string, string> = {}
+      if (queryOptions.sort) params.sort = queryOptions.sort
+      if (queryOptions.sort && queryOptions.direction) params.direction = queryOptions.direction
+      if (queryOptions.since) params.since = queryOptions.since
+      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.page) params.page = queryOptions.page.toString()
 
-      if (queryOptions.sort) queryParams.append('sort', queryOptions.sort)
-      if (queryOptions.sort && queryOptions.direction) queryParams.append('direction', queryOptions.direction)
-      if (queryOptions.since) queryParams.append('since', queryOptions.since)
-      if (queryOptions.per_page) queryParams.append('per_page', queryOptions.per_page.toString())
-      if (queryOptions.page) queryParams.append('page', queryOptions.page.toString())
+      const apiPath = `/repos/${owner}/${repo}/issues/comments/`
 
-      const queryString = queryParams.toString()
-      const apiPath = `/repos/${owner}/${repo}/issues/comments/${queryString ? `?${queryString}` : ''}`
-
-      const res = await this.get(apiPath)
+      const res = await this.get(apiPath, params)
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
       }
@@ -564,22 +569,20 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, issue_number, ...queryOptions } = options
-      const queryParams = new URLSearchParams()
+      const params: Record<string, string> = {}
 
-      if (queryOptions.since) queryParams.append('since', queryOptions.since)
-      if (queryOptions.per_page) queryParams.append('per_page', queryOptions.per_page.toString())
-      if (queryOptions.page) queryParams.append('page', queryOptions.page.toString())
+      if (queryOptions.since) params.since = queryOptions.since
+      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.page) params.page = queryOptions.page.toString()
 
-      const queryString = queryParams.toString()
-      const apiPath = `/repos/${owner}/${repo}/issues/${issue_number}/comments/${queryString ? `?${queryString}` : ''}`
-
-      const res = await this.get(apiPath)
+      const apiPath = `/repos/${owner}/${repo}/issues/${issue_number}/comments`
+      const res = await this.get(apiPath, params)
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
       }
       return res
     } catch (error) {
-      throw new Error(`获取Issue评论列表失败: ${(error as Error).message}`)
+      throw new Error(`获取议题评论列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -621,7 +624,7 @@ export class Issue extends Base {
       }
       return res
     } catch (error) {
-      throw new Error(`获取Issue评论信息失败: ${(error as Error).message}`)
+      throw new Error(`获取议题评论信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -669,7 +672,7 @@ export class Issue extends Base {
       }
       return res
     } catch (error) {
-      throw new Error(`创建Issue评论失败: ${(error as Error).message}`)
+      throw new Error(`创建议题评论失败: ${(error as Error).message}`)
     }
   }
 
@@ -706,13 +709,13 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, comment_id, ...updateData } = options
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/comments/${comment_id}`, updateData)
+      const res = await this.patch(`/repos/${owner}/${repo}/issues/comments/${comment_id}`, null, updateData)
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
       }
       return res
     } catch (error) {
-      throw new Error(`更新Issue评论信息失败: ${(error as Error).message}`)
+      throw new Error(`更新议题评论信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -759,7 +762,7 @@ export class Issue extends Base {
       }
       return res
     } catch (error) {
-      throw new Error(`删除Issue评论信息失败: ${(error as Error).message}`)
+      throw new Error(`删除议题评论信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -775,5 +778,213 @@ export class Issue extends Base {
     options: RemoveIssueCommentParamType
   ): Promise<ApiResponseType<RemoveCollaboratorResponseType>> {
     return this.remove_issue_comment(options)
+  }
+
+  /**
+   * 获取子议题列表
+   * 权限:
+   * - Issues: Read
+   * - Pull requests: Read
+   * 需以上权限之一
+   * @param options 获取子议题列表的参数对象
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - issue_number 议题编号
+   * @returns 子议题列表
+   * @example
+  * ```ts
+  * const issue = get_issue() // 获取issue实例
+  * const res = await issue.get_sub_issue_list({ owner: 'owner', repo:'repo', issue_number:1 })
+  * console.log(res) // { data: SubIssueListResponseType }
+  * ```
+  */
+  public async get_sub_issue_list (
+    options: SubIssueListParamType
+  ): Promise<ApiResponseType<SubIssueListResponseType>> {
+    if (!options.owner || !options.repo) {
+      throw new Error(NotOwnerOrRepoParamMsg)
+    }
+    if (!options.issue_number) {
+      throw new Error(NotIssueCommentMsg)
+    }
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, issue_number, ...queryOptions } = options
+      const params: Record<string, string> = {}
+
+      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.page) params.page = queryOptions.page.toString()
+
+      const apiPath = `/repos/${owner}/${repo}/issues/${issue_number}/sub_issues`
+      const res = await this.get(apiPath, params)
+      if (res.statusCode === 404) {
+        throw new Error(NotIssueMsg)
+      }
+      return res
+    } catch (error) {
+      throw new Error(`获取子议题列表失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 添加子议题
+   * 添加一个子议题到指定的议题中
+   * 权限：
+   * - Issues：Write
+   * @param options 添加子议题的参数对象
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - issue_number 父议题编号
+   * - sub_issue_id 子议题编号
+   * - replace_parent 是否替换父议题
+   * @returns 添加结果信息
+   * @example
+   * ```ts
+   * const issue = get_issue() // 获取issue实例
+   * const res = await issue.add_sub_issue({ owner: 'owner', repo:'repo', issue_number:1, sub_issue_id:1, replace_parent:true })
+   * console.log(res) // { data: AddSubIssueResponseType }
+   * ```
+   */
+  public async add_sub_issue (
+    options: AddSubIssueParamType
+  ): Promise<ApiResponseType<AddSubIssueResponseType>> {
+    if (!options.owner || !options.repo) {
+      throw new Error(NotOwnerOrRepoParamMsg)
+    }
+    if (!options.issue_number) {
+      throw new Error(NotIssueCommentMsg)
+    }
+    if (!options.sub_issue_id) {
+      throw new Error(NotSubIssueNumberMsg)
+    }
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, issue_number, sub_issue_id, replace_parent } = options
+      const res = await this.post(`/repos/${owner}/${repo}/issues/${issue_number}/sub_issues`, {
+        sub_issue_id,
+        replace_parent
+      })
+      if (res.statusCode === 404) {
+        throw new Error(NotIssueMsg)
+      }
+      return res
+    } catch (error) {
+      throw new Error(`添加子议题失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 删除子议题
+   * 权限：
+   * - Issues：Write
+   * @param options 删除子议题的参数对象
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - issue_number 父议题编号
+   * - sub_issue_id 子议题编号
+   * @returns 删除结果信息
+  * @example
+  * ```ts
+  * const issue = get_issue() // 获取issue实例
+  * const res = await issue.remove_sub_issue({ owner: 'owner', repo:'repo', issue_number:1, sub_issue_id:1 })
+  * console.log(res) // { data: RemoveSubIssueResponseType }
+  * ```
+  */
+  public async remove_sub_issue (
+    options: RemoveSubIssueParamType
+  ): Promise<ApiResponseType<RemoveSubIssueResponseType>> {
+    if (!options.owner || !options.repo) {
+      throw new Error(NotOwnerOrRepoParamMsg)
+    }
+    if (!options.issue_number) {
+      throw new Error(NotIssueCommentMsg)
+    }
+    if (!options.sub_issue_id) {
+      throw new Error(NotSubIssueNumberMsg)
+    }
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, issue_number, sub_issue_id } = options
+      const res = await this.delete(`/repos/${owner}/${repo}/issues/${issue_number}/sub_issue`, null, {
+        sub_issue_id
+      })
+      if (res.statusCode === 404) {
+        throw new Error(NotIssueMsg)
+      }
+      return res
+    } catch (error) {
+      throw new Error(`删除子议题失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 删除子议题
+   * 删除一个子议题
+   * 权限：
+   * - Issues：Write
+   * @deprecated 请使用 remove_sub_issue 方法代替
+   */
+  public async delete_sub_issue (
+    options: RemoveSubIssueParamType
+  ): Promise<ApiResponseType<RemoveSubIssueResponseType>> {
+    return this.remove_sub_issue(options)
+  }
+
+  /**
+   * 重新排序子议题
+   * 重新确定子议题优先级
+   * 权限：
+   * - Issues：Write
+   * @param options 重新排序子议题的参数对象
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - issue_number 父议题编号
+   * - sub_issue_id 子议题编号
+   * - before_id 插入位置的子议题编号
+   * @example
+   * ```ts
+   * const issue = get_issue() // 获取issue实例
+   * const res = await issue.reprioritize_sub_issue({ owner: 'owner', repo:'repo', issue_number:1, sub_issue_id:1, before_id:1 })
+   * console.log(res) // { data: ReprioritizeSubIssueResponseType }
+   * ```
+   */
+  public async reprioritize_sub_issue (
+    options: ReprioritizeSubIssueParamType
+  ): Promise<ApiResponseType<ReprioritizeSubIssueResponseType>> {
+    if (!options.owner || !options.repo) {
+      throw new Error(NotOwnerOrRepoParamMsg)
+    }
+    if (!options.issue_number) {
+      throw new Error(NotIssueCommentMsg)
+    }
+    if (!options.sub_issue_id) {
+      throw new Error(NotSubIssueNumberMsg)
+    }
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, issue_number, sub_issue_id, ...queryOptions } = options
+      const params: Record<string, string> = {}
+
+      if (queryOptions.before_id && !queryOptions.after_id) params.before_id = queryOptions.before_id.toString()
+      if (queryOptions.after_id && !queryOptions.before_id) params.after_id = queryOptions.after_id.toString()
+      const url = `/repos/${owner}/${repo}/issues/${issue_number}/sub_issues/priority`
+      const res = await this.patch(url, params, {
+        sub_issue_id: String(sub_issue_id)
+      })
+      if (res.statusCode === 404) {
+        throw new Error(NotIssueMsg)
+      }
+      return res
+    } catch (error) {
+      throw new Error(`重新排序子议题失败: ${(error as Error).message}`)
+    }
   }
 }

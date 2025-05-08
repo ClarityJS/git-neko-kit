@@ -462,3 +462,63 @@ export interface RemoveIssueCommentResponseType {
 /** 删除状态信息 */
   info: string
 }
+
+/** 获取子议题列表参数类型 */
+export interface SubIssueListParamType extends RepoBaseParamType {
+  /** 议题ID */
+  issue_number: number;
+  /**
+   * 每页结果数量
+   * @default 30
+   */
+  per_page?: number;
+  /**
+   * 页码
+   * @default 1
+   */
+  page?: number;
+}
+/** 获取子议题列表响应类型 */
+export type SubIssueListResponseType = IssueInfoResponseType[]
+
+/** 添加子议题参数类型 */
+export interface AddSubIssueParamType extends RepoBaseParamType {
+  /** 议题ID */
+  issue_number: number;
+  /** * 子议题ID */
+  sub_issue_id: number;
+  /** * 是否替换父议题 */
+  replace_parent: boolean;
+}
+/** 添加子议题响应类型 */
+export type AddSubIssueResponseType = IssueInfoResponseType
+
+/** 删除子议题参数类型 */
+export interface RemoveSubIssueParamType extends RepoBaseParamType {
+  /** 议题ID */
+  issue_number: number;
+  /** 子议题ID */
+  sub_issue_id: number;
+}
+/** 删除子议题响应类型 */
+export type RemoveSubIssueResponseType = IssueInfoResponseType
+
+/** 重新确定子议题优先级参数类型 */
+export interface ReprioritizeSubIssueParamType extends RepoBaseParamType {
+  /** 议题ID */
+  issue_number: number;
+  /** 子议题ID */
+  sub_issue_id: number;
+  /**
+   * 要优先排序的子问题的 ID（与 before_id 互斥，只能指定其中一个）
+   * 在此 ID 之后放置子问题
+   */
+  after_id?: number;
+  /**
+   * 要优先排序的子问题的 ID（与 after_id 互斥，只能指定其中一个）
+   * 在此 ID 之前放置子问题
+   */
+  before_id?: number;
+}
+/** 重新确定子议题优先级响应类型 */
+export type ReprioritizeSubIssueResponseType = IssueInfoResponseType

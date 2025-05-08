@@ -69,26 +69,22 @@ export class Repo extends Base {
   public async get_org_repos_list (
     options: OrgRepoListParmsType
   ): Promise<ApiResponseType<OrgRepoListType>> {
+    if (!options.org) {
+      throw new Error(NotParamMsg)
+    }
     try {
-      if (!options.org) {
-        throw new Error(NotParamMsg)
-      }
       this.setRequestConfig({
         token: this.userToken
       })
-      const queryParams = new URLSearchParams()
-      if (options?.type) queryParams.set('type', options.type)
-      if (options?.sort) queryParams.set('sort', options.sort)
-      if (options?.direction) queryParams.set('direction', options.direction)
-      if (options?.per_page) {
-        queryParams.set('per_page', options.per_page.toString())
-      }
-      if (options?.page) queryParams.set('page', options.page.toString())
-      const queryString = queryParams.toString()
-      const url = queryString
-        ? `/orgs/${options.org}/repos?${queryString}`
-        : `/orgs/${options.org}/repos`
-      const res = await this.get(url)
+      const { org, ...queryOptions } = options
+      const params: Record<string, string> = {}
+      if (queryOptions?.type) params.type = queryOptions.type
+      if (queryOptions?.sort) params.sort = queryOptions.sort
+      if (queryOptions?.direction) params.direction = queryOptions.direction
+      if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions?.page) params.page = queryOptions.page.toString()
+      const url = `/orgs/${org}/repos`
+      const res = await this.get(url, params)
       if (res.statusCode === 404) {
         throw new Error(NotOrgMsg)
       } else if (res.statusCode === 401) {
@@ -138,26 +134,18 @@ export class Repo extends Base {
       this.setRequestConfig({
         token: this.userToken
       })
-      const queryParams = new URLSearchParams()
-      if (!options?.visibility && !options?.affiliation && options?.type) {
-        queryParams.set('type', options.type)
-      }
-      if (options?.visibility) {
-        queryParams.set('visibility', options.visibility)
-      }
-      if (options?.affiliation) {
-        queryParams.set('affiliation', options.affiliation)
-      }
-      if (options?.sort) queryParams.set('sort', options.sort)
-      if (options?.direction) queryParams.set('direction', options.direction)
-      if (options?.per_page) {
-        queryParams.set('per_page', options.per_page.toString())
-      }
-      if (options?.page) queryParams.set('page', options.page.toString())
+      const { ...queryOptions } = options
+      const params: Record<string, string> = {}
+      if (!options?.visibility && !options?.affiliation && queryOptions?.type) params.type = queryOptions.type
+      if (queryOptions?.visibility) params.visibility = queryOptions.visibility
+      if (queryOptions?.affiliation) params.affiliation = queryOptions.affiliation
+      if (queryOptions?.sort) params.sort = queryOptions.sort
+      if (queryOptions?.direction) params.direction = queryOptions.direction
+      if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions?.page) params.page = queryOptions.page.toString()
 
-      const queryString = queryParams.toString()
-      const url = queryString ? `/user/repos?${queryString}` : '/uses/repos'
-      const res = await this.get(url)
+      const url = '/uses/repos'
+      const res = await this.get(url, params)
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
@@ -201,16 +189,15 @@ export class Repo extends Base {
       this.setRequestConfig({
         token: this.userToken
       })
-      const queryParams = new URLSearchParams()
-      if (options?.type) queryParams.set('type', options.type)
-      if (options?.sort) queryParams.set('sort', options.sort)
-      if (options?.direction) queryParams.set('direction', options.direction)
-      if (options?.per_page) {
-        queryParams.set('per_page', options.per_page.toString())
-      }
-      if (options?.page) queryParams.set('page', options.page.toString())
+      const { username, ...queryOptions } = options
+      const params: Record<string, string> = {}
+      if (queryOptions?.type) params.type = queryOptions.type
+      if (queryOptions?.sort) params.sort = queryOptions.sort
+      if (queryOptions?.direction) params.direction = queryOptions.direction
+      if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions?.page) params.page = queryOptions.page.toString()
+
       const isFormat = options?.format ?? this.format
-      const queryString = queryParams.toString()
       let res
       try {
         res = await this.get_user_repos_list_by_token({
@@ -218,8 +205,8 @@ export class Repo extends Base {
           format: isFormat
         })
       } catch (error) {
-        const url = `/users/${options.username}/repos?${queryString}`
-        res = await this.get(url)
+        const url = `/users/${username}/repos`
+        res = await this.get(url, params)
       }
 
       switch (res.statusCode) {

@@ -339,13 +339,14 @@ export class Base {
    * Github PATCH 请求方法
    * @param path - 请求路径
    * @param data - 请求数据
+   * @param params - URL查询参数
    * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
-  public async patch (path: string, data: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
+  public async patch (path: string, params: Record<string, string> | null = null, data: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
     try {
       const request = this.createRequest()
-      const req = await request.patch(path, data, customHeaders)
+      const req = await request.patch(path, params, data, customHeaders)
       if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
         throw new Error(RateLimitMsg)
       }
@@ -389,13 +390,14 @@ export class Base {
    * Github DELETE 请求方法
    * @param path - 请求路径
    * @param params - URL查询参数
+   * @param data - 请求体数据
    * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
-  public async delete (path: string, params?: Record<string, string>, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
+  public async delete (path: string, params: Record<string, string> | null = null, data?: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
     try {
       const request = this.createRequest()
-      const req = await request.delete(path, params, customHeaders)
+      const req = await request.delete(path, params, data, customHeaders)
       if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
         throw new Error(RateLimitMsg)
       }
