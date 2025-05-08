@@ -948,7 +948,8 @@ export class Issue extends Base {
    * - repo 仓库名称
    * - issue_number 父议题编号
    * - sub_issue_id 子议题编号
-   * - before_id 插入位置的子议题编号
+   * - before_id 指定要在哪个子议题之前插入，传入目标子议题的编号
+   * - after_id 指定要在哪个子议题之后插入，传入目标子议题的编号
    * @example
    * ```ts
    * const issue = get_issue() // 获取issue实例
