@@ -7,6 +7,7 @@ import {
   NotPerrmissionMsg,
   NotRepoOrPerrmissionMsg,
   NotUserMsg,
+  NotUserParamMsg,
   parse_git_url
 } from '@/common'
 import { Base } from '@/models/platform/github/base'
@@ -50,14 +51,20 @@ export class Repo extends Base {
 
   /**
    * 获取组织仓库列表
+   * 权限: Metadata - read-only , 如果获取公开仓库可无需此权限
    * @param options - 请求参数对象
-   * @param options.org - 组织名称
-   * @param options.type - 仓库类型，可选值：'all' | 'public' | 'private' | 'forks' | 'sources' | 'member', 默认值：'all'
-   * @param options.sort - 排序字段，可选值：'created' | 'updated' | 'pushed' | 'full_name', 默认值：'created'
-   * @param options.direction - 排序方向，可选值：'asc' | 'desc', 默认值：'desc'
-   * @param options.per_page - 每页数量（1-100）, 默认值：30
-   * @param options.page - 页码 默认值：1
+   * - org - 组织名称
+   * - type - 仓库类型，可选值：'all' | 'public' | 'private' | 'forks' | 'sources' | 'member', 默认值：'all'
+   * - sort - 排序字段，可选值：'created' | 'updated' | 'pushed' | 'full_name', 默认值：'created'
+   * - direction - 排序方向，可选值：'asc' | 'desc', 默认值：'desc'
+   * - per_page - 每页数量（1-100）, 默认值：30
+   * - page - 页码 默认值：1
    * @returns 组织仓库列表
+   * @example
+   * ```ts
+   * const repos = await repo.get_org_repos_list({ org: 'org' })
+   * console.log(repos)
+   * ```
    */
   public async get_org_repos_list (
     options: OrgRepoListParmsType
@@ -73,7 +80,9 @@ export class Repo extends Base {
       if (options?.type) queryParams.set('type', options.type)
       if (options?.sort) queryParams.set('sort', options.sort)
       if (options?.direction) queryParams.set('direction', options.direction)
-      if (options?.per_page) queryParams.set('per_page', options.per_page.toString())
+      if (options?.per_page) {
+        queryParams.set('per_page', options.per_page.toString())
+      }
       if (options?.page) queryParams.set('page', options.page.toString())
       const queryString = queryParams.toString()
       const url = queryString
@@ -106,17 +115,25 @@ export class Repo extends Base {
 
   /**
    * 查询仓库详细信息
+   * 权限: Metadata - read-only , 如果获取公开仓库可无需此权限
    * @param options - 请求参数对象
-   * @param options.type - 仓库类型，可选值：可选all， public， private
-   * @param options.visibility - 仓库可见性，可选值：'public' | 'private' | 'internal', 默认值：'all'
-   * @param options.affiliation - 仓库关联，可选值：'owner' | 'collaborator' | 'organization_member', 默认值：'owner,collaborator,organization_member'
-   * @param options.sort - 排序字段，可选值：'created' | 'updated' | 'pushed' | 'full_name', 默认值：'created'
-   * @param options.direction - 排序方向，可选值：'asc' | 'desc', 默认值：'desc'
-   * @param options.per_page - 每页数量（1-100）, 默认值：30
-   * @param options.page - 页码 默认值：1
+   * - type - 仓库类型，可选值：可选all， public， private
+   * - visibility - 仓库可见性，可选值：'public' | 'private' | 'internal', 默认值：'all'
+   * - affiliation - 仓库关联，可选值：'owner' | 'collaborator' | 'organization_member', 默认值：'owner,collaborator,organization_member'
+   * - sort - 排序字段，可选值：'created' | 'updated' | 'pushed' | 'full_name', 默认值：'created'
+   * - direction - 排序方向，可选值：'asc' | 'desc', 默认值：'desc'
+   * - per_page - 每页数量（1-100）, 默认值：30
+   * - page - 页码 默认值：1
    * @returns 仓库详细信息
+   * @example
+   * ```ts
+   * const repos = await repo.get_repos_list({ username: 'username' })
+   * console.log(repos)
+   * ```
    */
-  public async get_user_repos_list_by_token (options?: UserByTokenRepoListParamType): Promise<ApiResponseType<UserRepoListType>> {
+  public async get_user_repos_list_by_token (
+    options?: UserByTokenRepoListParamType
+  ): Promise<ApiResponseType<UserRepoListType>> {
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -125,17 +142,21 @@ export class Repo extends Base {
       if (!options?.visibility && !options?.affiliation && options?.type) {
         queryParams.set('type', options.type)
       }
-      if (options?.visibility) queryParams.set('visibility', options.visibility)
-      if (options?.affiliation) queryParams.set('affiliation', options.affiliation)
+      if (options?.visibility) {
+        queryParams.set('visibility', options.visibility)
+      }
+      if (options?.affiliation) {
+        queryParams.set('affiliation', options.affiliation)
+      }
       if (options?.sort) queryParams.set('sort', options.sort)
       if (options?.direction) queryParams.set('direction', options.direction)
-      if (options?.per_page) queryParams.set('per_page', options.per_page.toString())
+      if (options?.per_page) {
+        queryParams.set('per_page', options.per_page.toString())
+      }
       if (options?.page) queryParams.set('page', options.page.toString())
 
       const queryString = queryParams.toString()
-      const url = queryString
-        ? `/user/repos?${queryString}`
-        : '/uses/repos'
+      const url = queryString ? `/user/repos?${queryString}` : '/uses/repos'
       const res = await this.get(url)
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
@@ -161,21 +182,22 @@ export class Repo extends Base {
 
   /**
    * 获取用户仓库列表
+   * 权限: Metadata - read-only, 如果只获取公开仓库可无需此权限
    * @param options - 请求参数对象
-   * @param options.username - 用户名
-   * @remarks 优先获取授权用户仓库列表，若授权用户不存在则获取指定用户仓库列表
-   * @param options.type - 仓库类型，可选值：all， owner， member，, 默认值：'all'
-   * @param options.sort - 排序字段，可选值：'created' | 'updated' | 'pushed' | 'full_name', 默认值：'created'
-   * @param options.direction - 排序方向，可选值：'asc' | 'desc', 默认值：'desc'
-   * @param options.per_page - 每页数量（1-100）, 默认值：30
-   * @param options.page - 页码 默认值：1
+   * - username - 用户名
+   * 优先获取授权用户仓库列表，若授权用户不存在则获取指定用户仓库列表
+   * - type - 仓库类型，可选值：all， owner， member，, 默认值：'all'
+   * - sort - 排序字段，可选值：'created' | 'updated' | 'pushed' | 'full_name', 默认值：'created'
+   * - direction - 排序方向，可选值：'asc' | 'desc', 默认值：'desc'
+   * - per_page - 每页数量（1-100）, 默认值：30
+   * - page - 页码 默认值：1
    * @returns 用户仓库列表
    */
   public async get_user_repos_list (
     options: UserRepoListParamType
   ): Promise<ApiResponseType<UserRepoListType>> {
     try {
-      if (!options.username) throw new Error(NotParamMsg)
+      if (!options.username) throw new Error(NotUserParamMsg)
       this.setRequestConfig({
         token: this.userToken
       })
@@ -183,7 +205,9 @@ export class Repo extends Base {
       if (options?.type) queryParams.set('type', options.type)
       if (options?.sort) queryParams.set('sort', options.sort)
       if (options?.direction) queryParams.set('direction', options.direction)
-      if (options?.per_page) queryParams.set('per_page', options.per_page.toString())
+      if (options?.per_page) {
+        queryParams.set('per_page', options.per_page.toString())
+      }
       if (options?.page) queryParams.set('page', options.page.toString())
       const isFormat = options?.format ?? this.format
       const queryString = queryParams.toString()
@@ -226,11 +250,17 @@ export class Repo extends Base {
 
   /**
    * 获取仓库信息
+   * 权限: Metadata - read-only, 如果只获取公开仓库可无需此权限
    * @param options - 仓库信息参数对象，必须包含以下两种组合之一：
    * - options.url 仓库URL地址
    * - options.owner 仓库拥有者
    * - options.repo 仓库名称
    * url参数和owner、repo参数传入其中的一种
+   * @example
+   * ```ts
+   * const repo = await repo.get_repo_info({ url: 'https://github.com/ClarityJS/git-neko-kit' })
+   * console.log(repo)
+   * ```
    */
   public async get_repo_info (
     options: RepoInfoParamType
@@ -275,6 +305,7 @@ export class Repo extends Base {
 
   /**
    * 创建组织仓库
+   * 权限：Administration - Read and write
    * @param options 创建组织仓库参数
    * - owner: 组织名称
    * - name: 仓库名称
@@ -331,6 +362,7 @@ export class Repo extends Base {
 
   /**
    * 获取协作者列表
+   * 权限：Metadata - Read
    * @param options 获取协作者列表对象
    * - owner: 仓库拥有者
    * - repo: 仓库名称
@@ -366,7 +398,9 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get(`/repos/${owner}/${repo}/collaborators`, { ...options })
+      const res = await this.get(`/repos/${owner}/${repo}/collaborators`, {
+        ...options
+      })
       return res
     } catch (error) {
       throw new Error(`获取仓库协作者列表失败: ${(error as Error).message}`)
@@ -374,26 +408,27 @@ export class Repo extends Base {
   }
 
   /**
-     * 邀请协作者
-     * @param options 邀请协作者对象
-     * - owner: 仓库拥有者
-     * - repo: 仓库名称
-     * - url: 仓库地址
-     * owner和repo或者url选择一个即可
-     * - username: 要邀请协作者用户名
-     * - permission: 协作者权限，可选pull，triage, push, maintain, admin，默认为pull
-     * @returns 返回邀请协作者结果
-     * @example
-     * ```ts
-     * const result = await collaborator.add_collaborator({
-     *  owner: 'owner',
-     *  repo: 'repo',
-     *  username: 'username',
-     *  permission: 'pull'
-     * })
-     * console.log(result)
-     })
-     */
+   * 邀请协作者
+   * 权限：Administration - Read and write
+   * @param options 邀请协作者对象
+   * - owner: 仓库拥有者
+   * - repo: 仓库名称
+   * - url: 仓库地址
+   * owner和repo或者url选择一个即可
+   * - username: 要邀请协作者用户名
+   * - permission: 协作者权限，可选pull，triage, push, maintain, admin，默认为pull
+   * @returns 返回邀请协作者结果
+   * @example
+   * ```ts
+   * const result = await collaborator.add_collaborator({
+   *  owner: 'owner',
+   *  repo: 'repo',
+   *  username: 'username',
+   *  permission: 'pull'
+   * })
+   * console.log(result)
+   * ```
+   */
   public async add_collaborator (
     options: CollaboratorParamType
   ): Promise<ApiResponseType<AddCollaboratorResponseType>> {
@@ -414,9 +449,12 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       username = options?.username
-      const res = await this.put(`/repos/${owner}/${repo}/collaborators/${username}`, {
-        permission: options.permission ?? 'pull'
-      })
+      const res = await this.put(
+        `/repos/${owner}/${repo}/collaborators/${username}`,
+        {
+          permission: options.permission ?? 'pull'
+        }
+      )
       if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
       if (res.statusCode === 422 && res.data.message) {
         if (res.data.message.includes('is not a valid permission.')) {
@@ -432,6 +470,7 @@ export class Repo extends Base {
 
   /**
    * 删除协作者
+   * 权限：Administration - Read and write
    * @param options 删除协作者对象
    * - owner: 仓库拥有者
    * - repo: 仓库名称
@@ -469,7 +508,9 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       username = options?.username
-      const res = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`)
+      const res = await this.delete(
+        `/repos/${owner}/${repo}/collaborators/${username}`
+      )
       if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
       if (res.status && res.statusCode === 204) {
         res.data = {
@@ -488,6 +529,7 @@ export class Repo extends Base {
 
   /**
    * 快速获取仓库可见性
+   * 权限: Metadata - read-only, 如果只获取公开仓库可无需此权限
    * @param options
    * - url 仓库URL地址
    * - owner 仓库拥有者
@@ -501,7 +543,9 @@ export class Repo extends Base {
    * console.log(visibility) // 输出 public 或 private
    * ```
    */
-  public async get_repo_visibility (options: RepoInfoParamType): Promise<RepoVisibilityResponseType['visibility'] | null> {
+  public async get_repo_visibility (
+    options: RepoInfoParamType
+  ): Promise<RepoVisibilityResponseType['visibility'] | null> {
     try {
       let owner, repo
       if ('url' in options) {
@@ -528,6 +572,7 @@ export class Repo extends Base {
 
   /**
    * 获取仓库默认分支
+   * 权限: Metadata - read-only, 如果只获取公开仓库可无需此权限
    * @param options
    * - url 仓库URL地址
    * - owner 仓库拥有者
@@ -539,7 +584,9 @@ export class Repo extends Base {
    * console.log(defaultBranch) // 输出 main
    * ```ts
    */
-  public async get_repo_default_branch (options: RepoInfoParamType): Promise<RepoDefaultBranchResponseType['default_branch']> {
+  public async get_repo_default_branch (
+    options: RepoInfoParamType
+  ): Promise<RepoDefaultBranchResponseType['default_branch']> {
     try {
       let owner, repo
       if ('url' in options) {

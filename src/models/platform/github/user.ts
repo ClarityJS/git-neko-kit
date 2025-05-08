@@ -37,8 +37,14 @@ export class User extends Base {
   /**
    * 获取指定的用户信息
    * 不止可以获取用户信息还可以获取组织信息
+   * 权限：无需任何权限
    * @param options - 用户参数
-   * @param options.username - 用户名或组织名
+   * - username - 用户名或组织名
+   * @example
+   * ```ts
+   * const userInfo = await user.get_user_info({ username: 'username' })
+   * console.log(userInfo)
+   * ```
    */
   public async get_user_info (options: UserInfoParamType):
   Promise<ApiResponseType<UserInfoResponseType>> {
@@ -67,10 +73,16 @@ export class User extends Base {
 
   /**
    * 通过用户id获取用户信息
-   * user_id 不是用户名, 而是用户的唯一标识符，
+   * user_id 不是用户名, 而是github平台上用户的唯一标识符
+   * 权限：无需任何权限
    * @param options - 用户参数
-   * @param options.user_id - 用户id
+   * - user_id： 用户id
    * @returns 用户信息
+   * @example
+   * ```ts
+   * const userInfo = await user.get_user_info_by_user_id({ user_id: 123456789 })
+   * console.log(userInfo)
+   * ```
    */
   public async get_user_info_by_user_id (options: UserIdParamType):
   Promise<ApiResponseType<UserInfoResponseType>> {
@@ -99,6 +111,7 @@ export class User extends Base {
 
   /**
    * 通过访问令牌获取用户信息
+   * 权限：无需任何权限
    * @param options - 访问令牌配置参数对象
    * - access_token - 访问令牌
    * @example
@@ -136,8 +149,9 @@ export class User extends Base {
 
   /**
    * 获取用户贡献数据
+   * 权限：无需任何权限
    * @param options - 用户参数
-   * @param options.username - 用户名
+   * - username: 用户名
    * @returns 用户贡献数据
    * @example
    * ```ts
@@ -183,6 +197,7 @@ export class User extends Base {
 
   /**
    * 快速获取获取用户id
+   * 权限：无需任何权限
    * 该方法会自动获取当前用户的id，需要传入token
    * @returns 用户id
    * @example
@@ -200,6 +215,7 @@ export class User extends Base {
 
   /**
    * 快速获取获取用户名
+   * 权限：无需任何权限
    * 该方法会自动获取当前用户的用户名，需要传入token
    * @returns 用户名
    * @example
@@ -219,6 +235,7 @@ export class User extends Base {
   /**
    * 快速获取获取用户昵称
    * 该方法会自动获取当前用户的昵称，需要传入token
+   * 权限：无需任何权限
    * @remarks 用户昵称可能会为null
    * @returns 昵称
    * @example
@@ -238,6 +255,7 @@ export class User extends Base {
   /**
    * 快速获取获取用户邮箱
    * 该方法会自动获取当前用户的邮箱，需要传入token
+   * 权限：无需任何权限
    * @returns 邮箱
    * @example
    * ```ts
@@ -256,6 +274,7 @@ export class User extends Base {
   /**
    * 快速获取获取用户头像地址
    * 该方法会自动获取当前用户的头像地址，需要传入token
+   * 权限：无需任何权限
    * @returns 头像地址
    * @example
    * ```ts

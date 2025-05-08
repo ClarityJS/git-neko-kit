@@ -25,6 +25,7 @@ export class WebHook extends Base {
 
   /**
    * 检查WebHook签名是否正确
+   * 权限：无需任何权限
    * @param options - WebHook参数对象，必须包含以下参数：
    * - secret: WebHook的密钥, 可以从Base类入口传递
    * - payload: 要验证的签名主体

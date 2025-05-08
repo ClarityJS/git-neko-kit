@@ -29,6 +29,7 @@ export class Commit extends Base {
 
   /**
    * 获取一个提交信息
+   * 权限: Contents - read-only
    * @param options - 提交信息参数对象
    * - url 仓库URL地址
    * - owner 仓库拥有者
@@ -36,6 +37,12 @@ export class Commit extends Base {
    * url参数和owner、repo参数传入其中的一种
    * - sha 提交的SHA值，如果不提供，则默认获取仓库的默认分支的最新提交信息
    * - format - 可选，是否格式化提交信息, 默认为false
+   * @returns 提交信息
+   * @example
+   * ```ts
+   * const commitInfo = await commit.get_commit_info({ owner: 'owner', repo: 'repo' })
+   * console.log(commitInfo)
+   * ```
    */
   public async get_commit_info (
     options: CommitInfoParamType

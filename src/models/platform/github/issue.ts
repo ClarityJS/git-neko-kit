@@ -24,7 +24,6 @@ import type {
   IssueCommentListParamType,
   IssueInfoParamType,
   IssueInfoResponseType,
-  IssueListParamType,
   IssueListResponseType,
   LockIssueParamType,
   LockIssueResponseType,
@@ -34,6 +33,7 @@ import type {
   RemoveIssueCommentParamType,
   RepoCommentListParamType,
   RepoCommentListResponseType,
+  RepoIssueListParamType,
   UnLockIssueParamType,
   UnLockIssueResponseType,
   UpdateIssueCommentParamType,
@@ -66,6 +66,7 @@ export class Issue extends Base {
 
   /**
    * 获取Issue详情
+   * 权限: Issues - Read
    * @param options 请求参数列表
    * - url 仓库URL地址
    * - owner 仓库拥有者
@@ -114,6 +115,7 @@ export class Issue extends Base {
 
   /**
    * 获取仓库的Issue列表
+   * 权限: Issues - Read
    * @param options 请求参数列表
    * - url 仓库URL地址
    * - owner 仓库拥有者
@@ -139,8 +141,8 @@ export class Issue extends Base {
    * console.log(res) // { data: IssueListResponseType[] }
    * ```
    */
-  public async get_issue_list (
-    options: IssueListParamType
+  public async get_repo_issue_list (
+    options: RepoIssueListParamType
   ): Promise<ApiResponseType<IssueListResponseType>> {
     let owner, repo
     try {
@@ -190,6 +192,7 @@ export class Issue extends Base {
 
   /**
    * 创建一个Issue
+   * 权限: Issues - Write
    * @param options 发送Issue的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -230,6 +233,10 @@ export class Issue extends Base {
 
   /**
    * 更新一个Issue
+   * 权限:
+   * - Issues: Write
+   * - Pull requests: Write
+   * 需以上权限之一
    * @param options 更新Issue的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -271,6 +278,10 @@ export class Issue extends Base {
 
   /**
    * 重新打开一个Issue
+   * 权限:
+   * - Issues: Write
+   * - Pull requests: Write
+   * 需以上权限之一
    * @param options 打开Issue的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -309,6 +320,10 @@ export class Issue extends Base {
 
   /**
    * 重新打开一个议题
+   * 权限:
+   * - Issues: Write
+   * - Pull requests: Write
+   * 需以上权限之一
    * @deprecated 请使用 open_issue 方法代替
    */
   public async reopen_issue (options: OpenIssueParamType): Promise<ApiResponseType<OpenIssueResponseType>> {
@@ -317,6 +332,10 @@ export class Issue extends Base {
 
   /**
    * 关闭一个Issue
+   * 权限:
+   * - Issues: Write
+   * - Pull requests: Write
+   * 需以上权限之一
    * @param options 关闭Issue的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -359,6 +378,10 @@ export class Issue extends Base {
 
   /**
    * 锁定一个Issue
+   * 权限:
+   * - Issues: Write
+   * - Pull requests: Write
+   * 需以上权限之一
    * @param options 锁定Issue的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -406,6 +429,10 @@ export class Issue extends Base {
 
   /**
    * 解锁一个Issue
+   * 权限:
+   * - Issues: Write
+   * - Pull requests: Write
+   * 需以上权限之一
    * @param options 解锁Issue的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -449,6 +476,10 @@ export class Issue extends Base {
 
   /**
    * 获取一个仓库下Issue的评论列表
+   * 权限:
+   * - Issues: Read
+   * - Pull requests: Read
+   * 需以上权限之一
    * @param options 获取Issue评论列表的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -500,6 +531,10 @@ export class Issue extends Base {
 
   /**
    * 获取一个Issue下的评论列表
+   * 权限:
+   * - Issues: Read
+   * - Pull requests: Read
+   * 需以上权限之一
    * @param options 获取Issue评论列表的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -550,6 +585,10 @@ export class Issue extends Base {
 
   /**
    * 获取Issue评论信息
+   * 权限:
+   * - Issues: Read
+   * - Pull requests: Read
+   * 需以上权限之一
    * @param options 获取Issue评论信息的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -588,6 +627,10 @@ export class Issue extends Base {
 
   /**
    * 创建一个Issue评论
+   * 权限:
+   * - Issues: Write
+   * - Pull requests: Write
+   * 需以上权限之一
    * @param options 创建Issue评论的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -632,6 +675,10 @@ export class Issue extends Base {
 
   /**
    * 更新Issue评论信息
+   * 权限:
+   * - Issues: Write
+   * - Pull requests: Write
+   * 需以上权限之一
    * @param options 更新Issue评论信息的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -671,6 +718,10 @@ export class Issue extends Base {
 
   /**
    * 删除Issue评论信息
+   * 权限:
+   * - Issues: Write
+   * - Pull requests: Write
+   * 需以上权限之一
    * @param options 删除Issue评论信息的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -714,6 +765,10 @@ export class Issue extends Base {
 
   /**
    * 删除Issue评论信息
+   * 权限:
+   * - Issues: Write
+   * - Pull requests: Write
+   * 需以上权限之一
    * @deprecated 请使用 remove_issue_comment 方法代替
    */
   public async delete_issue_comment (

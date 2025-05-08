@@ -1,6 +1,6 @@
 import { NotOrgMsg, NotOrgParamMsg } from '@/common'
 import { Base } from '@/models/platform/github/base'
-import {
+import type {
   ApiResponseType,
   OrganizationInfoType,
   OrganizationNameParamType
@@ -22,9 +22,15 @@ export class Org extends Base {
 
   /**
    * 获取组织信息
+   * 权限: Plan - read-only ，若需要获取组织计划则需要该权限，并且是组织所有者
    * @param options 组织参数
    * - org 组织名称
    * @returns 组织信息
+   * @example
+   * ```ts
+   * const orgInfo = await org.get_org_info({ org: 'org' })
+   * console.log(orgInfo)
+   * ```
    */
   public async get_org_info (options: OrganizationNameParamType): Promise<ApiResponseType<OrganizationInfoType>> {
     if (!options.org) {
@@ -40,7 +46,7 @@ export class Org extends Base {
       }
       return res
     } catch (error) {
-      throw new Error(`获取组织信息失败: ${(error as Error).message}`)
+      throw new Error(`获取组织${options.org}信息失败: ${(error as Error).message}`)
     }
   }
 }
