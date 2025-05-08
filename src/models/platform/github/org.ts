@@ -22,7 +22,8 @@ export class Org extends Base {
 
   /**
    * 获取组织信息
-   * 权限: Plan - read-only ，若需要获取组织计划则需要该权限，并且是组织所有者
+   * 权限:
+   * - Plan: Read-only ，若需要获取组织计划则需要该权限，并且是组织所有者
    * @param options 组织参数
    * - org 组织名称
    * @returns 组织信息

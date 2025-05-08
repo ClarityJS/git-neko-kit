@@ -51,7 +51,7 @@ export class Repo extends Base {
 
   /**
    * 获取组织仓库列表
-   * 权限: Metadata - read-only , 如果获取公开仓库可无需此权限
+   * 权限: Metadata - Read-only , 如果获取公开仓库可无需此权限
    * @param options - 请求参数对象
    * - org - 组织名称
    * - type - 仓库类型，可选值：'all' | 'public' | 'private' | 'forks' | 'sources' | 'member', 默认值：'all'
@@ -170,7 +170,8 @@ export class Repo extends Base {
 
   /**
    * 获取用户仓库列表
-   * 权限: Metadata - read-only, 如果只获取公开仓库可无需此权限
+   * 权限:
+   * - Metadata: Read-only, 如果只获取公开仓库可无需此权限
    * @param options - 请求参数对象
    * - username - 用户名
    * 优先获取授权用户仓库列表，若授权用户不存在则获取指定用户仓库列表
@@ -237,7 +238,8 @@ export class Repo extends Base {
 
   /**
    * 获取仓库信息
-   * 权限: Metadata - read-only, 如果只获取公开仓库可无需此权限
+   * 权限:
+   * - Metadata: Read-only, 如果只获取公开仓库可无需此权限
    * @param options - 仓库信息参数对象，必须包含以下两种组合之一：
    * - options.url 仓库URL地址
    * - options.owner 仓库拥有者
@@ -292,7 +294,8 @@ export class Repo extends Base {
 
   /**
    * 创建组织仓库
-   * 权限：Administration - Read and write
+   * 权限：
+   * - Administration: Read and write
    * @param options 创建组织仓库参数
    * - owner: 组织名称
    * - name: 仓库名称
@@ -349,7 +352,8 @@ export class Repo extends Base {
 
   /**
    * 获取协作者列表
-   * 权限：Metadata - Read
+   * 权限：
+   * - Metadata: Read
    * @param options 获取协作者列表对象
    * - owner: 仓库拥有者
    * - repo: 仓库名称
@@ -396,7 +400,8 @@ export class Repo extends Base {
 
   /**
    * 邀请协作者
-   * 权限：Administration - Read and write
+   * 权限：
+   * - Administration: Read and write
    * @param options 邀请协作者对象
    * - owner: 仓库拥有者
    * - repo: 仓库名称
@@ -457,7 +462,8 @@ export class Repo extends Base {
 
   /**
    * 删除协作者
-   * 权限：Administration - Read and write
+   * 权限：
+   * - Administration: Read and write
    * @param options 删除协作者对象
    * - owner: 仓库拥有者
    * - repo: 仓库名称
@@ -516,7 +522,8 @@ export class Repo extends Base {
 
   /**
    * 快速获取仓库可见性
-   * 权限: Metadata - read-only, 如果只获取公开仓库可无需此权限
+   * 权限:
+   * - Metadata: Read-only, 如果只获取公开仓库可无需此权限
    * @param options
    * - url 仓库URL地址
    * - owner 仓库拥有者
@@ -559,7 +566,8 @@ export class Repo extends Base {
 
   /**
    * 获取仓库默认分支
-   * 权限: Metadata - read-only, 如果只获取公开仓库可无需此权限
+   * 权限:
+   * - Metadata: Read-only, 如果只获取公开仓库可无需此权限
    * @param options
    * - url 仓库URL地址
    * - owner 仓库拥有者

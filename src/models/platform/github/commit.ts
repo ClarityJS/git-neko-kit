@@ -29,7 +29,8 @@ export class Commit extends Base {
 
   /**
    * 获取一个提交信息
-   * 权限: Contents - read-only
+   * 权限:
+   * — Contents: read-only
    * @param options - 提交信息参数对象
    * - url 仓库URL地址
    * - owner 仓库拥有者

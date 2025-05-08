@@ -63,7 +63,6 @@ import type {
  * - 管理子Issue
  *
  * @remarks 每个拉取请求都是一个议题，但并非每个议题都是拉取请求。
- * @class Issue
  */
 export class Issue extends Base {
   constructor (base: Base) {
@@ -75,7 +74,8 @@ export class Issue extends Base {
 
   /**
    * 获取Issue详情
-   * 权限: Issues - Read
+   * 权限:
+   * - Issues: Read-only
    * @param options 请求参数列表
    * - url 仓库URL地址
    * - owner 仓库拥有者
@@ -124,7 +124,8 @@ export class Issue extends Base {
 
   /**
    * 获取仓库的Issue列表
-   * 权限: Issues - Read
+   * 权限:
+   * - Issues:Read-only
    * @param options 请求参数列表
    * - url 仓库URL地址
    * - owner 仓库拥有者
@@ -199,7 +200,8 @@ export class Issue extends Base {
 
   /**
    * 创建一个Issue
-   * 权限: Issues - Write
+   * 权限:
+   * - Issues: Write
    * @param options 发送Issue的参数对象
    * - owner 仓库拥有者
    * - repo 仓库名称
@@ -484,8 +486,8 @@ export class Issue extends Base {
   /**
    * 获取一个仓库下Issue的评论列表
    * 权限:
-   * - Issues: Read
-   * - Pull requests: Read
+   * - Issues: Read-only
+   * - Pull requests: Read-only
    * 需以上权限之一
    * @param options 获取Issue评论列表的参数对象
    * - owner 仓库拥有者
@@ -537,8 +539,8 @@ export class Issue extends Base {
   /**
    * 获取一个Issue下的评论列表
    * 权限:
-   * - Issues: Read
-   * - Pull requests: Read
+   * - Issues: Read-only
+   * - Pull requests: Read-only
    * 需以上权限之一
    * @param options 获取Issue评论列表的参数对象
    * - owner 仓库拥有者
@@ -589,8 +591,8 @@ export class Issue extends Base {
   /**
    * 获取Issue评论信息
    * 权限:
-   * - Issues: Read
-   * - Pull requests: Read
+   * - Issues: Read-only
+   * - Pull requests: Read-only
    * 需以上权限之一
    * @param options 获取Issue评论信息的参数对象
    * - owner 仓库拥有者
@@ -783,8 +785,8 @@ export class Issue extends Base {
   /**
    * 获取子议题列表
    * 权限:
-   * - Issues: Read
-   * - Pull requests: Read
+   * - Issues: Read-only
+   * - Pull requests: Read-only
    * 需以上权限之一
    * @param options 获取子议题列表的参数对象
    * - owner 仓库拥有者
