@@ -46,6 +46,24 @@ export interface formatParamType {
   /** 是否格式化 */
   format: boolean;
 }
+
+/**
+ * 一个仓库基本参数
+ * 包含：
+ * - owner: 仓库拥有者
+ * - repo: 仓库名称
+ */
+export type RepoBaseParamType = RepoOwnerParamType & RepoNameParamType
+
+/**
+ * 一个仓库参数, 可以是基本参数，也可以是仓库地址
+ * 包含：
+ * - owner: 仓库拥有者
+ * - repo: 仓库名称
+ * - url: 仓库地址
+ */
+export type RepoParamType = RepoBaseParamType | RepoUrlParamType
+
 /** guthub基础入口类型 */
 export interface GitHubAuthType {
   /** 私钥内容 */

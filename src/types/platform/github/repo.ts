@@ -2,6 +2,7 @@ import {
   formatParamType,
   RepoNameParamType,
   RepoOwnerParamType,
+  RepoParamType,
   RepoUrlParamType,
   UserNameParamType
 } from '@/types/platform/github/base'
@@ -49,11 +50,8 @@ export interface UserByTokenRepoListParamType extends RepoListBaseParamType {
   format?: formatParamType['format']
 }
 
-/** 仓库信息响应类型 */
-export interface RepoBaseParamType extends RepoOwnerParamType, RepoNameParamType { }
-
 /** 仓库信息请求参数 */
-export type RepoInfoParamType = (RepoBaseParamType | RepoUrlParamType) & {
+export type RepoInfoParamType = RepoParamType & {
   /** 是否格式化日期 */
   format?: formatParamType['format']
 }
@@ -542,7 +540,7 @@ export interface CollaboratorInfo extends AccountBaseType {
 export type CollaboratorListResponseType = CollaboratorInfo[]
 
 /** 移除协作者参数类型 */
-export type RemoveCollaboratorParamType = (RepoBaseParamType | RepoUrlParamType) & UserNameParamType
+export type RemoveCollaboratorParamType = RepoParamType & UserNameParamType
 /** 移除协作者响应类型 */
 export interface RemoveCollaboratorResponseType {
   /** 状态信息 */

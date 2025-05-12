@@ -1,15 +1,14 @@
 import { GitHubAppInfoType } from '@/types/platform/github/app'
-import { RepoUrlParamType } from '@/types/platform/github/base'
-import { RepoBaseParamType } from '@/types/platform/github/repo'
+import { RepoBaseParamType, RepoParamType, RepoUrlParamType } from '@/types/platform/github/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 议题信息参数类型 */
-export type IssueInfoParamType = (RepoBaseParamType | RepoUrlParamType) & {
+export type IssueInfoParamType = RepoParamType & {
   /** 议题ID */
   issue_number: number
 }
 /** 议题列表参数类型 */
-export type RepoIssueListParamType = (RepoBaseParamType | RepoUrlParamType) & {
+export type RepoIssueListParamType = RepoParamType & {
   /**
    * 里程碑筛选
    * @default undefined
@@ -227,6 +226,7 @@ export interface IssueInfoResponseType {
 
 /** 议题列表响应类型 */
 export type IssueListResponseType = IssueInfoResponseType[]
+
 /** 创建议题参数类型 */
 export type CreteIssueParamType = RepoBaseParamType & {
   /** 标题 */

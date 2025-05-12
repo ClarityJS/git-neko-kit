@@ -14,7 +14,7 @@ import {
 } from '@/types'
 
 /**
- * Base 提交操作类
+ * Commit 提交操作类
  *
  * 提供对GitHub Commit的CRUD操作，包括：
  * - 获取一个提交信息
