@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.5.2](https://github.com/CandriaJS/git-neko-kit/compare/v0.5.1...v0.5.2) (2025-05-12)
+
+
+### ♻️ 代码重构
+
+* 更新项目仓库地址和作者信息 ([edb704e](https://github.com/CandriaJS/git-neko-kit/commit/edb704e97cf0caa1a5be64a76f301a34ca54eab1))
+
 ## [0.5.1](https://github.com/CandriaJS/git-neko-kit/compare/v0.5.0...v0.5.1) (2025-05-12)
 
 
