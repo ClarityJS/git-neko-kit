@@ -17,12 +17,14 @@ permissions:
 
 jobs:
   beta-version:
+    if: "!startsWith(github.head_ref, 'release-please')"
     runs-on: ubuntu-latest
     outputs:
       beta_version: ${{ steps.set-version.outputs.BETA_VERSION }}
       short_commit_hash: ${{ steps.get-sha.outputs.SHORT_COMMIT_HASH }}
       build_timestamp: ${{ steps.get-build-timestamp.outputs.BUILD_TIMESTAMP }}
       package_name: ${{ steps.set-version.outputs.PACKAGE_NAME }}
+      package_short_name: ${{ steps.set-version.outputs.PACKAGE_SHORT_NAME }}
 
     steps:
       - name: 检出代码
@@ -42,7 +44,7 @@ jobs:
           branch=${{ github.event.pull_request.head.ref || github.ref_name }}
           git fetch origin $branch --depth=100
           git checkout $branch
-          RELEASE_BRANCH="release-please--branches--main--components--git-neko-kit"
+          RELEASE_BRANCH="release-please--branches--main--components--karin-plugin-meme"
           if git ls-remote --heads origin $RELEASE_BRANCH | grep -q $RELEASE_BRANCH; then
             git fetch origin $RELEASE_BRANCH --depth=1
             git checkout FETCH_HEAD -- package.json
@@ -53,7 +55,10 @@ jobs:
           fi       
           BETA_VERSION="$VERSION-beta.$(date +%s)"
 
-          PACKAGE_NAME=$(pnpm pkg get name | tr -d '"' | awk -F'/' '{print $2}')
+          PACKAGE_NAME=$(pnpm pkg get name | tr -d '"')
+          PACKAGE_SHORT_NAME=$(pnpm pkg get name | tr -d '"' | awk -F'/' '{print $2}')
+          echo "PACKAGE_SHORT_NAME=$PACKAGE_SHORT_NAME" >> $GITHUB_ENV
+          echo "PACKAGE_SHORT_NAME=$PACKAGE_SHORT_NAME" >> $GITHUB_OUTPUT
           echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_ENV
           echo "PACKAGE_NAME=$PACKAGE_NAME" >> $GITHUB_OUTPUT
           echo "BETA_VERSION=$BETA_VERSION" >> $GITHUB_ENV
@@ -109,7 +114,7 @@ jobs:
       - name: 上传构建产物
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ needs.beta-version.outputs.package_name }}
+          name: ${{ needs.beta-version.outputs.package_short_name }}
           path: ${{ runner.temp }}/temp/
       
       - name: 获取主分支的最新提交消息
@@ -147,7 +152,7 @@ jobs:
       - name: 导入构建产物
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.beta-version.outputs.package_name }}
+          name: ${{ needs.beta-version.outputs.package_short_name }}
           path: ./
 
       - name: 发布预览版
@@ -162,7 +167,7 @@ jobs:
           echo "发布者: \`${{ github.actor }}\`" >> $GITHUB_STEP_SUMMARY
           echo "使用 pnpm:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          echo "pnpm install https://pkg.pr.new/${{ needs.beta-version.outputs.package_name }}@${{ needs.beta-version.outputs.short_commit_hash }}" >> $GITHUB_STEP_SUMMARY
+          echo "pnpm install https://pkg.pr.new/${{ github.repository }}/${{ needs.beta-version.outputs.package_name }}@${{ needs.beta-version.outputs.short_commit_hash }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
           echo "## 完整输出信息" >> $GITHUB_STEP_SUMMARY
@@ -183,7 +188,7 @@ jobs:
 
             你可以通过以下命令安装该版本：
             ```
-            pnpm install https://pkg.pr.new/${{ needs.beta-version.outputs.package_name }}@${{ needs.beta-version.outputs.short_commit_hash }}
+            pnpm install https://pkg.pr.new/${{ github.repository }}/${{ needs.beta-version.outputs.package_name }}@${{ needs.beta-version.outputs.short_commit_hash }}
             ```
 
       - name: 上传NPM包信息

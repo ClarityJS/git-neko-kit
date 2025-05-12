@@ -1,5 +1,5 @@
 {
-  "name": "@clarityjs/git-neko-kit",
+  "name": "@candriajs/git-neko-kit",
   "version": "0.4.4",
   "description": "Github, Gitee, GitCode API封装库",
   "keywords": [
