@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.5.1](https://github.com/CandriaJS/git-neko-kit/compare/v0.5.0...v0.5.1) (2025-05-12)
+
+
+### 📦️ 构建系统
+
+* **release:** 移除设置 pnpm 和包名步骤 ([96cd660](https://github.com/CandriaJS/git-neko-kit/commit/96cd660864253cad1af2af27fa000a4f7ef9c5a9))
+
 ## [0.5.0](https://github.com/CandriaJS/git-neko-kit/compare/v0.4.4...v0.5.0) (2025-05-12)
 
 
