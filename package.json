@@ -10,10 +10,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ClarityJS/git-neko-kit.git"
+    "url": "git+https://github.com/CandriaJS/git-neko-kit.git"
   },
   "license": "GNU AGPL-3.0",
-  "author": "ClarityJS",
+  "author": "CandriaJS",
   "type": "module",
   "exports": {
     ".": {
