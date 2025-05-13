@@ -1,5 +1,22 @@
 # 变更日志
 
+## [0.6.0](https://github.com/CandriaJS/git-neko-kit/compare/v0.5.2...v0.6.0) (2025-05-13)
+
+
+### ✨ 新功能
+
+* **platform/github:** 添加 Release 操作类并更新相关类型定义 ([b08e3b4](https://github.com/CandriaJS/git-neko-kit/commit/b08e3b47ccde814eafb2023f7e73a2fbfff2dbb3))
+
+
+### 📝 文档更新
+
+* 更新 issue 模板中的文档链接和标题格式 ([247d980](https://github.com/CandriaJS/git-neko-kit/commit/247d980cfac5574e978982ffd0cda272696d16ad))
+
+
+### 🎡 持续集成
+
+* 使用 GitHub App 令牌处理过期和新创建的问题 ([d11e6d6](https://github.com/CandriaJS/git-neko-kit/commit/d11e6d6a7218d2e934baab1c78a2389bce369328))
+
 ## [0.5.2](https://github.com/CandriaJS/git-neko-kit/compare/v0.5.1...v0.5.2) (2025-05-12)
 
 
