@@ -1,10 +1,13 @@
 import {
   formatDate,
   getContributionData,
+  isNotAccessTokeMsg,
   isOrgMsg,
+  NotAccessTokenMsg,
   NotOrgOrUserMsg,
   NotOrgOrUserParamMsg,
   NotPerrmissionMsg,
+  NotUserIdParamMsg,
   NotUserMsg,
   NotUserParamMsg
 } from '@/common'
@@ -12,8 +15,8 @@ import { Base } from '@/models/platform/github/base'
 import {
   ApiResponseType,
   ContributionResult,
-  UserIdParamType,
-  UserInfoByTokenParamType,
+  UserInfoByAuthParamType,
+  UserInfoByIdParamType,
   UserInfoParamType,
   UserInfoResponseType,
   UserNameParamType
@@ -48,12 +51,16 @@ export class User extends Base {
    */
   public async get_user_info (options: UserInfoParamType):
   Promise<ApiResponseType<UserInfoResponseType>> {
+    const token = options.access_token ?? this.userToken
+    if (!options.username) {
+      throw new Error(NotOrgOrUserParamMsg)
+    }
+    if (!token?.startsWith('ghu_')) {
+      throw new Error(isNotAccessTokeMsg)
+    }
     try {
-      if (!options.username) {
-        throw new Error(NotOrgOrUserParamMsg)
-      }
       this.setRequestConfig({
-        token: this.userToken
+        token
       })
       const res = await this.get(`/users/${options.username}`)
       if (res.statusCode === 401) {
@@ -62,8 +69,19 @@ export class User extends Base {
         throw new Error(NotOrgOrUserMsg)
       }
       if (res.data) {
-        res.data.created_at = await formatDate(res.data.created_at)
-        res.data.updated_at = await formatDate(res.data.updated_at)
+        res.data = {
+          id: res.data.id,
+          login: res.data.login,
+          name: res.data.name,
+          html_url: res.data.html_url,
+          avatar_url: res.data.avatar_url,
+          email: res.data.email,
+          type: res.data.type,
+          bio: res.data.bio,
+          blog: res.data.blog,
+          followers: res.data.followers,
+          following: res.data.following
+        }
       }
       return res
     } catch (error) {
@@ -84,12 +102,16 @@ export class User extends Base {
    * console.log(userInfo)
    * ```
    */
-  public async get_user_info_by_user_id (options: UserIdParamType):
+  public async get_user_info_by_user_id (options: UserInfoByIdParamType):
   Promise<ApiResponseType<UserInfoResponseType>> {
+    const token = options.access_token ?? this.userToken
+    if (!options.user_id) {
+      throw new Error(NotUserParamMsg)
+    }
+    if (!token?.startsWith('ghu_')) {
+      throw new Error(isNotAccessTokeMsg)
+    }
     try {
-      if (!options.user_id) {
-        throw new Error(NotUserParamMsg)
-      }
       this.setRequestConfig({
         token: this.userToken
       })
@@ -100,8 +122,19 @@ export class User extends Base {
         throw new Error(NotUserMsg)
       }
       if (res.data) {
-        res.data.created_at = await formatDate(res.data.created_at)
-        res.data.updated_at = await formatDate(res.data.updated_at)
+        res.data = {
+          id: res.data.id,
+          login: res.data.login,
+          name: res.data.name,
+          html_url: res.data.html_url,
+          avatar_url: res.data.avatar_url,
+          email: res.data.email,
+          type: res.data.type,
+          bio: res.data.bio,
+          blog: res.data.blog,
+          followers: res.data.followers,
+          following: res.data.following
+        }
       }
       return res
     } catch (error) {
@@ -120,12 +153,15 @@ export class User extends Base {
    * console.log(userInfo)
    * ```
    */
-  public async get_user_info_by_token (options?: UserInfoByTokenParamType):
+  public async get_user_info_by_auth (options?: UserInfoByAuthParamType):
   Promise<ApiResponseType<UserInfoResponseType>> {
-    const access_token = (options && options.access_token) ?? this.userToken
+    const token = options?.access_token ?? this.userToken
+    if (!options || !token) {
+      throw new Error(NotAccessTokenMsg)
+    }
     try {
       this.setRequestConfig({
-        token: access_token
+        token
       })
       const res = await this.get('/user')
       switch (res.statusCode) {
@@ -134,17 +170,43 @@ export class User extends Base {
         case 404:
           throw new Error(NotUserMsg)
       }
-      const isFormat = options?.format ?? this.format
-      if (isFormat) {
-        if (res.data) {
-          res.data.created_at = await formatDate(res.data.created_at)
-          res.data.updated_at = await formatDate(res.data.updated_at)
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          login: res.data.login,
+          name: res.data.name,
+          html_url: res.data.html_url,
+          avatar_url: res.data.avatar_url,
+          email: res.data.email,
+          type: res.data.type,
+          bio: res.data.bio,
+          blog: res.data.blog,
+          followers: res.data.followers,
+          following: res.data.following
         }
       }
       return res
     } catch (error) {
       throw new Error(`获取授权用户信息失败: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 通过访问令牌获取用户信息
+   * 权限：无需任何权限
+   * @deprecated 该方法已过时，请使用get_user_info_by_auth方法
+   * @param options - 访问令牌配置参数对象
+   * - access_token - 访问令牌
+   * @example
+   * ```ts
+   * const userInfo = await user.get_user_info_by_token({ access_token: 'access_token' })
+   * console.log(userInfo)
+   * ```
+   */
+
+  public async get_user_info_by_token (options: UserInfoByAuthParamType):
+  Promise<ApiResponseType<UserInfoResponseType>> {
+    return this.get_user_info_by_auth(options)
   }
 
   /**
@@ -207,7 +269,7 @@ export class User extends Base {
    */
   public async get_user_id (): Promise<number | null> {
     try {
-      return (await this.get_user_info_by_token()).data.id
+      return (await this.get_user_info_by_auth({})).data.id
     } catch {
       return null
     }
@@ -226,7 +288,7 @@ export class User extends Base {
    */
   public async get_username (): Promise<string | null> {
     try {
-      return (await this.get_user_info_by_token()).data.login
+      return (await this.get_user_info_by_auth()).data.login
     } catch {
       return null
     }
@@ -246,7 +308,7 @@ export class User extends Base {
    */
   public async get_nickname (): Promise<string | null> {
     try {
-      return (await this.get_user_info_by_token()).data.name
+      return (await this.get_user_info_by_auth()).data.name
     } catch {
       return null
     }
@@ -265,7 +327,7 @@ export class User extends Base {
    */
   public async get_user_email (): Promise<string | null> {
     try {
-      return (await this.get_user_info_by_token()).data.email
+      return (await this.get_user_info_by_auth()).data.email
     } catch {
       return null
     }
@@ -284,7 +346,7 @@ export class User extends Base {
    */
   public async get_avatar_url (): Promise<string | null> {
     try {
-      return (await this.get_user_info_by_token()).data.avatar_url
+      return (await this.get_user_info_by_auth()).data.avatar_url
     } catch {
       return null
     }
