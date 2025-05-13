@@ -1,6 +1,6 @@
 name: 错误报告
 description: 在使用 git-neko-kit 的过程中遇到了错误
-title: '[Bug?]: '
+title: '[🐛 Bug]: '
 labels: [ "bug" ]
 
 body:
@@ -13,7 +13,7 @@ body:
       label: 请确保以下事项
       description: 您必须勾选以下所有内容，否则您的issue可能会被直接关闭。
       options:
-        - label: 我已经阅读了[文档](https://docs.wuliya.cn/clarity/git-neko-kit)。
+        - label: 我已经阅读了[文档](https://git-neko-kit.pages.dev)。
         - label: 我确定没有重复的issue或讨论。
         - label: 我确定是`git-neko-kit`的问题，而不是其他原因（例如网络，`依赖`或`操作`）。
         - label: 我确定这个问题在最新版本中没有被修复。
@@ -35,8 +35,8 @@ body:
   - type: textarea
     id: config
     attributes:
-      label: 配置
-      description: 请提供您的`git-neko-kit`应用的配置文件(隐藏隐私字段)
+      label: 代码片段
+      description: 请提供您的`git-neko-kit`应用的代码片段(隐藏隐私字段)
     validations:
       required: true
   - type: textarea
