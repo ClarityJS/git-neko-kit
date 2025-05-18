@@ -14,6 +14,7 @@ import { Base } from '@/models/platform/github/base'
 import type {
   AddCollaboratorResponseType,
   ApiResponseType,
+  CollaboratorInfoResponseType,
   CollaboratorListParamType,
   CollaboratorListResponseType,
   CollaboratorParamType,
@@ -25,6 +26,7 @@ import type {
   RepoDefaultBranchResponseType,
   RepoInfoParamType,
   RepoInfoResponseType,
+  RepoLanguageResponseType,
   RepoVisibilityResponseType,
   UserByTokenRepoListParamType,
   UserRepoListParamType,
@@ -81,7 +83,9 @@ export class Repo extends Base {
       if (queryOptions?.type) params.type = queryOptions.type
       if (queryOptions?.sort) params.sort = queryOptions.sort
       if (queryOptions?.direction) params.direction = queryOptions.direction
-      if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions?.per_page) {
+        params.per_page = queryOptions.per_page.toString()
+      }
       if (queryOptions?.page) params.page = queryOptions.page.toString()
       const url = `/orgs/${org}/repos`
       const res = await this.get(url, params)
@@ -91,17 +95,48 @@ export class Repo extends Base {
         throw new Error(NotPerrmissionMsg)
       }
       const isFormat = options.format ?? this.format
-      if (isFormat) {
-        if (res.data) {
-          res.data = await Promise.all(
-            res.data.map(async (repo: RepoInfoResponseType) => ({
-              ...repo,
-              created_at: await formatDate(repo.created_at),
-              updated_at: await formatDate(repo.updated_at),
-              pushed_at: await formatDate(repo.pushed_at)
-            }))
-          )
-        }
+      if (res.data) {
+        res.data = await Promise.all(
+          res.data.map(async (repo: RepoInfoResponseType) => ({
+            id: repo.id,
+            name: repo.name,
+            full_name: repo.full_name,
+            owner: {
+              id: repo.owner.id,
+              login: repo.owner.login,
+              name: repo.owner.name,
+              avatar_url: repo.owner.avatar_url,
+              type: repo.owner.type,
+              html_url: repo.owner.html_url,
+              company: repo.owner.company,
+              email: repo.owner.email,
+              bio: repo.owner.bio,
+              blog: repo.owner.blog,
+              followers: repo.owner.followers,
+              following: repo.owner.following
+            },
+            public: !repo.private,
+            private: repo.private,
+            visibility: repo.private ? 'private' : 'public',
+            fork: repo.fork,
+            archived: repo.archived,
+            disabled: repo.disabled,
+            html_url: repo.html_url,
+            description: repo.description,
+            created_at: isFormat
+              ? await formatDate(repo.created_at)
+              : repo.created_at,
+            updated_at: isFormat
+              ? await formatDate(repo.updated_at)
+              : repo.updated_at,
+            stargazers_count: repo.stargazers_count,
+            watchers_count: repo.watchers_count,
+            language: repo.language,
+            forks_count: repo.forks_count,
+            open_issues_count: repo.open_issues_count,
+            default_branch: repo.default_branch
+          }))
+        )
       }
       return res
     } catch (error) {
@@ -136,12 +171,18 @@ export class Repo extends Base {
       })
       const { ...queryOptions } = options
       const params: Record<string, string> = {}
-      if (!options?.visibility && !options?.affiliation && queryOptions?.type) params.type = queryOptions.type
+      if (!options?.visibility && !options?.affiliation && queryOptions?.type) {
+        params.type = queryOptions.type
+      }
       if (queryOptions?.visibility) params.visibility = queryOptions.visibility
-      if (queryOptions?.affiliation) params.affiliation = queryOptions.affiliation
+      if (queryOptions?.affiliation) {
+        params.affiliation = queryOptions.affiliation
+      }
       if (queryOptions?.sort) params.sort = queryOptions.sort
       if (queryOptions?.direction) params.direction = queryOptions.direction
-      if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions?.per_page) {
+        params.per_page = queryOptions.per_page.toString()
+      }
       if (queryOptions?.page) params.page = queryOptions.page.toString()
 
       const url = '/uses/repos'
@@ -150,17 +191,48 @@ export class Repo extends Base {
         throw new Error(NotPerrmissionMsg)
       }
       const isFormat = options?.format ?? this.format
-      if (isFormat) {
-        if (res.data) {
-          res.data = await Promise.all(
-            res.data.map(async (repo: RepoInfoResponseType) => ({
-              ...repo,
-              created_at: await formatDate(repo.created_at),
-              updated_at: await formatDate(repo.updated_at),
-              pushed_at: await formatDate(repo.pushed_at)
-            }))
-          )
-        }
+      if (res.data) {
+        res.data = await Promise.all(
+          res.data.map(async (repo: RepoInfoResponseType) => ({
+            id: repo.id,
+            name: repo.name,
+            full_name: repo.full_name,
+            owner: {
+              id: repo.owner.id,
+              login: repo.owner.login,
+              name: repo.owner.name,
+              avatar_url: repo.owner.avatar_url,
+              type: repo.owner.type,
+              html_url: repo.owner.html_url,
+              company: repo.owner.company,
+              email: repo.owner.email,
+              bio: repo.owner.bio,
+              blog: repo.owner.blog,
+              followers: repo.owner.followers,
+              following: repo.owner.following
+            },
+            public: !repo.private,
+            private: repo.private,
+            visibility: repo.private ? 'private' : 'public',
+            fork: repo.fork,
+            archived: repo.archived,
+            disabled: repo.disabled,
+            html_url: repo.html_url,
+            description: repo.description,
+            created_at: isFormat
+              ? await formatDate(repo.created_at)
+              : repo.created_at,
+            updated_at: isFormat
+              ? await formatDate(repo.updated_at)
+              : repo.updated_at,
+            stargazers_count: repo.stargazers_count,
+            watchers_count: repo.watchers_count,
+            language: repo.language,
+            forks_count: repo.forks_count,
+            open_issues_count: repo.open_issues_count,
+            default_branch: repo.default_branch
+          }))
+        )
       }
       return res
     } catch (error) {
@@ -195,20 +267,14 @@ export class Repo extends Base {
       if (queryOptions?.type) params.type = queryOptions.type
       if (queryOptions?.sort) params.sort = queryOptions.sort
       if (queryOptions?.direction) params.direction = queryOptions.direction
-      if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions?.per_page) {
+        params.per_page = queryOptions.per_page.toString()
+      }
       if (queryOptions?.page) params.page = queryOptions.page.toString()
 
       const isFormat = options?.format ?? this.format
-      let res
-      try {
-        res = await this.get_user_repos_list_by_token({
-          ...options,
-          format: isFormat
-        })
-      } catch (error) {
-        const url = `/users/${username}/repos`
-        res = await this.get(url, params)
-      }
+      const url = `/users/${username}/repos`
+      const res = await this.get(url, params)
 
       switch (res.statusCode) {
         case 404:
@@ -217,17 +283,48 @@ export class Repo extends Base {
           throw new Error(NotPerrmissionMsg)
       }
 
-      if (isFormat) {
-        if (res.data) {
-          res.data = await Promise.all(
-            res.data.map(async (repo: RepoInfoResponseType) => ({
-              ...repo,
-              created_at: await formatDate(repo.created_at),
-              updated_at: await formatDate(repo.updated_at),
-              pushed_at: await formatDate(repo.pushed_at)
-            }))
-          )
-        }
+      if (res.data) {
+        res.data = await Promise.all(
+          res.data.map(async (repo: RepoInfoResponseType) => ({
+            id: repo.id,
+            name: repo.name,
+            full_name: repo.full_name,
+            owner: {
+              id: repo.owner.id,
+              login: repo.owner.login,
+              name: repo.owner.name,
+              avatar_url: repo.owner.avatar_url,
+              type: repo.owner.type,
+              html_url: repo.owner.html_url,
+              company: repo.owner.company,
+              email: repo.owner.email,
+              bio: repo.owner.bio,
+              blog: repo.owner.blog,
+              followers: repo.owner.followers,
+              following: repo.owner.following
+            },
+            public: !repo.private,
+            private: repo.private,
+            visibility: repo.private ? 'private' : 'public',
+            fork: repo.fork,
+            archived: repo.archived,
+            disabled: repo.disabled,
+            html_url: repo.html_url,
+            description: repo.description,
+            created_at: isFormat
+              ? await formatDate(repo.created_at)
+              : repo.created_at,
+            updated_at: isFormat
+              ? await formatDate(repo.updated_at)
+              : repo.updated_at,
+            stargazers_count: repo.stargazers_count,
+            watchers_count: repo.watchers_count,
+            language: repo.language,
+            forks_count: repo.forks_count,
+            open_issues_count: repo.open_issues_count,
+            default_branch: repo.default_branch
+          }))
+        )
       }
 
       return res
@@ -247,7 +344,7 @@ export class Repo extends Base {
    * url参数和owner、repo参数传入其中的一种
    * @example
    * ```ts
-   * const repo = await repo.get_repo_info({ url: 'https://github.com/ClarityJS/git-neko-kit' })
+   * const repo = await repo.get_repo_info({ url: 'https://github.com/CandriaJS/git-neko-kit' })
    * console.log(repo)
    * ```
    */
@@ -279,11 +376,45 @@ export class Repo extends Base {
           throw new Error(NotOrgOrUserMsg)
       }
       const isFormat = options?.format ?? this.format
-      if (isFormat) {
-        if (res.data) {
-          res.data.created_at = await formatDate(res.data.created_at)
-          res.data.updated_at = await formatDate(res.data.updated_at)
-          res.data.pushed_at = await formatDate(res.data.pushed_at)
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          name: res.data.name,
+          full_name: res.data.full_name,
+          owner: {
+            id: res.data.owner.id,
+            login: res.data.owner.login,
+            name: res.data.owner.name,
+            avatar_url: res.data.owner.avatar_url,
+            type: res.data.owner.type,
+            html_url: res.data.owner.html_url,
+            company: res.data.owner.company,
+            email: res.data.owner.email,
+            bio: res.data.owner.bio,
+            blog: res.data.owner.blog,
+            followers: res.data.owner.followers,
+            following: res.data.owner.following
+          },
+          public: !res.data.private,
+          private: res.data.private,
+          visibility: res.data.private ? 'private' : 'public',
+          fork: res.data.fork,
+          archived: res.data.archived,
+          disabled: res.data.disabled,
+          html_url: res.data.repo.html_url,
+          description: res.data.description,
+          created_at: isFormat
+            ? await formatDate(res.data.created_at)
+            : res.data.created_at,
+          updated_at: isFormat
+            ? await formatDate(res.data.updated_at)
+            : res.data.updated_at,
+          stargazers_count: res.data.stargazers_count,
+          watchers_count: res.data.watchers_count,
+          language: res.data.language,
+          forks_count: res.data.forks_count,
+          open_issues_count: res.data.open_issues_count,
+          default_branch: res.data.default_branch
         }
       }
       return res
@@ -327,9 +458,8 @@ export class Repo extends Base {
     options: OrgRepoCreateParamType
   ): Promise<ApiResponseType<RepoInfoResponseType>> {
     try {
-      const { owner, name, ...repoOptions } = options
+      const { owner, ...repoOptions } = options
       const body = {
-        name,
         ...repoOptions
       }
       const res = await this.post(`/orgs/${owner}/repos`, body)
@@ -337,11 +467,45 @@ export class Repo extends Base {
         throw new Error(NotPerrmissionMsg)
       }
       const isFormat = options?.format ?? this.format
-      if (isFormat) {
-        if (res.data) {
-          res.data.created_at = await formatDate(res.data.created_at)
-          res.data.updated_at = await formatDate(res.data.updated_at)
-          res.data.pushed_at = await formatDate(res.data.pushed_at)
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          name: res.data.name,
+          full_name: res.data.full_name,
+          owner: {
+            id: res.data.owner.id,
+            login: res.data.owner.login,
+            name: res.data.owner.name,
+            avatar_url: res.data.owner.avatar_url,
+            type: res.data.owner.type,
+            html_url: res.data.owner.html_url,
+            company: res.data.owner.company,
+            email: res.data.owner.email,
+            bio: res.data.owner.bio,
+            blog: res.data.owner.blog,
+            followers: res.data.owner.followers,
+            following: res.data.owner.following
+          },
+          public: !res.data.private,
+          private: res.data.private,
+          visibility: res.data.private ? 'private' : 'public',
+          fork: res.data.fork,
+          archived: res.data.archived,
+          disabled: res.data.disabled,
+          html_url: res.data.repo.html_url,
+          description: res.data.description,
+          created_at: isFormat
+            ? await formatDate(res.data.created_at)
+            : res.data.created_at,
+          updated_at: isFormat
+            ? await formatDate(res.data.updated_at)
+            : res.data.updated_at,
+          stargazers_count: res.data.stargazers_count,
+          watchers_count: res.data.watchers_count,
+          language: res.data.language,
+          forks_count: res.data.forks_count,
+          open_issues_count: res.data.open_issues_count,
+          default_branch: res.data.default_branch
         }
       }
       return res
@@ -389,9 +553,26 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get(`/repos/${owner}/${repo}/collaborators`, {
-        ...options
-      })
+      const { ...queryOptions } = options
+      const params: Record<string, string> = {}
+      if (queryOptions.affiliation) params.milestone = queryOptions.affiliation.toString()
+      if (queryOptions.permission) params.permission = queryOptions.permission.toString()
+      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.page) params.page = queryOptions.page.toString()
+      const res = await this.get(`/repos/${owner}/${repo}/collaborators`, params)
+      if (res.data) {
+        res.data = await Promise.all(
+          res.data.map((repo: CollaboratorInfoResponseType) => ({
+            id: repo.id,
+            login: repo.login,
+            avatar_url: repo.avatar_url,
+            email: repo.email,
+            name: repo.name,
+            permissions: repo.permissions,
+            role_name: repo.role_name
+          }))
+        )
+      }
       return res
     } catch (error) {
       throw new Error(`获取仓库协作者列表失败: ${(error as Error).message}`)
@@ -454,6 +635,52 @@ export class Repo extends Base {
         }
       }
 
+      const isFormat = options?.format ?? this.format
+
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          repository: {
+            id: res.data.repository.id,
+            name: res.data.repository.name,
+            full_name: res.data.repository.full_name,
+            owner: {
+              id: res.data.repository.owner.id,
+              login: res.data.repository.owner.login,
+              name: res.data.repository.owner.name,
+              avatar_url: res.data.repository.owner.avatar_url,
+              type: res.data.repository.owner.type,
+              html_url: res.data.repository.owner.html_url,
+              company: res.data.repository.owner.company,
+              email: res.data.repository.owner.email,
+              bio: res.data.repository.owner.bio,
+              blog: res.data.repository.owner.blog,
+              followers: res.data.repository.owner.followers,
+              following: res.data.repository.owner.following
+            },
+            public: !res.data.repository.private,
+            private: res.data.repository.private,
+            visibility: res.data.repository.private ? 'private' : 'public',
+            fork: res.data.repository.fork,
+            archived: res.data.repository.archived,
+            disabled: res.data.repository.disabled,
+            html_url: res.data.repository.html_url,
+            description: res.data.repository.description,
+            created_at: isFormat
+              ? await formatDate(res.data.repository.created_at)
+              : res.data.repository.created_at,
+            updated_at: isFormat
+              ? await formatDate(res.data.repository.updated_at)
+              : res.data.repository.updated_at,
+            stargazers_count: res.data.repository.stargazers_count,
+            watchers_count: res.data.repository.watchers_count,
+            language: res.data.repository.language,
+            forks_count: res.data.repository.forks_count,
+            open_issues_count: res.data.repository.open_issues_count,
+            default_branch: res.data.repository.default_branch
+          }
+        }
+      }
       return res
     } catch (error) {
       throw new Error(`添加协作者${username}失败: ${(error as Error).message}`)
@@ -501,9 +728,7 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       username = options?.username
-      const res = await this.delete(
-        `/repos/${owner}/${repo}/collaborators/${username}`
-      )
+      const res = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`)
       if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
       if (res.status && res.statusCode === 204) {
         res.data = {
@@ -533,7 +758,7 @@ export class Repo extends Base {
    * @returns 仓库可见性，
    * @example
    * ```ts
-   * const visibility = await repo.get_repo_visibility({url: 'https://github.com/ClarityJS/git-neko-kit'})
+   * const visibility = await repo.get_repo_visibility({url: 'https://github.com/CandriaJS/git-neko-kit'})
    * console.log(visibility) // 输出 public 或 private
    * ```
    */
@@ -554,7 +779,7 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       const res = await this.get_repo_info({ owner, repo })
-      let visibility = 'public'
+      let visibility:RepoVisibilityResponseType['visibility'] = 'private'
       if (res.data) {
         visibility = res.data?.visibility
       }
@@ -575,7 +800,7 @@ export class Repo extends Base {
    * url参数和owner、repo参数传入其中的一种
    * @example
    * ```ts
-   * const defaultBranch = await repo.get_repo_default_branch({url: 'https://github.com/ClarityJS/meme-plugin')}
+   * const defaultBranch = await repo.get_repo_default_branch({url: 'https://github.com/CandriaJS/meme-plugin')}
    * console.log(defaultBranch) // 输出 main
    * ```ts
    */
@@ -603,6 +828,48 @@ export class Repo extends Base {
       return default_branch
     } catch (error) {
       throw new Error(`获取仓库默认分支失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取仓库主要语言
+   * 权限:
+   * - Metadata: Read-only, 如果只获取公开仓库可无需此权限
+   * @param options
+   * - url 仓库URL地址
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * url参数和owner、repo参数传入其中的一种
+   * @example
+   * ```ts
+   * const language =  await repo.get_repo_language({url: 'URL_ADDRESS.com/CandriaJS/meme-plugin')}
+   * console.log(language) // 输出 JavaScript
+   * ```ts
+   */
+  public async get_repo_language (
+    options: RepoInfoParamType
+  ): Promise<RepoLanguageResponseType['language']> {
+    try {
+      let owner, repo
+      if ('url' in options) {
+        const url = options.url.trim()
+        const info = parse_git_url(url)
+        owner = info?.owner
+        repo = info?.repo
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options?.owner
+        repo = options?.repo
+      } else {
+        throw new Error(NotParamMsg)
+      }
+      const res = await this.get_repo_info({ owner, repo })
+      let language: RepoLanguageResponseType['language'] = ''
+      if (res.data) {
+        language = res.data?.language
+      }
+      return language
+    } catch (error) {
+      throw new Error(`获取仓库语言失败: ${(error as Error).message}`)
     }
   }
 }

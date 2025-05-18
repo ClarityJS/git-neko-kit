@@ -1,4 +1,4 @@
-import { AccessTokenType, formatParamType, UserIdParamType, UserNameParamType } from '@/types/platform/github/base'
+import { AccessTokenType, UserIdParamType, UserNameParamType } from '@/types/platform/github/base'
 
 /** 用户信息参数类型 */
 export interface UserInfoParamType extends UserNameParamType {

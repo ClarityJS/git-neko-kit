@@ -1,5 +1,5 @@
 import { formatParamType, RepoOwnerParamType } from '@/types/platform/github/base'
-import { AccountBaseType } from '@/types/platform/github/user'
+import { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 创建组织仓库请求参数 */
 export interface OrgRepoCreateParamType extends RepoOwnerParamType {
@@ -50,38 +50,38 @@ export interface OrgRepoCreateParamType extends RepoOwnerParamType {
   /** 新存储库的自定义属性 */
   custom_properties?: { [key: string]: string };
   /** 是否格式化日期 */
-  format: formatParamType['format']
+  format?: formatParamType['format']
 }
 
 /**
  * 组织的基本信息
  */
-export interface OrganizationBaseType extends AccountBaseType {
-  /** 组织的名称 */
-  name?: string;
-  /** 组织的描述 */
-  description: string | null;
-  /** 组织的公司名称 */
-  company?: string;
-  /** 组织的博客 URL */
-  blog: string | null;
-  /** 组织的所在地 */
-  location?: string;
-  /** 组织的邮箱地址 */
-  email?: string;
-  /** 组织的 Twitter 用户名 */
-  twitter_username?: string | null;
-  /** 组织是否已验证 */
-  is_verified?: boolean;
-  /** 账户类型（例如 "Organization"） */
-  type: string;
-  /** 创建时间 */
-  created_at: string;
-  /** 更新时间 */
-  updated_at: string;
-  /** 归档时间 */
-  archived_at: string | null;
-}
+// export interface OrganizationBaseType extends Omit<UserInfoResponseType, 'name' | 'company'> {
+//   /** 组织的名称 */
+//   name?: string;
+//   /** 组织的描述 */
+//   description: string | null;
+//   /** 组织的公司名称 */
+//   company?: string | null;
+//   /** 组织的博客 URL */
+//   blog?: string | null;
+//   /** 组织的所在地 */
+//   location?: string;
+//   /** 组织的邮箱地址 */
+//   email?: string;
+//   /** 组织的 Twitter 用户名 */
+//   twitter_username?: string | null;
+//   /** 组织是否已验证 */
+//   is_verified?: boolean;
+//   /** 账户类型（例如 "Organization"） */
+//   type: string;
+//   /** 创建时间 */
+//   created_at: string;
+//   /** 更新时间 */
+//   updated_at: string;
+//   /** 归档时间 */
+//   archived_at: string | null;
+// }
 /**
  * 组织的计划信息
  */
