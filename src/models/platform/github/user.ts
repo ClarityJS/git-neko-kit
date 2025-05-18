@@ -1,5 +1,4 @@
 import {
-  formatDate,
   getContributionData,
   isNotAccessTokeMsg,
   isOrgMsg,
@@ -72,13 +71,14 @@ export class User extends Base {
         res.data = {
           id: res.data.id,
           login: res.data.login,
-          name: res.data.name,
+          name: res.data.name || null,
+          type: res.data.type,
           html_url: res.data.html_url,
           avatar_url: res.data.avatar_url,
-          email: res.data.email,
-          type: res.data.type,
-          bio: res.data.bio,
-          blog: res.data.blog,
+          company: res.data.company || null,
+          email: res.data.email || null,
+          bio: res.data.bio || null,
+          blog: res.data.blog || null,
           followers: res.data.followers,
           following: res.data.following
         }
@@ -106,7 +106,7 @@ export class User extends Base {
   Promise<ApiResponseType<UserInfoResponseType>> {
     const token = options.access_token ?? this.userToken
     if (!options.user_id) {
-      throw new Error(NotUserParamMsg)
+      throw new Error(NotUserIdParamMsg)
     }
     if (!token?.startsWith('ghu_')) {
       throw new Error(isNotAccessTokeMsg)
@@ -125,13 +125,14 @@ export class User extends Base {
         res.data = {
           id: res.data.id,
           login: res.data.login,
-          name: res.data.name,
+          name: res.data.name || null,
+          type: res.data.type,
           html_url: res.data.html_url,
           avatar_url: res.data.avatar_url,
-          email: res.data.email,
-          type: res.data.type,
-          bio: res.data.bio,
-          blog: res.data.blog,
+          company: res.data.company || null,
+          email: res.data.email || null,
+          bio: res.data.bio || null,
+          blog: res.data.blog || null,
           followers: res.data.followers,
           following: res.data.following
         }
@@ -174,13 +175,14 @@ export class User extends Base {
         res.data = {
           id: res.data.id,
           login: res.data.login,
-          name: res.data.name,
+          name: res.data.name || null,
+          type: res.data.type,
           html_url: res.data.html_url,
           avatar_url: res.data.avatar_url,
-          email: res.data.email,
-          type: res.data.type,
-          bio: res.data.bio,
-          blog: res.data.blog,
+          company: res.data.company || null,
+          email: res.data.email || null,
+          bio: res.data.bio || null,
+          blog: res.data.blog || null,
           followers: res.data.followers,
           following: res.data.following
         }

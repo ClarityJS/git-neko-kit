@@ -19,26 +19,26 @@ export interface UserInfoByIdParamType extends UserIdParamType {
 
 /** 用户信息响应类型 */
 export interface UserInfoResponseType {
-  /** 账号登录名 */
-  login: string;
   /** 账号ID */
   id: number;
+  /** 账号登录名 */
+  login: string;
   /** 用户全名 */
   name: string | null;
-  /** 账号主页URL */
-  html_url: string;
   /** 账号类型 */
   type: string;
+  /** 账号主页URL */
+  html_url: string;
   /** 账号头像URL */
   avatar_url: string;
   /** 公司 */
   company: string | null;
-  /** 博客URL */
-  blog: string | null;
   /** 邮箱 */
   email: string | null;
   /** 个人简介 */
   bio: string | null;
+  /** 博客URL */
+  blog: string | null;
   /** 粉丝数 */
   followers: number;
   /** 关注数 */
