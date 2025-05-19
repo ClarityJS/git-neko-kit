@@ -1,8 +1,10 @@
 import fs from 'node:fs'
 
+import convert, { type RGB } from 'color-convert'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime.js'
 import GitUrlParse from 'git-url-parse'
+import LanguageColors from 'language-colors'
 
 import { basePath } from '@/root'
 import { ContributionResult, RepoBaseParamType } from '@/types'
@@ -107,6 +109,43 @@ export function parse_git_url (url: string): RepoBaseParamType {
   }
 }
 
+/**
+ * 将 RGB 颜色值转换为十六进制颜色代码
+ * @param rgb - RGB颜色值数组，必须是包含3个0-255之间整数的数组
+ * @returns 十六进制颜色代码
+ * @example
+ * ```ts
+ * console.log(RgbToHex([255, 128, 0])) // 输出 "#ff8000"
+ * ```
+ */
+export function RgbToHex (rgb: RGB): string {
+  if (!Array.isArray(rgb)) {
+    throw new Error('RGB值必须是数组类型')
+  }
+  if (rgb.length !== 3) {
+    throw new Error('RGB数组必须包含且仅包含3个值')
+  }
+
+  if (!rgb.every(n => Number.isInteger(n) && n >= 0 && n <= 255)) {
+    throw new Error('RGB值必须都是0-255之间的整数')
+  }
+
+  return `#${convert.rgb.hex(rgb)}`
+}
+
+/**
+ * 根据语言名称获取对应的颜色值
+ * @param language - 语言名称
+ * @returns 颜色值的十六进制字符串
+ * @example
+ * ```ts
+ * console.log(get_langage_color('JavaScript')) // 输出 "#f1e05a"
+ * ```
+ */
+export function get_langage_color (language: string): string {
+  language = language.toLowerCase()
+  return RgbToHex(LanguageColors[language].color) ?? '#cccccc'
+}
 /**
  * 将数组按指定大小分割成二维数组
  * @param items - 要分割的数组

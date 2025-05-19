@@ -1,10 +1,12 @@
 import {
   formatDate,
+  get_langage_color,
   isNotPerrmissionMsg,
   NotOrgMsg,
   NotOrgOrUserMsg,
   NotParamMsg,
   NotPerrmissionMsg,
+  NotRepoMsg,
   NotRepoOrPerrmissionMsg,
   NotUserMsg,
   NotUserParamMsg,
@@ -26,7 +28,9 @@ import type {
   RepoDefaultBranchResponseType,
   RepoInfoParamType,
   RepoInfoResponseType,
-  RepoLanguageResponseType,
+  RepoLanguagesListParamType,
+  RepoLanguagesListType,
+  RepoMainLanguageResponseType,
   RepoVisibilityResponseType,
   UserByTokenRepoListParamType,
   UserRepoListParamType,
@@ -420,6 +424,54 @@ export class Repo extends Base {
       return res
     } catch (error) {
       throw new Error(`获取仓库信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  public async get_repo_languages_list (
+    options: RepoLanguagesListParamType
+  ): Promise<ApiResponseType<RepoLanguagesListType>> {
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      let owner, repo
+      if ('url' in options) {
+        const url = options.url.trim()
+        const info = parse_git_url(url)
+        owner = info?.owner
+        repo = info?.repo
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options?.owner
+        repo = options?.repo
+      } else {
+        throw new Error(NotParamMsg)
+      }
+      const res = await this.get(`/repos/${owner}/${repo}/languages`)
+      switch (res.statusCode) {
+        case 401:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotRepoMsg)
+      }
+      if (res.data) {
+        const totalBytes = Object.values(res.data).reduce<number>((sum, bytes) => sum + (bytes as number), 0)
+        res.data = {
+          languages: await Promise.all(
+            Object.entries(res.data).map(([language, bytes]) => {
+              const languageLower = language.toLowerCase()
+              return {
+                language,
+                color: get_langage_color(languageLower),
+                percent: Number(((bytes as number / totalBytes) * 100).toFixed(2)),
+                bytes: bytes as number
+              }
+            })
+          )
+        }
+      }
+      return res
+    } catch (error) {
+      throw new Error(`获取仓库语言列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -861,7 +913,7 @@ export class Repo extends Base {
    */
   public async get_repo_main_language (
     options: RepoInfoParamType
-  ): Promise<RepoLanguageResponseType['language']> {
+  ): Promise<RepoMainLanguageResponseType['language']> {
     try {
       let owner, repo
       if ('url' in options) {

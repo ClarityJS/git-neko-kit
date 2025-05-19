@@ -19,26 +19,6 @@ export interface RepoListBaseParamType {
   page?: number
 }
 
-/** 组织仓库列表参数类型 */
-export interface OrgRepoListParmType extends RepoListBaseParamType {
-  /** 组织名称 */
-  org: string
-  /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
-  type?: 'all' | 'public' | 'private' | 'forks' | 'sources' | 'member'
-  /** 是否格式化日期 */
-  format?: formatParamType['format']
-}
-
-/** 用户仓库列表参数类型 */
-export interface UserRepoListParamType extends RepoListBaseParamType {
-  /** 用户名 */
-  username: string
-  /** 类型，可选all， owner， member， 默认为 all */
-  type?: 'all' | 'owner' | 'member'
-  /** 是否格式化日期 */
-  format?: formatParamType['format']
-}
-
 export interface UserByTokenRepoListParamType extends RepoListBaseParamType {
   /** 仓库的可见性，可选all， public， private， 默认为 all */
   visibility?: 'all' | 'public' | 'private'
@@ -210,17 +190,57 @@ export interface RepoInfoResponseType {
   default_branch: string;
 }
 
+/** 组织仓库列表参数类型 */
+export interface OrgRepoListParmType extends RepoListBaseParamType {
+  /** 组织名称 */
+  org: string
+  /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
+  type?: 'all' | 'public' | 'private' | 'forks' | 'sources' | 'member'
+  /** 是否格式化日期 */
+  format?: formatParamType['format']
+}
 /**
  * 组织仓库列表类型
  * 该类型包含了多个仓库的信息，每个仓库都有自己的详细信息。
  */
 export type OrgRepoListType = RepoInfoResponseType[]
 
+/** 用户仓库列表参数类型 */
+export interface UserRepoListParamType extends RepoListBaseParamType {
+  /** 用户名 */
+  username: string
+  /** 类型，可选all， owner， member， 默认为 all */
+  type?: 'all' | 'owner' | 'member'
+  /** 是否格式化日期 */
+  format?: formatParamType['format']
+}
 /** 用户仓库列表类型 */
 export type UserRepoListType = Array<RepoInfoResponseType & {
   /** * 仓库的角色名称 */
   role_name?: string;
 }>
+
+/** 仓库语言信息类型 */
+export interface LanguageInfo {
+  /** 编程语言名称 */
+  language: string;
+  /** 语言对应的颜色 */
+  color: string;
+  /** 在仓库中的占比（百分比） */
+  percent: number;
+  /** 该语言的代码字节数 */
+  bytes: number;
+}
+
+/** 仓库语言列表参数类型 */
+export type RepoLanguagesListParamType = RepoParamType
+/** 仓库语言列表类型 */
+export interface RepoLanguagesListType {
+  /** 仓库的语言统计信息列表 */
+  languages: LanguageInfo[];
+}
+
+/** 仓库文件列表参数类型 */
 
 /** 仓库可见性响应类型 */
 export interface RepoVisibilityResponseType {
@@ -235,7 +255,7 @@ export interface RepoDefaultBranchResponseType {
 }
 
 /** 仓库主要语言响应类型 */
-export interface RepoLanguageResponseType {
+export interface RepoMainLanguageResponseType {
   /** * 仓库的主要语言 */
   language: RepoInfoResponseType['language'];
 }
