@@ -530,11 +530,11 @@ export class Repo extends Base {
    * @returns 返回获取协作者列表结果
    * @example
    * ```ts
-   * const result = await collaborator.get_collaborator_list(options)
+   * const result = await collaborator.get_collaborators_list(options)
    * console.log(result)
    * ```
    */
-  public async get_collaborator_list (
+  public async get_collaborators_list (
     options: CollaboratorListParamType
   ): Promise<ApiResponseType<CollaboratorListResponseType>> {
     try {
@@ -732,17 +732,38 @@ export class Repo extends Base {
       if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
       if (res.status && res.statusCode === 204) {
         res.data = {
-          info: `删除协作者${username}成功`
+          info: `移除协作者${username}成功`
         }
       } else {
         res.data = {
-          info: `删除协作者${username}失败`
+          info: `移除协作者${username}失败`
         }
       }
       return res
     } catch (error) {
-      throw new Error(`删除协作者${username}失败: ${(error as Error).message}`)
+      throw new Error(`移除协作者${username}失败: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 删除协作者
+   * @deprecated 请使用remove_collaborator方法
+   * @param options 删除协作者对象
+   * @returns 返回删除协作者结果
+   * @example
+   * ```ts
+   * const result = await collaborator.delete_collaborator({
+   *  owner: 'owner',
+   *  repo:'repo',
+   *  username: 'username'
+   * })
+   * console.log(result)
+  * ```
+  */
+  public async delete_collaborator (
+    options: RemoveCollaboratorParamType
+  ): Promise<ApiResponseType<RemoveCollaboratorResponseType>> {
+    return this.remove_collaborator(options)
   }
 
   /**
@@ -764,7 +785,7 @@ export class Repo extends Base {
    */
   public async get_repo_visibility (
     options: RepoInfoParamType
-  ): Promise<RepoVisibilityResponseType['visibility'] | null> {
+  ): Promise<RepoVisibilityResponseType['visibility']> {
     try {
       let owner, repo
       if ('url' in options) {
@@ -779,13 +800,9 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       const res = await this.get_repo_info({ owner, repo })
-      let visibility:RepoVisibilityResponseType['visibility'] = 'private'
-      if (res.data) {
-        visibility = res.data?.visibility
-      }
-      return visibility
+      return res.data.visibility
     } catch (error) {
-      return null
+      throw new Error(`获取仓库可见性失败: ${(error as Error).message}`)
     }
   }
 
@@ -806,7 +823,7 @@ export class Repo extends Base {
    */
   public async get_repo_default_branch (
     options: RepoInfoParamType
-  ): Promise<RepoDefaultBranchResponseType['default_branch']> {
+  ): Promise<RepoDefaultBranchResponseType['default_branch'] | null> {
     try {
       let owner, repo
       if ('url' in options) {
@@ -821,11 +838,7 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       const res = await this.get_repo_info({ owner, repo })
-      let default_branch = 'main'
-      if (res.data) {
-        default_branch = res.data?.default_branch
-      }
-      return default_branch
+      return res.data.default_branch
     } catch (error) {
       throw new Error(`获取仓库默认分支失败: ${(error as Error).message}`)
     }
@@ -846,7 +859,7 @@ export class Repo extends Base {
    * console.log(language) // 输出 JavaScript
    * ```ts
    */
-  public async get_repo_language (
+  public async get_repo_main_language (
     options: RepoInfoParamType
   ): Promise<RepoLanguageResponseType['language']> {
     try {
@@ -863,11 +876,7 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       const res = await this.get_repo_info({ owner, repo })
-      let language: RepoLanguageResponseType['language'] = ''
-      if (res.data) {
-        language = res.data?.language
-      }
-      return language
+      return res.data.language
     } catch (error) {
       throw new Error(`获取仓库语言失败: ${(error as Error).message}`)
     }
