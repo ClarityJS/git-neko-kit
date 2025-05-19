@@ -19,7 +19,7 @@ import type {
   CollaboratorListResponseType,
   CollaboratorParamType,
   OrgRepoCreateParamType,
-  OrgRepoListParmsType,
+  OrgRepoListParmType,
   OrgRepoListType,
   RemoveCollaboratorParamType,
   RemoveCollaboratorResponseType,
@@ -69,7 +69,7 @@ export class Repo extends Base {
    * ```
    */
   public async get_org_repos_list (
-    options: OrgRepoListParmsType
+    options: OrgRepoListParmType
   ): Promise<ApiResponseType<OrgRepoListType>> {
     if (!options.org) {
       throw new Error(NotParamMsg)

@@ -20,7 +20,7 @@ export interface RepoListBaseParamType {
 }
 
 /** 组织仓库列表参数类型 */
-export interface OrgRepoListParmsType extends RepoListBaseParamType {
+export interface OrgRepoListParmType extends RepoListBaseParamType {
   /** 组织名称 */
   org: string
   /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
