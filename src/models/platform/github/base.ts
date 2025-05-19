@@ -296,10 +296,11 @@ export class Base {
     try {
       const request = this.createRequest()
       const req = await request.get(path, parms, customHeaders)
-      if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
+      if ((req.statusCode === 403 || req.statusCode === 429) && req.headers['x-ratelimit-remaining'] === '0') {
         throw new Error(RateLimitMsg)
       }
       return {
+        success: req.success,
         status: req.success ? 'ok' : 'error',
         statusCode: req.statusCode,
         msg: req.msg,
@@ -321,10 +322,11 @@ export class Base {
     try {
       const request = this.createRequest()
       const req = await request.post(path, data, customHeaders)
-      if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
+      if ((req.statusCode === 403 || req.statusCode === 429) && req.headers['x-ratelimit-remaining'] === '0') {
         throw new Error(RateLimitMsg)
       }
       return {
+        success: req.success,
         status: req.success ? 'ok' : 'error',
         statusCode: req.statusCode,
         msg: req.msg,
@@ -347,10 +349,11 @@ export class Base {
     try {
       const request = this.createRequest()
       const req = await request.patch(path, params, data, customHeaders)
-      if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
+      if ((req.statusCode === 403 || req.statusCode === 429) && req.headers['x-ratelimit-remaining'] === '0') {
         throw new Error(RateLimitMsg)
       }
       return {
+        success: req.success,
         status: req.success ? 'ok' : 'error',
         statusCode: req.statusCode,
         msg: req.msg,
@@ -372,10 +375,11 @@ export class Base {
     try {
       const request = this.createRequest()
       const req = await request.put(path, data, customHeaders)
-      if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
+      if ((req.statusCode === 403 || req.statusCode === 429) && req.headers['x-ratelimit-remaining'] === '0') {
         throw new Error(RateLimitMsg)
       }
       return {
+        success: req.success,
         status: req.success ? 'ok' : 'error',
         statusCode: req.statusCode,
         msg: req.msg,
@@ -398,10 +402,11 @@ export class Base {
     try {
       const request = this.createRequest()
       const req = await request.delete(path, params, data, customHeaders)
-      if (req.statusCode === 403 && req.data.message.includes('API rate limit exceeded')) {
+      if ((req.statusCode === 403 || req.statusCode === 429) && req.headers['x-ratelimit-remaining'] === '0') {
         throw new Error(RateLimitMsg)
       }
       return {
+        success: req.success,
         status: req.success ? 'ok' : 'error',
         statusCode: req.statusCode,
         msg: req.msg,

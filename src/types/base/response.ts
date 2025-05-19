@@ -7,15 +7,19 @@ export type ResponseStatusCodeType = number
 /** 消息响应类型 */
 export type ResponseMsgType = string
 
+/** 响应头类型 */
+export type ResponseHeadersType = Record<string, string | string[] | number | boolean | null>
+
 /** 响应类型 */
 export interface ResponseType<D = any> {
   success: ResponseSuccessType
   statusCode: ResponseStatusCodeType
+  headers: ResponseHeadersType
   msg: ResponseMsgType
   data: D
 }
 
 /** API响应类型 */
-export interface ApiResponseType<D = any> extends Omit<ResponseType<D>, 'success'> {
+export interface ApiResponseType<D = any> extends Omit<ResponseType<D>, 'headers'> {
   status: 'ok' | 'error'
 }

@@ -106,19 +106,35 @@ export class Request {
         default:
           throw new Error(`不支持的请求方法: ${method}`)
       }
-      console.log(response)
+
+      const headers = Object.fromEntries(
+        Object.entries(response.headers)
+          .filter(([_, v]) => v !== undefined)
+          .map(([k, v]) => [k.toLowerCase(), v])
+      )
+
       return {
         success: true,
         statusCode: response.status,
+        headers,
         data: response.data,
         msg: response.status >= 200 && response.status < 500 ? '请求成功' : '请求异常'
       }
     } catch (error) {
-      console.error(error)
+      const axiosError = error as AxiosError
+      const errorHeaders = axiosError.response?.headers
+        ? Object.fromEntries(
+          Object.entries(axiosError.response.headers)
+            .filter(([_, v]) => v !== undefined)
+            .map(([k, v]) => [k.toLowerCase(), v])
+        )
+        : {}
+
       return {
         success: false,
-        statusCode: 500,
-        msg: (error as AxiosError).message ?? '网络连接失败',
+        statusCode: axiosError.response?.status ?? 500,
+        headers: errorHeaders,
+        msg: axiosError.message ?? '网络连接失败',
         data: null
       }
     }
