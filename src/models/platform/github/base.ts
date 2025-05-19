@@ -282,7 +282,11 @@ export class Base {
   private createRequest (): Request {
     const { url, token, tokenType } = this.currentRequestConfig
     const proxyConfig = this.proxy?.type !== 'common' ? this.proxy : null
-    return new Request(url!, tokenType, token ?? null, proxyConfig as ProxyParamsType)
+    const customHeaders = {
+      'X-GitHub-Api-Version': '2022-11-28',
+      Accept: 'application/vnd.github+json'
+    }
+    return new Request(url!, tokenType, token ?? null, proxyConfig as ProxyParamsType, customHeaders)
   }
 
   /**
