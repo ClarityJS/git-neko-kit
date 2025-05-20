@@ -21,6 +21,7 @@ import type {
   CollaboratorListResponseType,
   CollaboratorParamType,
   OrgRepoCreateParamType,
+  OrgRepoCreateResponseType,
   OrgRepoListParmType,
   OrgRepoListType,
   RemoveCollaboratorParamType,
@@ -508,7 +509,7 @@ export class Repo extends Base {
    */
   public async create_org_repo (
     options: OrgRepoCreateParamType
-  ): Promise<ApiResponseType<RepoInfoResponseType>> {
+  ): Promise<ApiResponseType<OrgRepoCreateResponseType>> {
     try {
       const { owner, ...repoOptions } = options
       const body = {

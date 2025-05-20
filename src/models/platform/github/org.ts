@@ -2,8 +2,8 @@ import { NotOrgMsg, NotOrgParamMsg } from '@/common'
 import { Base } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
-  OrganizationInfoType,
-  OrganizationNameParamType
+  OrgInfoParamType,
+  OrgInfoResponseType
 } from '@/types'
 
 /**
@@ -33,7 +33,9 @@ export class Org extends Base {
    * console.log(orgInfo)
    * ```
    */
-  public async get_org_info (options: OrganizationNameParamType): Promise<ApiResponseType<OrganizationInfoType>> {
+  public async get_org_info (
+    options: OrgInfoParamType
+  ): Promise<ApiResponseType<OrgInfoResponseType>> {
     if (!options.org) {
       throw new Error(NotOrgParamMsg)
     }
@@ -44,6 +46,16 @@ export class Org extends Base {
       const res = await this.get(`/orgs/${options.org}`)
       if (res.statusCode === 404) {
         throw new Error(NotOrgMsg)
+      }
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          login: res.data.login,
+          name: res.data.name,
+          avatar_url: res.data.avatar_url,
+          description: res.data.description,
+          html_url: res.data.html_url
+        }
       }
       return res
     } catch (error) {
