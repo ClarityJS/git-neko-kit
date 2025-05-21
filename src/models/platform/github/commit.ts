@@ -97,12 +97,12 @@ export class Commit extends Base {
           commit: {
             url: res.data.commit.url,
             author: {
-              id: res.data.commit.author.id,
-              login: res.data.commit.author.login,
+              id: res.data.author.id,
+              login: res.data.author.login,
               name: res.data.commit.author.name,
               email: res.data.commit.author.email,
-              html_url: res.data.commit.author.html_url,
-              type: _.capitalize(res.data.commit.author.type.toLowerCase()),
+              html_url: res.data.author.html_url,
+              type: _.capitalize(String(res.data.author.type).toLowerCase()),
               date: isFormat
                 ? formatDate(res.data.commit.author.date)
                 : res.data.commit.author.date
@@ -110,13 +110,13 @@ export class Commit extends Base {
             committer: {
               id: res.data.committer.id,
               login: res.data.committer.login,
-              name: res.data.committer.name,
-              email: res.data.committer.email,
+              name: res.data.commit.committer.name,
+              email: res.data.commit.committer.email,
               html_url: res.data.committer.html_url,
-              type: _.capitalize(res.data.committer.type.toLowerCase()),
+              type: _.capitalize(String(res.data.committer.type).toLowerCase()),
               date: isFormat
-                ? formatDate(res.data.committer.date)
-                : res.data.committer.date
+                ? formatDate(res.data.commit.committer.date)
+                : res.data.commit.committer.date
             },
             message: res.data.commit.message,
             ...(isFormat && {

@@ -405,7 +405,7 @@ export class Repo extends Base {
           fork: res.data.fork,
           archived: res.data.archived,
           disabled: res.data.disabled,
-          html_url: res.data.repo.html_url,
+          html_url: res.data.html_url,
           description: res.data.description,
           created_at: isFormat
             ? await formatDate(res.data.created_at)
@@ -458,7 +458,7 @@ export class Repo extends Base {
         res.data = {
           languages: await Promise.all(
             Object.entries(res.data).map(([language, bytes]) => {
-              const languageLower = language.toLowerCase()
+              const languageLower = String(language).toLowerCase()
               return {
                 language,
                 color: get_langage_color(languageLower),

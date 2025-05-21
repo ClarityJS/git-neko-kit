@@ -35,7 +35,7 @@ export function readJSON<T = Record<string, unknown>> (file = '', root = ''): T 
  * @param options - 初始化 日期
  */
 async function initDate (locale: string = 'zh-cn') {
-  const normalizedLocale = locale.toLowerCase()
+  const normalizedLocale = String(locale).toLowerCase()
   await import(`dayjs/locale/${normalizedLocale}.js`)
   dayjs.locale(normalizedLocale)
 }
@@ -143,7 +143,7 @@ export function RgbToHex (rgb: RGB): string {
  * ```
  */
 export function get_langage_color (language: string): string {
-  language = language.toLowerCase()
+  language = String(language).toLowerCase()
   return RgbToHex(LanguageColors[language].color) ?? '#cccccc'
 }
 /**
@@ -169,7 +169,7 @@ export async function getContributionData (html: string): Promise<ContributionRe
   const countRegex = /<tool-tip .*?class="sr-only position-absolute">(.*?) contribution/g
   const dates = Array.from(html.matchAll(dateRegex), m => m[1])
   const counts = Array.from(html.matchAll(countRegex), m =>
-    m[1].toLowerCase() === 'no' ? 0 : parseInt(m[1])
+    String(m[1]).toLowerCase() === 'no' ? 0 : parseInt(m[1])
   )
   if (!dates.length || !counts.length) {
     return { total: 0, contributions: [] }
