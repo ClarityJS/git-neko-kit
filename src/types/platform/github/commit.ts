@@ -20,6 +20,7 @@ export type CommitInfoBaseParamType = RepoBaseParamType & CommitInfoCommonParamT
  * */
 export type CommitInfoUrlParamType = RepoUrlParamType & CommitInfoCommonParamType
 
+/** Git提交用户信息 */
 export interface GitUser extends Omit<UserInfoResponseType, 'company' | 'bio' | 'blog' | 'followers' | 'following'> {
   /** 日期字符串 */
   data: string;
@@ -27,7 +28,7 @@ export interface GitUser extends Omit<UserInfoResponseType, 'company' | 'bio' | 
 /**
  * 验证信息类型
  * 这个只有GitHub平台返回
- * */
+ */
 // export interface Verification {
 //   /** 是否已验证 */
 //   verified: boolean;
