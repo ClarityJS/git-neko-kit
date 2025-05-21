@@ -44,7 +44,7 @@ export const NotRepoOrPerrmissionMsg = '喵呜~ 这个仓库不存在或访问�
 export const NotTagMsg = '喵呜~ 这个标签不存在哦'
 export const NotUserMsg = '喵呜~ 这个用户不存在哦'
 
-/** WebHook小写 */
+/** WebHook错误信息 */
 export const isNotWebHookSignatureMsg = '喵呜~ WebHook 签名格式不正确'
 export const NotWebHookSignatureMsg = '喵呜~ WebHook 签名验证失败'
 

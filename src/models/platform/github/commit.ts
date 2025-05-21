@@ -70,8 +70,8 @@ export class Commit extends Base {
       }
       if (!options.sha) {
         const repoInfo = await this.get_repo()
-        const res = await repoInfo.get_repo_info({ owner, repo })
-        sha = res.data?.default_branch
+        const default_branch = await repoInfo.get_repo_default_branch({ owner, repo })
+        sha = default_branch
       } else {
         sha = options.sha
       }

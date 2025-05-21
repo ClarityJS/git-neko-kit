@@ -273,11 +273,7 @@ export class User extends Base {
    * console.log(userId)
    */
   public async get_user_id (): Promise<number | null> {
-    try {
-      return (await this.get_user_info_by_auth({})).data.id
-    } catch {
-      return null
-    }
+    return (await this.get_user_info_by_auth({})).data.id
   }
 
   /**
@@ -292,11 +288,7 @@ export class User extends Base {
    * ```
    */
   public async get_username (): Promise<string | null> {
-    try {
-      return (await this.get_user_info_by_auth()).data.login
-    } catch {
-      return null
-    }
+    return (await this.get_user_info_by_auth()).data.login
   }
 
   /**
@@ -312,11 +304,7 @@ export class User extends Base {
    * ```
    */
   public async get_nickname (): Promise<string | null> {
-    try {
-      return (await this.get_user_info_by_auth()).data.name
-    } catch {
-      return null
-    }
+    return (await this.get_user_info_by_auth()).data.name
   }
 
   /**
@@ -331,11 +319,7 @@ export class User extends Base {
    * ```
    */
   public async get_user_email (): Promise<string | null> {
-    try {
-      return (await this.get_user_info_by_auth()).data.email
-    } catch {
-      return null
-    }
+    return (await this.get_user_info_by_auth()).data.email
   }
 
   /**
@@ -349,11 +333,7 @@ export class User extends Base {
    * console.log(avatarUrl)
    * ```
    */
-  public async get_avatar_url (): Promise<string | null> {
-    try {
-      return (await this.get_user_info_by_auth()).data.avatar_url
-    } catch {
-      return null
-    }
+  public async get_avatar_url (): Promise<string> {
+    return (await this.get_user_info_by_auth()).data.avatar_url
   }
 }
