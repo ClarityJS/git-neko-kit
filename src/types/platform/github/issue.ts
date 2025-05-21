@@ -1,5 +1,5 @@
 import { GitHubAppInfoType } from '@/types/platform/github/app'
-import { RepoBaseParamType, RepoParamType, RepoUrlParamType } from '@/types/platform/github/base'
+import { RepoBaseParamType, RepoParamType } from '@/types/platform/github/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 议题信息参数类型 */

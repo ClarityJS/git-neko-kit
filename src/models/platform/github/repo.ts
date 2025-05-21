@@ -88,16 +88,15 @@ export class Repo extends Base {
       if (queryOptions?.type) params.type = queryOptions.type
       if (queryOptions?.sort) params.sort = queryOptions.sort
       if (queryOptions?.direction) params.direction = queryOptions.direction
-      if (queryOptions?.per_page) {
-        params.per_page = queryOptions.per_page.toString()
-      }
+      if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
       if (queryOptions?.page) params.page = queryOptions.page.toString()
       const url = `/orgs/${org}/repos`
       const res = await this.get(url, params)
-      if (res.statusCode === 404) {
-        throw new Error(NotOrgMsg)
-      } else if (res.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
+      switch (res.statusCode) {
+        case 404:
+          throw new Error(NotOrgMsg)
+        case 401:
+          throw new Error(NotPerrmissionMsg)
       }
       const isFormat = options.format ?? this.format
       if (res.data) {
