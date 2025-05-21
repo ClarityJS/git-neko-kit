@@ -45,7 +45,6 @@
     "test": "tsx test/index.ts"
   },
   "dependencies": {
-    "@types/lodash": "^4.17.16",
     "axios": "^1.8.4",
     "color-convert": "^3.1.0",
     "dayjs": "^1.11.13",
@@ -62,6 +61,7 @@
     "@types/color": "^4.2.0",
     "@types/git-url-parse": "^9.0.3",
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/lodash": "^4.17.16",
     "@types/node": "^22.13.13",
     "@typescript-eslint/eslint-plugin": "^8.28.0",
     "@typescript-eslint/parser": "^8.28.0",

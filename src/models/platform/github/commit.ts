@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 import {
   formatDate,
   NotCommitMsg,
@@ -10,7 +12,9 @@ import { Base } from '@/models/platform/github/base'
 import {
   ApiResponseType,
   CommitInfoParamType,
-  CommitInfoResponseType
+  CommitInfoResponseType,
+  DiffEntry,
+  ParentCommit
 } from '@/types'
 
 /**
@@ -82,41 +86,68 @@ export class Commit extends Base {
       }
 
       const isFormat = options.format ?? this.format
-      if (isFormat) {
-        if (res.data?.commit) {
-          res.data.commit = {
-            ...res.data.commit,
-            author: res.data.commit.author
-              ? {
-                  ...res.data.commit.author,
-                  date: await formatDate(res.data.commit.author.date)
-                }
-              : null,
-            committer: res.data.commit.committer
-              ? {
-                  ...res.data.commit.committer,
-                  date: await formatDate(res.data.commit.committer.date)
-                }
-              : null,
-            verification: res.data.commit.verification
-              ? {
-                  ...res.data.commit.verification,
-                  verified_at: res.data.commit.verification.verified_at
-                    ? await formatDate(res.data.commit.verification.verified_at)
-                    : null
-                }
-              : null
-          }
-        }
+      if (res.data) {
         const message = res.data?.commit?.message ?? ''
         const [title, ...bodyParts] = message.split('\n')
         res.data = {
-          ...res.data,
+          url: res.data.url,
+          sha: res.data.sha,
+          html_url: res.data.html_url,
+          comments_url: res.data.comments_url,
           commit: {
-            ...res.data.commit,
-            title: title.trim(),
-            body: bodyParts.join('\n').trim()
-          }
+            url: res.data.commit.url,
+            author: {
+              id: res.data.commit.author.id,
+              login: res.data.commit.author.login,
+              name: res.data.commit.author.name,
+              email: res.data.commit.author.email,
+              html_url: res.data.commit.author.html_url,
+              type: _.capitalize(res.data.commit.author.type.toLowerCase()),
+              date: isFormat
+                ? formatDate(res.data.commit.author.date)
+                : res.data.commit.author.date
+            },
+            committer: {
+              id: res.data.committer.id,
+              login: res.data.committer.login,
+              name: res.data.committer.name,
+              email: res.data.committer.email,
+              html_url: res.data.committer.html_url,
+              type: _.capitalize(res.data.committer.type.toLowerCase()),
+              date: isFormat
+                ? formatDate(res.data.committer.date)
+                : res.data.committer.date
+            },
+            message: res.data.commit.message,
+            ...(isFormat && {
+              title,
+              body: bodyParts
+            }),
+            tree: {
+              url: res.data.commit.tree.url,
+              sha: res.data.commit.tree.sha
+            }
+
+          },
+          parents: res.data.parents.map((parent: ParentCommit) => ({
+            sha: parent.sha,
+            url: parent.url
+          })),
+          status: {
+            additions: res.data.stats.additions,
+            deletions: res.data.stats.deletions,
+            total: res.data.stats.total
+          },
+          files: res.data.files.map((file: DiffEntry) => ({
+            sha: file.sha,
+            filename: file.filename,
+            status: file.status,
+            additions: file.additions,
+            deletions: file.deletions,
+            changes: file.changes,
+            blob_url: file.blob_url,
+            raw_url: file.raw_url
+          }))
         }
       }
       return res

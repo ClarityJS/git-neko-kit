@@ -25,6 +25,8 @@ export interface UserInfoResponseType {
   login: string;
   /** 用户全名 */
   name: string | null;
+  /** 邮箱 */
+  email: string | null;
   /** 账号类型 */
   type: 'User' | 'Organization';
   /** 账号主页URL */
@@ -33,8 +35,6 @@ export interface UserInfoResponseType {
   avatar_url: string;
   /** 公司 */
   company: string | null;
-  /** 邮箱 */
-  email: string | null;
   /** 个人简介 */
   bio: string | null;
   /** 博客URL */
