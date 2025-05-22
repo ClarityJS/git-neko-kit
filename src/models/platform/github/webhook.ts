@@ -46,6 +46,7 @@ export class WebHook extends Base {
     if (!secret || !options.payload || !options.signature) throw new Error(NotParamMsg)
     if (!options.signature.startsWith('sha256=')) throw new Error(isNotWebHookSignatureMsg)
 
+    let success: boolean = false
     let status: 'ok' | 'error' = 'error'
     let statusCode = 400
     let msg = NotWebHookSignatureMsg
@@ -66,11 +67,13 @@ export class WebHook extends Base {
       )
 
       if (isValid) {
+        success = true
         status = 'ok'
         statusCode = 200
         msg = WebHookSignatureSuccessMsg
         data = true
       } else {
+        success = false
         status = 'error'
         statusCode = 403
         msg = NotWebHookSignatureMsg
@@ -81,6 +84,7 @@ export class WebHook extends Base {
     }
     return Promise.resolve(
       {
+        success,
         status,
         statusCode,
         msg,
