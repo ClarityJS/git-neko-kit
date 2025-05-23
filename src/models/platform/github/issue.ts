@@ -1,7 +1,13 @@
 import _ from 'lodash'
 
 import {
+  isNotIssucLockMsg,
+  isNotIssueCommentCreateMsg,
+  isNotUnLockIssueMsg,
+  IssucLockSuccessMsg,
+  IssueCommentCreateSuccessMsg,
   IssueMovedMsg,
+  IssueUnlockSuccessMsg,
   NotIssueCommentBodyMsg,
   NotIssueCommentMsg,
   NotIssueCommentNumberMsg,
@@ -11,6 +17,7 @@ import {
   NotOwnerOrRepoParamMsg,
   NotParamMsg,
   NotPerrmissionMsg,
+  NotRepoMsg,
   NotSubIssueNumberMsg,
   parse_git_url
 } from '@/common'
@@ -28,6 +35,7 @@ import type {
   IssueCommentInfoParamType,
   IssueCommentInfoResponseType,
   IssueCommentListParamType,
+  IssueCommentListResponseType,
   IssueInfoParamType,
   IssueInfoResponseType,
   IssueLabelType,
@@ -114,7 +122,7 @@ export class Issue extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get(`/repos/${owner}/${repo}/issues/${options.issue_number}`) as ApiResponseType<IssueInfoResponseType>
+      const res = await this.get(`/repos/${owner}/${repo}/issues/${Number(options.issue_number)}`) as ApiResponseType<IssueInfoResponseType>
       switch (res.statusCode) {
         case 404:
           throw new Error(NotIssueMsg)
@@ -159,17 +167,6 @@ export class Issue extends Base {
                 avatar_url: res.data.assignee.avatar_url,
                 type: _.capitalize((res.data.assignee).type.toLowerCase())
               }
-            : null,
-          assignees: res.data.assignees && res.data.assignees.length > 0
-            ? res.data.assignees.map((assignee: IssueUser) => ({
-              id: assignee.id,
-              login: assignee.login,
-              name: assignee.name,
-              email: assignee.email,
-              html_url: assignee.html_url,
-              avatar_url: assignee.avatar_url,
-              type: _.capitalize((assignee).type.toLowerCase())
-            }))
             : null,
           milestone: res.data.milestone
             ? {
@@ -255,7 +252,6 @@ export class Issue extends Base {
       if (queryOptions.state) params.state = queryOptions.state
       if (queryOptions.assignee) params.assignee = queryOptions.assignee
       if (queryOptions.creator) params.creator = queryOptions.creator
-      if (queryOptions.mentioned) params.mentioned = queryOptions.mentioned
       if (queryOptions.labels) params.labels = queryOptions.labels
       if (queryOptions.sort) params.sort = queryOptions.sort
       if (queryOptions.direction) params.direction = queryOptions.direction
@@ -264,9 +260,69 @@ export class Issue extends Base {
       if (queryOptions.page) params.page = queryOptions.page.toString()
 
       const apiPath = `/repos/${owner}/${repo}/issues`
-      const res = await this.get(apiPath, params)
+      const res = await this.get(apiPath, params) as ApiResponseType<IssueListResponseType>
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
+      }
+      if (res.data) {
+        res.data = res.data.map(issue => ({
+          id: issue.id,
+          html_url: issue.html_url,
+          number: issue.number,
+          comments: issue.comments,
+          state: issue.state,
+          state_reason: issue.state_reason,
+          title: issue.title,
+          body: issue.body,
+          user: issue.user
+            ? {
+                id: issue.user.id,
+                login: issue.user.login,
+                name: issue.user.name,
+                email: issue.user.email,
+                html_url: issue.user.html_url,
+                avatar_url: issue.user.avatar_url,
+                type: _.capitalize((issue.user).type.toLowerCase())
+              }
+            : null,
+          labels: issue.labels
+            ? issue.labels.map((label: IssueLabelType) => ({
+              id: label.id,
+              name: label.name,
+              color: label.color
+            }))
+            : null,
+          assignee: issue.assignee
+            ? {
+                id: issue.assignee.id,
+                login: issue.assignee.login,
+                name: issue.assignee.name,
+                email: issue.assignee.email,
+                html_url: issue.assignee.html_url,
+                avatar_url: issue.assignee.avatar_url,
+                type: _.capitalize((issue.assignee).type.toLowerCase())
+              }
+            : null,
+          milestone: issue.milestone
+            ? {
+                id: issue.milestone.id,
+                url: issue.milestone.url,
+                number: issue.milestone.number,
+                state: issue.milestone.state,
+                title: issue.milestone.title,
+                description: issue.milestone.description,
+                open_issues: issue.milestone.open_issues,
+                closed_issues: issue.milestone.closed_issues,
+                created_at: issue.milestone.created_at,
+                updated_at: issue.milestone.updated_at,
+                closed_at: issue.milestone.closed_at,
+                due_on: issue.milestone.due_on
+              }
+            : null,
+          closed_at: issue.closed_at,
+          created_at: issue.created_at,
+          updated_at: issue.updated_at
+        }))
       }
       return res
     } catch (error) {
@@ -309,7 +365,84 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, ...IssueOptions } = options
-      const res = await this.post(`/repos/${owner}/${repo}/issues`, IssueOptions)
+      const issueParams = {
+        ...IssueOptions,
+        ...(IssueOptions.labels && {
+          labels: Array.isArray(IssueOptions.labels) ? IssueOptions.labels : [IssueOptions.labels]
+        }),
+        ...(IssueOptions.assignees && {
+          assignees: Array.isArray(IssueOptions.assignees) ? IssueOptions.assignees : [IssueOptions.assignees]
+        })
+      }
+      const res = await this.post(`/repos/${owner}/${repo}/issues`, issueParams) as ApiResponseType<CreateIssueResponseType>
+      switch (res.statusCode) {
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 301:
+          throw new Error(NotRepoMsg)
+      }
+      if (res.data) {
+        if (res.data) {
+          res.data = {
+            id: res.data.id,
+            html_url: res.data.html_url,
+            number: res.data.number,
+            comments: res.data.comments,
+            state: res.data.state,
+            state_reason: res.data.state_reason,
+            title: res.data.title,
+            body: res.data.body,
+            user: res.data.user
+              ? {
+                  id: res.data.user.id,
+                  login: res.data.user.login,
+                  name: res.data.user.name,
+                  email: res.data.user.email,
+                  html_url: res.data.user.html_url,
+                  avatar_url: res.data.user.avatar_url,
+                  type: _.capitalize((res.data.user).type.toLowerCase())
+                }
+              : null,
+            labels: res.data.labels
+              ? res.data.labels.map((label: IssueLabelType) => ({
+                id: label.id,
+                name: label.name,
+                color: label.color
+              }))
+              : null,
+            assignee: res.data.assignee
+              ? {
+                  id: res.data.assignee.id,
+                  login: res.data.assignee.login,
+                  name: res.data.assignee.name,
+                  email: res.data.assignee.email,
+                  html_url: res.data.assignee.html_url,
+                  avatar_url: res.data.assignee.avatar_url,
+                  type: _.capitalize((res.data.assignee).type.toLowerCase())
+                }
+              : null,
+            milestone: res.data.milestone
+              ? {
+                  id: res.data.milestone.id,
+                  url: res.data.milestone.url,
+                  number: res.data.milestone.number,
+                  state: res.data.milestone.state,
+                  title: res.data.milestone.title,
+                  description: res.data.milestone.description,
+                  open_issues: res.data.milestone.open_issues,
+                  closed_issues: res.data.milestone.closed_issues,
+                  created_at: res.data.milestone.created_at,
+                  updated_at: res.data.milestone.updated_at,
+                  closed_at: res.data.milestone.closed_at,
+                  due_on: res.data.milestone.due_on
+                }
+              : null,
+            closed_at: res.data.closed_at,
+            created_at: res.data.created_at,
+            updated_at: res.data.updated_at
+          }
+        }
+      }
       return res
     } catch (error) {
       throw new Error(`创建Issue失败: ${(error as Error).message}`)
@@ -354,7 +487,86 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, issue_number, ...updateData } = options
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`, null, updateData)
+      const issueParams = {
+        ...updateData,
+        ...(updateData.labels && {
+          labels: Array.isArray(updateData.labels) ? updateData.labels : [updateData.labels]
+        }),
+        ...(updateData.assignees && {
+          assignees: Array.isArray(updateData.assignees) ? updateData.assignees : [updateData.assignees]
+        })
+      }
+      const res = await this.patch(`/repos/${owner}/${repo}/issues/${Number(issue_number)}`, null, issueParams) as ApiResponseType<UpdateIssueResponseType>
+      switch (res.statusCode) {
+        case 404:
+          throw new Error(NotIssueMsg)
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 301:
+          throw new Error(NotRepoMsg)
+      }
+      if (res.data) {
+        if (res.data) {
+          res.data = {
+            id: res.data.id,
+            html_url: res.data.html_url,
+            number: res.data.number,
+            comments: res.data.comments,
+            state: res.data.state,
+            state_reason: res.data.state_reason,
+            title: res.data.title,
+            body: res.data.body,
+            user: res.data.user
+              ? {
+                  id: res.data.user.id,
+                  login: res.data.user.login,
+                  name: res.data.user.name,
+                  email: res.data.user.email,
+                  html_url: res.data.user.html_url,
+                  avatar_url: res.data.user.avatar_url,
+                  type: _.capitalize((res.data.user).type.toLowerCase())
+                }
+              : null,
+            labels: res.data.labels
+              ? res.data.labels.map((label: IssueLabelType) => ({
+                id: label.id,
+                name: label.name,
+                color: label.color
+              }))
+              : null,
+            assignee: res.data.assignee
+              ? {
+                  id: res.data.assignee.id,
+                  login: res.data.assignee.login,
+                  name: res.data.assignee.name,
+                  email: res.data.assignee.email,
+                  html_url: res.data.assignee.html_url,
+                  avatar_url: res.data.assignee.avatar_url,
+                  type: _.capitalize((res.data.assignee).type.toLowerCase())
+                }
+              : null,
+            milestone: res.data.milestone
+              ? {
+                  id: res.data.milestone.id,
+                  url: res.data.milestone.url,
+                  number: res.data.milestone.number,
+                  state: res.data.milestone.state,
+                  title: res.data.milestone.title,
+                  description: res.data.milestone.description,
+                  open_issues: res.data.milestone.open_issues,
+                  closed_issues: res.data.milestone.closed_issues,
+                  created_at: res.data.milestone.created_at,
+                  updated_at: res.data.milestone.updated_at,
+                  closed_at: res.data.milestone.closed_at,
+                  due_on: res.data.milestone.due_on
+                }
+              : null,
+            closed_at: res.data.closed_at,
+            created_at: res.data.created_at,
+            updated_at: res.data.updated_at
+          }
+        }
+      }
       return res
     } catch (error) {
       throw new Error(`更新Issue失败: ${(error as Error).message}`)
@@ -393,10 +605,81 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, issue_number } = options
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`, null, {
-        state: 'open',
-        state_reason: 'reopened'
-      })
+      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`,
+        null,
+        {
+          state: 'open'
+        }) as ApiResponseType<OpenIssueResponseType>
+      switch (res.statusCode) {
+        case 404:
+          throw new Error(NotIssueMsg)
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 301:
+          throw new Error(NotRepoMsg)
+      }
+      if (res.data) {
+        if (res.data) {
+          res.data = {
+            id: res.data.id,
+            html_url: res.data.html_url,
+            number: res.data.number,
+            comments: res.data.comments,
+            state: res.data.state,
+            state_reason: res.data.state_reason,
+            title: res.data.title,
+            body: res.data.body,
+            user: res.data.user
+              ? {
+                  id: res.data.user.id,
+                  login: res.data.user.login,
+                  name: res.data.user.name,
+                  email: res.data.user.email,
+                  html_url: res.data.user.html_url,
+                  avatar_url: res.data.user.avatar_url,
+                  type: _.capitalize((res.data.user).type.toLowerCase())
+                }
+              : null,
+            labels: res.data.labels
+              ? res.data.labels.map((label: IssueLabelType) => ({
+                id: label.id,
+                name: label.name,
+                color: label.color
+              }))
+              : null,
+            assignee: res.data.assignee
+              ? {
+                  id: res.data.assignee.id,
+                  login: res.data.assignee.login,
+                  name: res.data.assignee.name,
+                  email: res.data.assignee.email,
+                  html_url: res.data.assignee.html_url,
+                  avatar_url: res.data.assignee.avatar_url,
+                  type: _.capitalize((res.data.assignee).type.toLowerCase())
+                }
+              : null,
+            milestone: res.data.milestone
+              ? {
+                  id: res.data.milestone.id,
+                  url: res.data.milestone.url,
+                  number: res.data.milestone.number,
+                  state: res.data.milestone.state,
+                  title: res.data.milestone.title,
+                  description: res.data.milestone.description,
+                  open_issues: res.data.milestone.open_issues,
+                  closed_issues: res.data.milestone.closed_issues,
+                  created_at: res.data.milestone.created_at,
+                  updated_at: res.data.milestone.updated_at,
+                  closed_at: res.data.milestone.closed_at,
+                  due_on: res.data.milestone.due_on
+                }
+              : null,
+            closed_at: res.data.closed_at,
+            created_at: res.data.created_at,
+            updated_at: res.data.updated_at
+          }
+        }
+      }
       return res
     } catch (error) {
       throw new Error(`打开Issue失败: ${(error as Error).message}`)
@@ -411,7 +694,9 @@ export class Issue extends Base {
    * 需以上权限之一
    * @deprecated 请使用 open_issue 方法代替
    */
-  public async reopen_issue (options: OpenIssueParamType): Promise<ApiResponseType<OpenIssueResponseType>> {
+  public async reopen_issue (
+    options: OpenIssueParamType
+  ): Promise<ApiResponseType<OpenIssueResponseType>> {
     return this.open_issue(options)
   }
 
@@ -447,13 +732,81 @@ export class Issue extends Base {
       this.setRequestConfig({
         token: this.userToken
       })
-      const { owner, repo, issue_number, state_reason } = options
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`, null, {
-        state: 'closed',
-        state_reason
-      })
-      if (res.statusCode === 404) {
-        throw new Error(NotIssueMsg)
+      const { owner, repo, issue_number } = options
+      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`,
+        null,
+        {
+          state: 'closed'
+        }) as ApiResponseType<CloseIssueResponseType>
+      switch (res.statusCode) {
+        case 404:
+          throw new Error(NotIssueMsg)
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 301:
+          throw new Error(NotRepoMsg)
+      }
+      if (res.data) {
+        if (res.data) {
+          res.data = {
+            id: res.data.id,
+            html_url: res.data.html_url,
+            number: res.data.number,
+            comments: res.data.comments,
+            state: res.data.state,
+            state_reason: res.data.state_reason,
+            title: res.data.title,
+            body: res.data.body,
+            user: res.data.user
+              ? {
+                  id: res.data.user.id,
+                  login: res.data.user.login,
+                  name: res.data.user.name,
+                  email: res.data.user.email,
+                  html_url: res.data.user.html_url,
+                  avatar_url: res.data.user.avatar_url,
+                  type: _.capitalize((res.data.user).type.toLowerCase())
+                }
+              : null,
+            labels: res.data.labels
+              ? res.data.labels.map((label: IssueLabelType) => ({
+                id: label.id,
+                name: label.name,
+                color: label.color
+              }))
+              : null,
+            assignee: res.data.assignee
+              ? {
+                  id: res.data.assignee.id,
+                  login: res.data.assignee.login,
+                  name: res.data.assignee.name,
+                  email: res.data.assignee.email,
+                  html_url: res.data.assignee.html_url,
+                  avatar_url: res.data.assignee.avatar_url,
+                  type: _.capitalize((res.data.assignee).type.toLowerCase())
+                }
+              : null,
+            milestone: res.data.milestone
+              ? {
+                  id: res.data.milestone.id,
+                  url: res.data.milestone.url,
+                  number: res.data.milestone.number,
+                  state: res.data.milestone.state,
+                  title: res.data.milestone.title,
+                  description: res.data.milestone.description,
+                  open_issues: res.data.milestone.open_issues,
+                  closed_issues: res.data.milestone.closed_issues,
+                  created_at: res.data.milestone.created_at,
+                  updated_at: res.data.milestone.updated_at,
+                  closed_at: res.data.milestone.closed_at,
+                  due_on: res.data.milestone.due_on
+                }
+              : null,
+            closed_at: res.data.closed_at,
+            created_at: res.data.created_at,
+            updated_at: res.data.updated_at
+          }
+        }
       }
       return res
     } catch (error) {
@@ -463,6 +816,7 @@ export class Issue extends Base {
 
   /**
    * 锁定一个Issue
+   * 仅GitHub平台可用
    * 权限:
    * - Issues: Write
    * - Pull requests: Write
@@ -494,26 +848,36 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, issue_number, lock_reason } = options
-      const res = await this.put(`/repos/${owner}/${repo}/issues/${issue_number}`, {
+      const res = await this.put(`/repos/${owner}/${repo}/issues/${Number(issue_number)}`, {
         locked: true,
         lock_reason
-      })
-      if (res.statusCode === 404) {
-        throw new Error(NotIssueMsg)
+      }) as ApiResponseType<LockIssueResponseType>
+      switch (res.statusCode) {
+        case 404:
+          throw new Error(NotIssueMsg)
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 301:
+          throw new Error(NotRepoMsg)
       }
+      let msg
       if (res.statusCode === 204) {
-        res.data = {
-          info: '锁定成功'
-        }
+        msg = IssucLockSuccessMsg
+      } else {
+        msg = isNotIssucLockMsg
+      }
+      res.data = {
+        info: msg
       }
       return res
     } catch (error) {
-      throw new Error(`锁定Issue失败: ${(error as Error).message}`)
+      throw new Error(`锁定Issue${options.issue_number}失败: ${(error as Error).message}`)
     }
   }
 
   /**
    * 解锁一个Issue
+   * 仅GitHub平台可用
    * 权限:
    * - Issues: Write
    * - Pull requests: Write
@@ -544,14 +908,23 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, issue_number } = options
-      const res = await this.delete(`/repos/${owner}/${repo}/issues/${issue_number}/lock`)
-      if (res.statusCode === 404) {
-        throw new Error(NotIssueMsg)
+      const res = await this.delete(`/repos/${owner}/${repo}/issues/${issue_number}/lock`) as ApiResponseType<UnLockIssueResponseType>
+      switch (res.statusCode) {
+        case 404:
+          throw new Error(NotIssueMsg)
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 301:
+          throw new Error(NotRepoMsg)
       }
+      let msg
       if (res.statusCode === 204) {
-        res.data = {
-          info: '解锁成功'
-        }
+        msg = IssueUnlockSuccessMsg
+      } else {
+        msg = isNotUnLockIssueMsg
+      }
+      res.data = {
+        info: msg
       }
       return res
     } catch (error) {
@@ -577,11 +950,11 @@ export class Issue extends Base {
    * @example
    * ```ts
    * const issue = get_issue() // 获取issue实例
-   * const res = await issue.get_issue_comment_list({ owner: 'owner', repo:'repo', issue_number:1 })
+   * const res = await issue.get_issue_comments_list({ owner: 'owner', repo:'repo', issue_number:1 })
    * console.log(res) // { data: IssueCommentListResponseType[] }
    * ```
    */
-  public async get_repo_comment_list (
+  public async get_repo_comments_list (
     options: RepoCommentListParamType
   ): Promise<ApiResponseType<RepoCommentListResponseType>> {
     if (!options.owner || !options.repo) {
@@ -602,9 +975,29 @@ export class Issue extends Base {
 
       const apiPath = `/repos/${owner}/${repo}/issues/comments/`
 
-      const res = await this.get(apiPath, params)
+      const res = await this.get(apiPath, params) as ApiResponseType<RepoCommentListResponseType>
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
+      }
+      if (res.data) {
+        res.data = res.data.map((comment: IssueCommentInfoResponseType) => ({
+          id: comment.id,
+          html_url: comment.html_url,
+          body: comment.body,
+          user: comment.user
+            ? {
+                id: comment.user.id,
+                login: comment.user.login,
+                name: comment.user.name,
+                email: comment.user.email,
+                html_url: comment.user.html_url,
+                avatar_url: comment.user.avatar_url,
+                type: _.capitalize((comment.user).type.toLowerCase())
+              }
+            : null,
+          created_at: comment.created_at,
+          updated_at: comment.updated_at
+        }))
       }
       return res
     } catch (error) {
@@ -629,13 +1022,13 @@ export class Issue extends Base {
    * @example
    * ```ts
    * const issue = get_issue() // 获取issue实例
-   * const res = await issue.get_issue_comment_list({ owner: 'owner', repo:'repo', issue_number:1 })
+   * const res = await issue.get_issue_comments_list({ owner: 'owner', repo:'repo', issue_number:1 })
    * console.log(res) // { data: IssueCommentListResponseType[] }
    * ```
    */
-  public async get_issue_comment_list (
+  public async get_issue_comments_list (
     options: IssueCommentListParamType
-  ): Promise<ApiResponseType<IssueCommentListParamType>> {
+  ): Promise<ApiResponseType<IssueCommentListResponseType>> {
     if (!options.owner || !options.repo) {
       throw new Error(NotOwnerOrRepoParamMsg)
     }
@@ -653,10 +1046,30 @@ export class Issue extends Base {
       if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
       if (queryOptions.page) params.page = queryOptions.page.toString()
 
-      const apiPath = `/repos/${owner}/${repo}/issues/${issue_number}/comments`
-      const res = await this.get(apiPath, params)
+      const apiPath = `/repos/${owner}/${repo}/issues/${Number(issue_number)}/comments`
+      const res = await this.get(apiPath, params) as ApiResponseType<IssueCommentListResponseType>
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
+      }
+      if (res.data) {
+        res.data = res.data.map((comment: IssueCommentInfoResponseType) => ({
+          id: comment.id,
+          html_url: comment.html_url,
+          body: comment.body,
+          user: comment.user
+            ? {
+                id: comment.user.id,
+                login: comment.user.login,
+                name: comment.user.name,
+                email: comment.user.email,
+                html_url: comment.user.html_url,
+                avatar_url: comment.user.avatar_url,
+                type: _.capitalize((comment.user).type.toLowerCase())
+              }
+            : null,
+          created_at: comment.created_at,
+          updated_at: comment.updated_at
+        }))
       }
       return res
     } catch (error) {
@@ -696,9 +1109,29 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, comment_id } = options
-      const res = await this.get(`/repos/${owner}/${repo}/issues/comments/${comment_id}`)
+      const res = await this.get(`/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`) as ApiResponseType<IssueCommentInfoResponseType>
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
+      }
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          html_url: res.data.html_url,
+          body: res.data.body,
+          user: res.data.user
+            ? {
+                id: res.data.user.id,
+                login: res.data.user.login,
+                name: res.data.user.name,
+                email: res.data.user.email,
+                html_url: res.data.user.html_url,
+                avatar_url: res.data.user.avatar_url,
+                type: _.capitalize((res.data.user).type.toLowerCase())
+              }
+            : null,
+          created_at: res.data.created_at,
+          updated_at: res.data.updated_at
+        }
       }
       return res
     } catch (error) {
@@ -742,11 +1175,31 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, issue_number, body } = options
-      const res = await this.post(`/repos/${owner}/${repo}/issues/${issue_number}/comments`, {
+      const res = await this.post(`/repos/${owner}/${repo}/issues/${Number(issue_number)}/comments`, {
         body
-      })
+      }) as ApiResponseType<CreteIssueCommentResponseType>
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
+      }
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          html_url: res.data.html_url,
+          body: res.data.body,
+          user: res.data.user
+            ? {
+                id: res.data.user.id,
+                login: res.data.user.login,
+                name: res.data.user.name,
+                email: res.data.user.email,
+                html_url: res.data.user.html_url,
+                avatar_url: res.data.user.avatar_url,
+                type: _.capitalize((res.data.user).type.toLowerCase())
+              }
+            : null,
+          created_at: res.data.created_at,
+          updated_at: res.data.updated_at
+        }
       }
       return res
     } catch (error) {
@@ -787,9 +1240,29 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, comment_id, ...updateData } = options
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/comments/${comment_id}`, null, updateData)
+      const res = await this.patch(`/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`, null, updateData)
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
+      }
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          html_url: res.data.html_url,
+          body: res.data.body,
+          user: res.data.user
+            ? {
+                id: res.data.user.id,
+                login: res.data.user.login,
+                name: res.data.user.name,
+                email: res.data.user.email,
+                html_url: res.data.user.html_url,
+                avatar_url: res.data.user.avatar_url,
+                type: _.capitalize((res.data.user).type.toLowerCase())
+              }
+            : null,
+          created_at: res.data.created_at,
+          updated_at: res.data.updated_at
+        }
       }
       return res
     } catch (error) {
@@ -829,14 +1302,18 @@ export class Issue extends Base {
         token: this.userToken
       })
       const { owner, repo, comment_id } = options
-      const res = await this.delete(`/repos/${owner}/${repo}/issues/comments/${comment_id}`)
+      const res = await this.delete(`/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`)
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
       }
+      let msg
       if (res.statusCode === 204) {
-        res.data = {
-          info: '删除成功'
-        }
+        msg = IssueCommentCreateSuccessMsg
+      } else {
+        msg = isNotIssueCommentCreateMsg
+      }
+      res.data = {
+        info: msg
       }
       return res
     } catch (error) {
@@ -860,6 +1337,7 @@ export class Issue extends Base {
 
   /**
    * 获取子议题列表
+   * 仅GitHub 平台使用
    * 权限:
    * - Issues: Read-only
    * - Pull requests: Read-only
@@ -895,10 +1373,70 @@ export class Issue extends Base {
       if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
       if (queryOptions.page) params.page = queryOptions.page.toString()
 
-      const apiPath = `/repos/${owner}/${repo}/issues/${issue_number}/sub_issues`
-      const res = await this.get(apiPath, params)
+      const apiPath = `/repos/${owner}/${repo}/issues/${Number(issue_number)}/sub_issues`
+      const res = await this.get(apiPath, params) as ApiResponseType<SubIssueListResponseType>
       if (res.statusCode === 404) {
         throw new Error(NotIssueMsg)
+      }
+      if (res.data) {
+        res.data = res.data.map(issue => ({
+          id: issue.id,
+          html_url: issue.html_url,
+          number: issue.number,
+          comments: issue.comments,
+          state: issue.state,
+          state_reason: issue.state_reason,
+          title: issue.title,
+          body: issue.body,
+          user: issue.user
+            ? {
+                id: issue.user.id,
+                login: issue.user.login,
+                name: issue.user.name,
+                email: issue.user.email,
+                html_url: issue.user.html_url,
+                avatar_url: issue.user.avatar_url,
+                type: _.capitalize((issue.user).type.toLowerCase())
+              }
+            : null,
+          labels: issue.labels
+            ? issue.labels.map((label: IssueLabelType) => ({
+              id: label.id,
+              name: label.name,
+              color: label.color
+            }))
+            : null,
+          assignee: issue.assignee
+            ? {
+                id: issue.assignee.id,
+                login: issue.assignee.login,
+                name: issue.assignee.name,
+                email: issue.assignee.email,
+                html_url: issue.assignee.html_url,
+                avatar_url: issue.assignee.avatar_url,
+                type: _.capitalize((issue.assignee).type.toLowerCase())
+              }
+            : null,
+          milestone: issue.milestone
+            ? {
+                id: issue.milestone.id,
+                url: issue.milestone.url,
+                number: issue.milestone.number,
+                state: issue.milestone.state,
+                title: issue.milestone.title,
+                description: issue.milestone.description,
+                open_issues: issue.milestone.open_issues,
+                closed_issues: issue.milestone.closed_issues,
+                created_at: issue.milestone.created_at,
+                updated_at: issue.milestone.updated_at,
+                closed_at: issue.milestone.closed_at,
+                due_on: issue.milestone.due_on
+              }
+            : null,
+          closed_at: issue.closed_at,
+          created_at: issue.created_at,
+          updated_at: issue.updated_at
+        }))
       }
       return res
     } catch (error) {
@@ -909,6 +1447,7 @@ export class Issue extends Base {
   /**
    * 添加子议题
    * 添加一个子议题到指定的议题中
+   * 仅GitHub 平台使用
    * 权限：
    * - Issues：Write
    * @param options 添加子议题的参数对象
@@ -945,9 +1484,69 @@ export class Issue extends Base {
       const res = await this.post(`/repos/${owner}/${repo}/issues/${issue_number}/sub_issues`, {
         sub_issue_id,
         replace_parent
-      })
+      }) as ApiResponseType<AddSubIssueResponseType>
       if (res.statusCode === 404) {
         throw new Error(NotIssueMsg)
+      }
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          html_url: res.data.html_url,
+          number: res.data.number,
+          comments: res.data.comments,
+          state: res.data.state,
+          state_reason: res.data.state_reason,
+          title: res.data.title,
+          body: res.data.body,
+          user: res.data.user
+            ? {
+                id: res.data.user.id,
+                login: res.data.user.login,
+                name: res.data.user.name,
+                email: res.data.user.email,
+                html_url: res.data.user.html_url,
+                avatar_url: res.data.user.avatar_url,
+                type: _.capitalize((res.data.user).type.toLowerCase())
+              }
+            : null,
+          labels: res.data.labels
+            ? res.data.labels.map((label: IssueLabelType) => ({
+              id: label.id,
+              name: label.name,
+              color: label.color
+            }))
+            : null,
+          assignee: res.data.assignee
+            ? {
+                id: res.data.assignee.id,
+                login: res.data.assignee.login,
+                name: res.data.assignee.name,
+                email: res.data.assignee.email,
+                html_url: res.data.assignee.html_url,
+                avatar_url: res.data.assignee.avatar_url,
+                type: _.capitalize((res.data.assignee).type.toLowerCase())
+              }
+            : null,
+          milestone: res.data.milestone
+            ? {
+                id: res.data.milestone.id,
+                url: res.data.milestone.url,
+                number: res.data.milestone.number,
+                state: res.data.milestone.state,
+                title: res.data.milestone.title,
+                description: res.data.milestone.description,
+                open_issues: res.data.milestone.open_issues,
+                closed_issues: res.data.milestone.closed_issues,
+                created_at: res.data.milestone.created_at,
+                updated_at: res.data.milestone.updated_at,
+                closed_at: res.data.milestone.closed_at,
+                due_on: res.data.milestone.due_on
+              }
+            : null,
+          closed_at: res.data.closed_at,
+          created_at: res.data.created_at,
+          updated_at: res.data.updated_at
+        }
       }
       return res
     } catch (error) {
@@ -991,9 +1590,69 @@ export class Issue extends Base {
       const { owner, repo, issue_number, sub_issue_id } = options
       const res = await this.delete(`/repos/${owner}/${repo}/issues/${issue_number}/sub_issue`, null, {
         sub_issue_id
-      })
+      }) as ApiResponseType<RemoveSubIssueResponseType>
       if (res.statusCode === 404) {
         throw new Error(NotIssueMsg)
+      }
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          html_url: res.data.html_url,
+          number: res.data.number,
+          comments: res.data.comments,
+          state: res.data.state,
+          state_reason: res.data.state_reason,
+          title: res.data.title,
+          body: res.data.body,
+          user: res.data.user
+            ? {
+                id: res.data.user.id,
+                login: res.data.user.login,
+                name: res.data.user.name,
+                email: res.data.user.email,
+                html_url: res.data.user.html_url,
+                avatar_url: res.data.user.avatar_url,
+                type: _.capitalize((res.data.user).type.toLowerCase())
+              }
+            : null,
+          labels: res.data.labels
+            ? res.data.labels.map((label: IssueLabelType) => ({
+              id: label.id,
+              name: label.name,
+              color: label.color
+            }))
+            : null,
+          assignee: res.data.assignee
+            ? {
+                id: res.data.assignee.id,
+                login: res.data.assignee.login,
+                name: res.data.assignee.name,
+                email: res.data.assignee.email,
+                html_url: res.data.assignee.html_url,
+                avatar_url: res.data.assignee.avatar_url,
+                type: _.capitalize((res.data.assignee).type.toLowerCase())
+              }
+            : null,
+          milestone: res.data.milestone
+            ? {
+                id: res.data.milestone.id,
+                url: res.data.milestone.url,
+                number: res.data.milestone.number,
+                state: res.data.milestone.state,
+                title: res.data.milestone.title,
+                description: res.data.milestone.description,
+                open_issues: res.data.milestone.open_issues,
+                closed_issues: res.data.milestone.closed_issues,
+                created_at: res.data.milestone.created_at,
+                updated_at: res.data.milestone.updated_at,
+                closed_at: res.data.milestone.closed_at,
+                due_on: res.data.milestone.due_on
+              }
+            : null,
+          closed_at: res.data.closed_at,
+          created_at: res.data.created_at,
+          updated_at: res.data.updated_at
+        }
       }
       return res
     } catch (error) {
@@ -1057,9 +1716,69 @@ export class Issue extends Base {
       const url = `/repos/${owner}/${repo}/issues/${issue_number}/sub_issues/priority`
       const res = await this.patch(url, params, {
         sub_issue_id: String(sub_issue_id)
-      })
+      }) as ApiResponseType<ReprioritizeSubIssueResponseType>
       if (res.statusCode === 404) {
         throw new Error(NotIssueMsg)
+      }
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          html_url: res.data.html_url,
+          number: res.data.number,
+          comments: res.data.comments,
+          state: res.data.state,
+          state_reason: res.data.state_reason,
+          title: res.data.title,
+          body: res.data.body,
+          user: res.data.user
+            ? {
+                id: res.data.user.id,
+                login: res.data.user.login,
+                name: res.data.user.name,
+                email: res.data.user.email,
+                html_url: res.data.user.html_url,
+                avatar_url: res.data.user.avatar_url,
+                type: _.capitalize((res.data.user).type.toLowerCase())
+              }
+            : null,
+          labels: res.data.labels
+            ? res.data.labels.map((label: IssueLabelType) => ({
+              id: label.id,
+              name: label.name,
+              color: label.color
+            }))
+            : null,
+          assignee: res.data.assignee
+            ? {
+                id: res.data.assignee.id,
+                login: res.data.assignee.login,
+                name: res.data.assignee.name,
+                email: res.data.assignee.email,
+                html_url: res.data.assignee.html_url,
+                avatar_url: res.data.assignee.avatar_url,
+                type: _.capitalize((res.data.assignee).type.toLowerCase())
+              }
+            : null,
+          milestone: res.data.milestone
+            ? {
+                id: res.data.milestone.id,
+                url: res.data.milestone.url,
+                number: res.data.milestone.number,
+                state: res.data.milestone.state,
+                title: res.data.milestone.title,
+                description: res.data.milestone.description,
+                open_issues: res.data.milestone.open_issues,
+                closed_issues: res.data.milestone.closed_issues,
+                created_at: res.data.milestone.created_at,
+                updated_at: res.data.milestone.updated_at,
+                closed_at: res.data.milestone.closed_at,
+                due_on: res.data.milestone.due_on
+              }
+            : null,
+          closed_at: res.data.closed_at,
+          created_at: res.data.created_at,
+          updated_at: res.data.updated_at
+        }
       }
       return res
     } catch (error) {

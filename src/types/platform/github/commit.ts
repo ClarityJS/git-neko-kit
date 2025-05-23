@@ -1,4 +1,9 @@
-import { formatParamType, RepoBaseParamType, RepoUrlParamType, ShaParamType } from '@/types/platform/github/base'
+import {
+  formatParamType,
+  RepoBaseParamType,
+  RepoUrlParamType,
+  ShaParamType
+} from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
 
 export interface CommitInfoCommonParamType {

@@ -64,6 +64,14 @@ export type RepoBaseParamType = RepoOwnerParamType & RepoNameParamType
  */
 export type RepoParamType = RepoBaseParamType | RepoUrlParamType
 
+/**
+ * 议题参数
+ */
+export interface IssueIdParamType {
+  /** 问题id */
+  issue_id: number | string;
+}
+
 /** guthub基础入口类型 */
 export interface GitHubAuthType {
   /** 私钥内容 */

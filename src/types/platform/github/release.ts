@@ -1,6 +1,6 @@
 import {
   RepoParamType
-} from '@/types/platform/github/base'
+} from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 反应信息类型 */
@@ -35,7 +35,6 @@ export type ReleaseInfoParamTypeType = RepoParamType & {
   release_id: number
 }
 /** 获Release信息响应类型 */
-// ... existing code ...
 export interface ReleaseInfoResponseType {
   /** 发布版本的 API URL */
   url: string;

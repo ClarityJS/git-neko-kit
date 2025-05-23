@@ -1,11 +1,9 @@
 import {
   formatParamType,
-  RepoNameParamType,
   RepoOwnerParamType,
   RepoParamType,
-  RepoUrlParamType,
   UserNameParamType
-} from '@/types/platform/github/base'
+} from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
 /** 仓库列表参数类型 */
 export interface RepoListBaseParamType {
