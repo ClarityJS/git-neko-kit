@@ -7,7 +7,11 @@ import {
   WebHookSignatureSuccessMsg
 } from '@/common'
 import { Base } from '@/models/platform/github/base'
-import type { ApiResponseType, WebHookParamType } from '@/types'
+import type {
+  ApiResponseType,
+  WebHookSignatureParamType,
+  WebHookSignatureResponseType
+} from '@/types'
 
 /**
  * Base WebHook操作类
@@ -40,8 +44,9 @@ export class WebHook extends Base {
    * })
    * ```
    */
-  public async check_webhook_signature (options: WebHookParamType):
-  Promise<ApiResponseType<boolean>> {
+  public async check_webhook_signature (
+    options: WebHookSignatureParamType
+  ):Promise<ApiResponseType<WebHookSignatureResponseType>> {
     const secret = options.secret ?? this.WebHook_Secret
     if (!secret || !options.payload || !options.signature) throw new Error(NotParamMsg)
     if (!options.signature.startsWith('sha256=')) throw new Error(isNotWebHookSignatureMsg)
@@ -50,7 +55,7 @@ export class WebHook extends Base {
     let status: 'ok' | 'error' = 'error'
     let statusCode = 400
     let msg = NotWebHookSignatureMsg
-    let data: boolean = false
+    let data
 
     try {
       const hmac = crypto.createHmac('sha256', secret)
@@ -70,14 +75,18 @@ export class WebHook extends Base {
         success = true
         status = 'ok'
         statusCode = 200
-        msg = WebHookSignatureSuccessMsg
-        data = true
+        msg = '请求成功'
+        data = {
+          info: WebHookSignatureSuccessMsg
+        }
       } else {
         success = false
         status = 'error'
         statusCode = 403
-        msg = NotWebHookSignatureMsg
-        data = false
+        msg = '请求失败'
+        data = {
+          info: NotWebHookSignatureMsg
+        }
       }
     } catch (error) {
       throw new Error(`请求验证WebHook签名失败: ${(error as Error).message}`)
