@@ -27,8 +27,12 @@ export interface UserInfoResponseType {
   name: string | null;
   /** 邮箱 */
   email: string | null;
-  /** 账号类型 */
-  type: 'User' | 'Organization';
+  /**
+   * 账号类型
+   * User: 用户
+   * Organization: 组织
+   */
+  type: string;
   /** 账号主页URL */
   html_url: string;
   /** 账号头像URL */

@@ -1,4 +1,7 @@
+import _ from 'lodash'
+
 import {
+  IssueMovedMsg,
   NotIssueCommentBodyMsg,
   NotIssueCommentMsg,
   NotIssueCommentNumberMsg,
@@ -27,7 +30,9 @@ import type {
   IssueCommentListParamType,
   IssueInfoParamType,
   IssueInfoResponseType,
+  IssueLabelType,
   IssueListResponseType,
+  IssueUser,
   LockIssueParamType,
   LockIssueResponseType,
   OpenIssueParamType,
@@ -109,12 +114,83 @@ export class Issue extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get(`/repos/${owner}/${repo}/issues/${options.issue_number}`)
+      const res = await this.get(`/repos/${owner}/${repo}/issues/${options.issue_number}`) as ApiResponseType<IssueInfoResponseType>
       switch (res.statusCode) {
         case 404:
           throw new Error(NotIssueMsg)
         case 301:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueMovedMsg)
+      }
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          html_url: res.data.html_url,
+          number: res.data.number,
+          comments: res.data.comments,
+          state: res.data.state,
+          state_reason: res.data.state_reason,
+          title: res.data.title,
+          body: res.data.body,
+          user: res.data.user
+            ? {
+                id: res.data.user.id,
+                login: res.data.user.login,
+                name: res.data.user.name,
+                email: res.data.user.email,
+                html_url: res.data.user.html_url,
+                avatar_url: res.data.user.avatar_url,
+                type: _.capitalize((res.data.user).type.toLowerCase())
+              }
+            : null,
+          labels: res.data.labels
+            ? res.data.labels.map((label: IssueLabelType) => ({
+              id: label.id,
+              name: label.name,
+              color: label.color
+            }))
+            : null,
+          assignee: res.data.assignee
+            ? {
+                id: res.data.assignee.id,
+                login: res.data.assignee.login,
+                name: res.data.assignee.name,
+                email: res.data.assignee.email,
+                html_url: res.data.assignee.html_url,
+                avatar_url: res.data.assignee.avatar_url,
+                type: _.capitalize((res.data.assignee).type.toLowerCase())
+              }
+            : null,
+          assignees: res.data.assignees && res.data.assignees.length > 0
+            ? res.data.assignees.map((assignee: IssueUser) => ({
+              id: assignee.id,
+              login: assignee.login,
+              name: assignee.name,
+              email: assignee.email,
+              html_url: assignee.html_url,
+              avatar_url: assignee.avatar_url,
+              type: _.capitalize((assignee).type.toLowerCase())
+            }))
+            : null,
+          milestone: res.data.milestone
+            ? {
+                id: res.data.milestone.id,
+                url: res.data.milestone.url,
+                number: res.data.milestone.number,
+                state: res.data.milestone.state,
+                title: res.data.milestone.title,
+                description: res.data.milestone.description,
+                open_issues: res.data.milestone.open_issues,
+                closed_issues: res.data.milestone.closed_issues,
+                created_at: res.data.milestone.created_at,
+                updated_at: res.data.milestone.updated_at,
+                closed_at: res.data.milestone.closed_at,
+                due_on: res.data.milestone.due_on
+              }
+            : null,
+          closed_at: res.data.closed_at,
+          created_at: res.data.created_at,
+          updated_at: res.data.updated_at
+        }
       }
       return res
     } catch (error) {

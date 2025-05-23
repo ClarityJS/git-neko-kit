@@ -64,7 +64,7 @@ export class User extends Base {
       this.setRequestConfig({
         token
       })
-      const res = await this.get(`/users/${options.username}`)
+      const res = await this.get(`/users/${options.username}`) as ApiResponseType<UserInfoResponseType>
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       } else if (res.statusCode === 404) {
@@ -118,7 +118,7 @@ export class User extends Base {
       this.setRequestConfig({
         token: this.userToken
       })
-      const res = await this.get(`/user/${options.user_id}`)
+      const res = await this.get(`/user/${options.user_id}`) as ApiResponseType<UserInfoResponseType>
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       } else if (res.statusCode === 404) {
@@ -167,7 +167,7 @@ export class User extends Base {
       this.setRequestConfig({
         token
       })
-      const res = await this.get('/user')
+      const res = await this.get('/user') as ApiResponseType<UserInfoResponseType>
       switch (res.statusCode) {
         case 401:
           throw new Error(NotPerrmissionMsg)

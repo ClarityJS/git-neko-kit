@@ -23,7 +23,7 @@ export type CommitInfoUrlParamType = RepoUrlParamType & CommitInfoCommonParamTyp
 /** Git提交用户信息 */
 export interface GitUser extends Omit<UserInfoResponseType, 'company' | 'bio' | 'blog' | 'followers' | 'following'> {
   /** 日期字符串 */
-  data: string;
+  date: string;
 }
 /**
  * 验证信息类型

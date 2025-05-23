@@ -134,7 +134,7 @@ export class App extends Base {
    * console.log(app.get_app_name()) // 输出AppName
    * ```
    */
-  public async get_app_name () {
+  public async get_app_name (): Promise<string> {
     return (await this.get_info()).data.name
   }
 }

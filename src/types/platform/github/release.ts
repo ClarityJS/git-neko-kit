@@ -1,7 +1,8 @@
 import {
   RepoParamType
 } from '@/types/platform/github/base'
-import { AccountBaseType } from '@/types/platform/github/user'
+import { UserInfoResponseType } from '@/types/platform/github/user'
+
 /** 反应信息类型 */
 export interface ReactionInfoType {
   /** 反应 API URL */
@@ -69,7 +70,7 @@ export interface ReleaseInfoResponseType {
   /** 发布时间 */
   published_at: string | null;
   /** 发布者信息 */
-  author: AccountBaseType & {
+  author: UserInfoResponseType & {
     /** 用户名 */
     name: string | null;
     /** 邮箱 */

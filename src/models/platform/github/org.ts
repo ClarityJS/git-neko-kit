@@ -43,7 +43,7 @@ export class Org extends Base {
       this.setRequestConfig({
         token: this.userToken
       })
-      const res = await this.get(`/orgs/${options.org}`)
+      const res = await this.get(`/orgs/${options.org}`) as ApiResponseType<OrgInfoResponseType>
       if (res.statusCode === 404) {
         throw new Error(NotOrgMsg)
       }

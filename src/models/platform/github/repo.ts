@@ -91,7 +91,7 @@ export class Repo extends Base {
       if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
       if (queryOptions?.page) params.page = queryOptions.page.toString()
       const url = `/orgs/${org}/repos`
-      const res = await this.get(url, params)
+      const res = await this.get(url, params) as ApiResponseType<OrgRepoListType>
       switch (res.statusCode) {
         case 404:
           throw new Error(NotOrgMsg)
@@ -190,7 +190,7 @@ export class Repo extends Base {
       if (queryOptions?.page) params.page = queryOptions.page.toString()
 
       const url = '/uses/repos'
-      const res = await this.get(url, params)
+      const res = await this.get(url, params) as ApiResponseType<UserRepoListType>
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
@@ -278,7 +278,7 @@ export class Repo extends Base {
 
       const isFormat = options?.format ?? this.format
       const url = `/users/${username}/repos`
-      const res = await this.get(url, params)
+      const res = await this.get(url, params) as ApiResponseType<UserRepoListType>
 
       switch (res.statusCode) {
         case 404:
@@ -372,7 +372,7 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get(`/repos/${owner}/${repo}`)
+      const res = await this.get(`/repos/${owner}/${repo}`) as ApiResponseType<RepoInfoResponseType>
       switch (res.statusCode) {
         case 401:
           throw new Error(NotPerrmissionMsg)
@@ -446,7 +446,7 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get(`/repos/${owner}/${repo}/languages`)
+      const res = await this.get(`/repos/${owner}/${repo}/languages`) as ApiResponseType<RepoLanguagesListType>
       switch (res.statusCode) {
         case 401:
           throw new Error(NotPerrmissionMsg)
@@ -514,7 +514,7 @@ export class Repo extends Base {
       const body = {
         ...repoOptions
       }
-      const res = await this.post(`/orgs/${owner}/repos`, body)
+      const res = await this.post(`/orgs/${owner}/repos`, body) as ApiResponseType<OrgRepoCreateResponseType>
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
@@ -544,7 +544,7 @@ export class Repo extends Base {
           fork: res.data.fork,
           archived: res.data.archived,
           disabled: res.data.disabled,
-          html_url: res.data.repo.html_url,
+          html_url: res.data.html_url,
           description: res.data.description,
           created_at: isFormat
             ? await formatDate(res.data.created_at)
@@ -611,7 +611,7 @@ export class Repo extends Base {
       if (queryOptions.permission) params.permission = queryOptions.permission.toString()
       if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
       if (queryOptions.page) params.page = queryOptions.page.toString()
-      const res = await this.get(`/repos/${owner}/${repo}/collaborators`, params)
+      const res = await this.get(`/repos/${owner}/${repo}/collaborators`, params) as ApiResponseType<CollaboratorListResponseType>
       if (res.data) {
         res.data = await Promise.all(
           res.data.map((repo: CollaboratorInfoResponseType) => ({
@@ -679,11 +679,12 @@ export class Repo extends Base {
         {
           permission: options.permission ?? 'pull'
         }
-      )
+      ) as ApiResponseType<AddCollaboratorResponseType>
       if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
-      if (res.statusCode === 422 && res.data.message) {
-        if (res.data.message.includes('is not a valid permission.')) {
-          throw new Error(isNotPerrmissionMsg)
+      if (res.statusCode === 422) {
+        const msg = (res.data as unknown as { message: string }).message
+        if (msg) {
+          if (msg.includes('is not a valid permission')) throw new Error(isNotPerrmissionMsg)
         }
       }
 
@@ -780,7 +781,7 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       username = options?.username
-      const res = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`)
+      const res = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`) as ApiResponseType<RemoveCollaboratorResponseType>
       if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
       if (res.status && res.statusCode === 204) {
         res.data = {
@@ -851,8 +852,7 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get_repo_info({ owner, repo })
-      return res.data.visibility
+      return (await this.get_repo_info({ owner, repo })).data.visibility
     } catch (error) {
       throw new Error(`获取仓库可见性失败: ${(error as Error).message}`)
     }
@@ -889,8 +889,7 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get_repo_info({ owner, repo })
-      return res.data.default_branch
+      return (await this.get_repo_info({ owner, repo })).data.default_branch
     } catch (error) {
       throw new Error(`获取仓库默认分支失败: ${(error as Error).message}`)
     }
@@ -927,8 +926,7 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get_repo_info({ owner, repo })
-      return res.data.language
+      return (await this.get_repo_info({ owner, repo })).data.language
     } catch (error) {
       throw new Error(`获取仓库语言失败: ${(error as Error).message}`)
     }
