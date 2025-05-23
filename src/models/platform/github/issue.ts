@@ -40,7 +40,6 @@ import type {
   IssueInfoResponseType,
   IssueLabelType,
   IssueListResponseType,
-  IssueUser,
   LockIssueParamType,
   LockIssueResponseType,
   OpenIssueParamType,
