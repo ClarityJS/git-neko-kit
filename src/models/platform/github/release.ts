@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { capitalize } from 'lodash-es'
 
 import {
   DeleteReleaseSuccessMsg,
@@ -97,7 +97,7 @@ export class Release extends Base {
             email: res.data.author.email,
             html_url: res.data.author.html_url,
             avatar_url: res.data.author.avatar_url,
-            type: _.capitalize((res.data.author).type.toLowerCase())
+            type: capitalize((res.data.author).type.toLowerCase())
           },
           assets: res.data.assets.map(asset => ({
             url: asset.url,
@@ -165,7 +165,7 @@ export class Release extends Base {
             email: res.data.author.email,
             html_url: res.data.author.html_url,
             avatar_url: res.data.author.avatar_url,
-            type: _.capitalize((res.data.author).type.toLowerCase())
+            type: capitalize((res.data.author).type.toLowerCase())
           },
           assets: res.data.assets.map(asset => ({
             url: asset.url,
@@ -232,7 +232,7 @@ export class Release extends Base {
             email: res.data.author.email,
             html_url: res.data.author.html_url,
             avatar_url: res.data.author.avatar_url,
-            type: _.capitalize((res.data.author).type.toLowerCase())
+            type: capitalize((res.data.author).type.toLowerCase())
           },
           assets: res.data.assets.map(asset => ({
             url: asset.url,
@@ -306,7 +306,7 @@ export class Release extends Base {
             email: release.author.email,
             html_url: release.author.html_url,
             avatar_url: release.author.avatar_url,
-            type: _.capitalize((release.author).type.toLowerCase())
+            type: capitalize((release.author).type.toLowerCase())
           },
           assets: release.assets.map(asset => ({
             url: asset.url,
@@ -370,7 +370,7 @@ export class Release extends Base {
             email: res.data.author.email,
             html_url: res.data.author.html_url,
             avatar_url: res.data.author.avatar_url,
-            type: _.capitalize((res.data.author).type.toLowerCase())
+            type: capitalize((res.data.author).type.toLowerCase())
           },
           assets: res.data.assets.map(asset => ({
             url: asset.url,
@@ -439,7 +439,7 @@ export class Release extends Base {
             email: res.data.author.email,
             html_url: res.data.author.html_url,
             avatar_url: res.data.author.avatar_url,
-            type: _.capitalize((res.data.author).type.toLowerCase())
+            type: capitalize((res.data.author).type.toLowerCase())
           },
           assets: res.data.assets.map(asset => ({
             url: asset.url,

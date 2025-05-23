@@ -1,4 +1,4 @@
-import fs from 'node:fs/promises'
+import fs from 'node:fs'
 
 import convert, { type RGB } from 'color-convert'
 import dayjs from 'dayjs'
@@ -10,7 +10,7 @@ import { basePath } from '@/root'
 import { ContributionResult, RepoBaseParamType } from '@/types'
 
 /**
- * 判断文件是否存在
+ * 异步判断文件是否存在
  * @param path - 文件路径
  * @returns 是否存在
  * @example
@@ -21,7 +21,7 @@ import { ContributionResult, RepoBaseParamType } from '@/types'
  */
 export async function exists (path: string) {
   try {
-    await fs.access(path)
+    await fs.promises.access(path)
     return true
   } catch {
     return false
@@ -33,15 +33,15 @@ export async function exists (path: string) {
  * @param root - 根目录
  * @returns JSON 对象
  */
-export async function readJSON (file = '', root = ''): Promise<any> {
-  root = root || basePath
+export function readJSON (file = '', root = ''): any {
+  root = root ?? basePath
   try {
     const filePath = `${root}/${file}`
-    if (!await exists(filePath)) {
+    if (!fs.existsSync(filePath)) {
       console.warn(`文件不存在: ${filePath}`)
       return {}
     }
-    const data = await fs.readFile(filePath, 'utf8')
+    const data = fs.readFileSync(filePath, 'utf8')
     return JSON.parse(data)
   } catch (e) {
     console.error(`读取 JSON 文件失败: ${file}`, e)

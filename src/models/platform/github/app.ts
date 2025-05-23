@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { capitalize } from 'lodash-es'
 
 import {
   AppRepoMovedMsg,
@@ -56,7 +56,7 @@ export class App extends Base {
             email: res.data.owner.email,
             html_url: res.data.owner.html_url,
             avatar_url: res.data.owner.avatar_url,
-            type: _.capitalize(res.data.owner.type.toLowerCase())
+            type: capitalize(res.data.owner.type.toLowerCase())
           },
           description: res.data.description,
           external_url: res.data.external_url,
@@ -103,7 +103,7 @@ export class App extends Base {
             email: res.data.owner.email,
             html_url: res.data.owner.html_url,
             avatar_url: res.data.owner.avatar_url,
-            type: _.capitalize(res.data.owner.type.toLowerCase())
+            type: capitalize(res.data.owner.type.toLowerCase())
           },
           description: res.data.description,
           external_url: res.data.external_url,
@@ -178,7 +178,7 @@ export class App extends Base {
                 email: res.data.account.email,
                 html_url: res.data.account.html_url,
                 avatar_url: res.data.account.avatar_url,
-                type: _.capitalize(res.data.account.type.toLowerCase())
+                type: capitalize(res.data.account.type.toLowerCase())
               }
             : null,
           repository_selection: res.data.repository_selection,

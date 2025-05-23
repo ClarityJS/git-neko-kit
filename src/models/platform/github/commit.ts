@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { capitalize } from 'lodash-es'
 
 import {
   formatDate,
@@ -104,7 +104,7 @@ export class Commit extends Base {
                   avatar_url: res.data.commit.author.avatar_url,
                   email: res.data.commit.author.email,
                   html_url: res.data.commit.author.html_url,
-                  type: _.capitalize(String(res.data.commit.author.type).toLowerCase()),
+                  type: capitalize(String(res.data.commit.author.type).toLowerCase()),
                   date: isFormat
                     ? await formatDate(res.data.commit.author.date)
                     : res.data.commit.author.date
@@ -118,7 +118,7 @@ export class Commit extends Base {
                   avatar_url: res.data.commit.committer.avatar_url,
                   email: res.data.commit.committer.email,
                   html_url: res.data.commit.committer.html_url,
-                  type: _.capitalize(String(res.data.commit.committer.type).toLowerCase()),
+                  type: capitalize(String(res.data.commit.committer.type).toLowerCase()),
                   date: isFormat
                     ? await formatDate(res.data.commit.committer.date)
                     : res.data.commit.committer.date

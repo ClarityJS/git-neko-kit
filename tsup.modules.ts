@@ -1,12 +1,13 @@
 import { defineConfig, type Options } from 'tsup'
 import fs from 'node:fs'
-import path, { dirname } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
+import path, { dirname } from 'node:path'
 
+fs.rmSync('dist/exports', { recursive: true, force: true })
 const pkg = JSON.parse(fs.readFileSync(new URL('package.json', import.meta.url), 'utf-8'))
 
 export const options: Options =({
-  entry: ['src/index.ts', 'src/root.ts'],      // 入口文件
+  entry: ['src/exports/*.ts'],      // 入口文件
   format: ['cjs', 'esm'],       // ESM格式
   bundle: true,                 // 打包依赖
   dts: true,                    // 生成类型声明文件
@@ -17,48 +18,30 @@ export const options: Options =({
   treeshake: true,              // 启用树摇优化
   platform: 'node',            // 指定为Node.js环境
   splitting: false,             // 代码分割, 是否拆分文件
-  outDir: 'dist',               // 指定输出目录 
+  outDir: 'dist/exports',               // 指定输出目录 
   external: Object.keys(pkg.dependencies),                 // 外部依赖, 不打包进输出文件中
   outExtension: ({ format }) => ({
     js: format === 'esm' ? '.mjs' : '.cjs'
   }),
-  onSuccess: async () => {
+    onSuccess: async () => {
     await new Promise((resolve) => setTimeout(resolve, 5000))
     copyFiles()
   }
 })
-
 export default defineConfig(options)
 
 const copyFiles = () => {
   const file_name_path = fileURLToPath(import.meta.url)
   const file_path = dirname(file_name_path)
 
-  const distDir = path.join(file_path, 'dist')
-  const esmDir = path.join(distDir, 'esm')
-  const cjsDir = path.join(distDir, 'cjs')
+  const distDir = path.join(file_path, 'dist', 'exports')
 
-  // 创建 esm 和 cjs 目录
-  fs.mkdirSync(esmDir, { recursive: true })
-  fs.mkdirSync(cjsDir, { recursive: true })
-
-  // 移动 .mjs 文件到 esm 目录
   fs.readdirSync(distDir).forEach((file) => {
-    if (file.endsWith('.mjs')) {
-      fs.renameSync(path.join(distDir, file), path.join(esmDir, file))
-    }
-  })
-
-  // 移动 .cjs 文件到 cjs 目录
-  fs.readdirSync(distDir).forEach((file) => {
-    if (file.endsWith('.cjs')) {
-      fs.renameSync(path.join(distDir, file), path.join(cjsDir, file))
-    }
     // 删除 .d.cts 文件
     if (file.endsWith('.d.cts')) {
       fs.rmSync(path.join(distDir, file))
     }
   })
 
-  console.log('构建目录成功!')
+  console.log('构建导出依赖目录成功!')
 }

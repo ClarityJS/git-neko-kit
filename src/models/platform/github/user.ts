@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
-import _ from 'lodash'
+import { capitalize } from 'lodash-es'
 
 import {
   getContributionData,
@@ -75,7 +75,7 @@ export class User extends Base {
           id: res.data.id,
           login: res.data.login,
           name: res.data.name || null,
-          type: _.capitalize(res.data.type.toLowerCase()),
+          type: capitalize(res.data.type.toLowerCase()),
           html_url: res.data.html_url,
           avatar_url: res.data.avatar_url,
           company: res.data.company || null,
@@ -129,7 +129,7 @@ export class User extends Base {
           id: res.data.id,
           login: res.data.login,
           name: res.data.name || null,
-          type: _.capitalize(res.data.type.toLowerCase()),
+          type: capitalize(res.data.type.toLowerCase()),
           html_url: res.data.html_url,
           avatar_url: res.data.avatar_url,
           company: res.data.company || null,
@@ -179,7 +179,7 @@ export class User extends Base {
           id: res.data.id,
           login: res.data.login,
           name: res.data.name || null,
-          type: _.capitalize(res.data.type.toLowerCase()),
+          type: capitalize(res.data.type.toLowerCase()),
           html_url: res.data.html_url,
           avatar_url: res.data.avatar_url,
           company: res.data.company || null,

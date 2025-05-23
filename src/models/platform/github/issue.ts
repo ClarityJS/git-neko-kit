@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { capitalize } from 'lodash-es'
 
 import {
   isNotIssucLockMsg,
@@ -146,7 +146,7 @@ export class Issue extends Base {
                 email: res.data.user.email,
                 html_url: res.data.user.html_url,
                 avatar_url: res.data.user.avatar_url,
-                type: _.capitalize((res.data.user).type.toLowerCase())
+                type: capitalize((res.data.user).type.toLowerCase())
               }
             : null,
           labels: res.data.labels
@@ -164,7 +164,7 @@ export class Issue extends Base {
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
                 avatar_url: res.data.assignee.avatar_url,
-                type: _.capitalize((res.data.assignee).type.toLowerCase())
+                type: capitalize((res.data.assignee).type.toLowerCase())
               }
             : null,
           milestone: res.data.milestone
@@ -281,7 +281,7 @@ export class Issue extends Base {
                 email: issue.user.email,
                 html_url: issue.user.html_url,
                 avatar_url: issue.user.avatar_url,
-                type: _.capitalize((issue.user).type.toLowerCase())
+                type: capitalize((issue.user).type.toLowerCase())
               }
             : null,
           labels: issue.labels
@@ -299,7 +299,7 @@ export class Issue extends Base {
                 email: issue.assignee.email,
                 html_url: issue.assignee.html_url,
                 avatar_url: issue.assignee.avatar_url,
-                type: _.capitalize((issue.assignee).type.toLowerCase())
+                type: capitalize((issue.assignee).type.toLowerCase())
               }
             : null,
           milestone: issue.milestone
@@ -399,7 +399,7 @@ export class Issue extends Base {
                   email: res.data.user.email,
                   html_url: res.data.user.html_url,
                   avatar_url: res.data.user.avatar_url,
-                  type: _.capitalize((res.data.user).type.toLowerCase())
+                  type: capitalize((res.data.user).type.toLowerCase())
                 }
               : null,
             labels: res.data.labels
@@ -417,7 +417,7 @@ export class Issue extends Base {
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
                   avatar_url: res.data.assignee.avatar_url,
-                  type: _.capitalize((res.data.assignee).type.toLowerCase())
+                  type: capitalize((res.data.assignee).type.toLowerCase())
                 }
               : null,
             milestone: res.data.milestone
@@ -523,7 +523,7 @@ export class Issue extends Base {
                   email: res.data.user.email,
                   html_url: res.data.user.html_url,
                   avatar_url: res.data.user.avatar_url,
-                  type: _.capitalize((res.data.user).type.toLowerCase())
+                  type: capitalize((res.data.user).type.toLowerCase())
                 }
               : null,
             labels: res.data.labels
@@ -541,7 +541,7 @@ export class Issue extends Base {
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
                   avatar_url: res.data.assignee.avatar_url,
-                  type: _.capitalize((res.data.assignee).type.toLowerCase())
+                  type: capitalize((res.data.assignee).type.toLowerCase())
                 }
               : null,
             milestone: res.data.milestone
@@ -636,7 +636,7 @@ export class Issue extends Base {
                   email: res.data.user.email,
                   html_url: res.data.user.html_url,
                   avatar_url: res.data.user.avatar_url,
-                  type: _.capitalize((res.data.user).type.toLowerCase())
+                  type: capitalize((res.data.user).type.toLowerCase())
                 }
               : null,
             labels: res.data.labels
@@ -654,7 +654,7 @@ export class Issue extends Base {
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
                   avatar_url: res.data.assignee.avatar_url,
-                  type: _.capitalize((res.data.assignee).type.toLowerCase())
+                  type: capitalize((res.data.assignee).type.toLowerCase())
                 }
               : null,
             milestone: res.data.milestone
@@ -764,7 +764,7 @@ export class Issue extends Base {
                   email: res.data.user.email,
                   html_url: res.data.user.html_url,
                   avatar_url: res.data.user.avatar_url,
-                  type: _.capitalize((res.data.user).type.toLowerCase())
+                  type: capitalize((res.data.user).type.toLowerCase())
                 }
               : null,
             labels: res.data.labels
@@ -782,7 +782,7 @@ export class Issue extends Base {
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
                   avatar_url: res.data.assignee.avatar_url,
-                  type: _.capitalize((res.data.assignee).type.toLowerCase())
+                  type: capitalize((res.data.assignee).type.toLowerCase())
                 }
               : null,
             milestone: res.data.milestone
@@ -991,7 +991,7 @@ export class Issue extends Base {
                 email: comment.user.email,
                 html_url: comment.user.html_url,
                 avatar_url: comment.user.avatar_url,
-                type: _.capitalize((comment.user).type.toLowerCase())
+                type: capitalize((comment.user).type.toLowerCase())
               }
             : null,
           created_at: comment.created_at,
@@ -1063,7 +1063,7 @@ export class Issue extends Base {
                 email: comment.user.email,
                 html_url: comment.user.html_url,
                 avatar_url: comment.user.avatar_url,
-                type: _.capitalize((comment.user).type.toLowerCase())
+                type: capitalize((comment.user).type.toLowerCase())
               }
             : null,
           created_at: comment.created_at,
@@ -1125,7 +1125,7 @@ export class Issue extends Base {
                 email: res.data.user.email,
                 html_url: res.data.user.html_url,
                 avatar_url: res.data.user.avatar_url,
-                type: _.capitalize((res.data.user).type.toLowerCase())
+                type: capitalize((res.data.user).type.toLowerCase())
               }
             : null,
           created_at: res.data.created_at,
@@ -1193,7 +1193,7 @@ export class Issue extends Base {
                 email: res.data.user.email,
                 html_url: res.data.user.html_url,
                 avatar_url: res.data.user.avatar_url,
-                type: _.capitalize((res.data.user).type.toLowerCase())
+                type: capitalize((res.data.user).type.toLowerCase())
               }
             : null,
           created_at: res.data.created_at,
@@ -1256,7 +1256,7 @@ export class Issue extends Base {
                 email: res.data.user.email,
                 html_url: res.data.user.html_url,
                 avatar_url: res.data.user.avatar_url,
-                type: _.capitalize((res.data.user).type.toLowerCase())
+                type: capitalize((res.data.user).type.toLowerCase())
               }
             : null,
           created_at: res.data.created_at,
@@ -1395,7 +1395,7 @@ export class Issue extends Base {
                 email: issue.user.email,
                 html_url: issue.user.html_url,
                 avatar_url: issue.user.avatar_url,
-                type: _.capitalize((issue.user).type.toLowerCase())
+                type: capitalize((issue.user).type.toLowerCase())
               }
             : null,
           labels: issue.labels
@@ -1413,7 +1413,7 @@ export class Issue extends Base {
                 email: issue.assignee.email,
                 html_url: issue.assignee.html_url,
                 avatar_url: issue.assignee.avatar_url,
-                type: _.capitalize((issue.assignee).type.toLowerCase())
+                type: capitalize((issue.assignee).type.toLowerCase())
               }
             : null,
           milestone: issue.milestone
@@ -1505,7 +1505,7 @@ export class Issue extends Base {
                 email: res.data.user.email,
                 html_url: res.data.user.html_url,
                 avatar_url: res.data.user.avatar_url,
-                type: _.capitalize((res.data.user).type.toLowerCase())
+                type: capitalize((res.data.user).type.toLowerCase())
               }
             : null,
           labels: res.data.labels
@@ -1523,7 +1523,7 @@ export class Issue extends Base {
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
                 avatar_url: res.data.assignee.avatar_url,
-                type: _.capitalize((res.data.assignee).type.toLowerCase())
+                type: capitalize((res.data.assignee).type.toLowerCase())
               }
             : null,
           milestone: res.data.milestone
@@ -1611,7 +1611,7 @@ export class Issue extends Base {
                 email: res.data.user.email,
                 html_url: res.data.user.html_url,
                 avatar_url: res.data.user.avatar_url,
-                type: _.capitalize((res.data.user).type.toLowerCase())
+                type: capitalize((res.data.user).type.toLowerCase())
               }
             : null,
           labels: res.data.labels
@@ -1629,7 +1629,7 @@ export class Issue extends Base {
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
                 avatar_url: res.data.assignee.avatar_url,
-                type: _.capitalize((res.data.assignee).type.toLowerCase())
+                type: capitalize((res.data.assignee).type.toLowerCase())
               }
             : null,
           milestone: res.data.milestone
@@ -1737,7 +1737,7 @@ export class Issue extends Base {
                 email: res.data.user.email,
                 html_url: res.data.user.html_url,
                 avatar_url: res.data.user.avatar_url,
-                type: _.capitalize((res.data.user).type.toLowerCase())
+                type: capitalize((res.data.user).type.toLowerCase())
               }
             : null,
           labels: res.data.labels
@@ -1755,7 +1755,7 @@ export class Issue extends Base {
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
                 avatar_url: res.data.assignee.avatar_url,
-                type: _.capitalize((res.data.assignee).type.toLowerCase())
+                type: capitalize((res.data.assignee).type.toLowerCase())
               }
             : null,
           milestone: res.data.milestone

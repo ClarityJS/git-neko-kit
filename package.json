@@ -18,12 +18,17 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "import": "./dist/esm/index.mjs",
       "types": "./dist/index.d.ts",
-      "require": "./dist/index.cjs"
+      "require": "./dist/cjs/index.cjs"
+    },
+    "./axios": {
+      "types": "./dist/exports/axios.d.ts",
+      "import": "./dist/exports/axios.mjs",
+      "require": "./dist/exports/axios.cjs"
     }
   },
-  "main": "./dist/index.js",
+  "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist/*",
@@ -31,7 +36,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc --noEmit && tsup --config tsup.config.ts",
+    "build": "tsc --noEmit && tsup && tsup --tsconfig tsconfig.module.json --config tsup.modules.ts",
     "build:docs": "pnpm run build:typedoc && pnpm run docs:build",
     "build:pages": "vitepress build docs",
     "build:typedoc": "typedoc --options typedoc.json",
@@ -45,6 +50,7 @@
     "test": "tsx test/index.ts"
   },
   "dependencies": {
+    "@types/lodash-es": "^4.17.12",
     "axios": "^1.8.4",
     "color-convert": "^3.1.0",
     "dayjs": "^1.11.13",
@@ -53,7 +59,7 @@
     "https-proxy-agent": "^7.0.6",
     "jsonwebtoken": "^9.0.2",
     "language-colors": "^2.1.55",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "socks-proxy-agent": "^8.0.5",
     "uuid": "^11.1.0"
   },
@@ -61,7 +67,6 @@
     "@types/color": "^4.2.0",
     "@types/git-url-parse": "^9.0.3",
     "@types/jsonwebtoken": "^9.0.9",
-    "@types/lodash": "^4.17.16",
     "@types/node": "^22.13.13",
     "@typescript-eslint/eslint-plugin": "^8.28.0",
     "@typescript-eslint/parser": "^8.28.0",
