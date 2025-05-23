@@ -36,21 +36,6 @@ API 封装进度：
   </details>
 
   <details>
-    <summary>仓库</summary>
-
-| 功能           | 状态      |
-|----------------|-----------|
-| 获取组织仓库列表  | ✅ 已完成 |
-| 获取用户仓库列表  | ✅ 已完成 |
-| 获取仓库信息   | ✅ 已完成 |
-| 创建组织仓库   | ✅ 已完成 |
-| 更新仓库信息   | ⬜ 待完成 |
-| 删除仓库   | ⬜ 待完成 |
-| 获取仓库语言   | ⬜ 待完成 |
-
-  </details>
-
-  <details>
     <summary>用户</summary>
 
 | 功能           | 状态      |
@@ -59,13 +44,45 @@ API 封装进度：
 | 获取用户贡献数据   | ✅ 已完成 |
 
   </details>
-
+  
   <details>
-    <summary>提交</summary>
+    <summary>仓库</summary>
 
 | 功能           | 状态      |
 |----------------|-----------|
-| 获取一个提交信息 | ✅ 已完成 |
+| 获取组织仓库列表  | ✅ 已完成 |
+| 获取用户仓库列表  | ✅ 已完成 |
+| 获取仓库信息   | ✅ 已完成 |
+| 创建组织仓库   | ✅ 已完成 |
+| 更新仓库信息   | ✅ 已完成 |
+| 删除仓库   | ✅ 已完成 |
+| 获取仓库语言   | ✅ 已完成 |
+
+  </details>
+
+  <details>
+    <summary>Release</summary>
+
+| 功能           | 状态      |
+|----------------|-----------|
+| 获取Release信息 | ✅ 已完成 |
+| 创建Release   | ✅ 已完成 |
+| 更新Release   | ✅ 已完成 |
+| 删除Release   | ✅ 已完成 |
+
+  </details>
+
+  <details>
+    <summary>Issue</summary>
+
+| 功能           | 状态      |
+|----------------|-----------|
+| 获取Issue信息 | ✅ 已完成 |
+| 创建Issue   | ✅ 已完成 |
+| 更新Issue   | ✅ 已完成 |
+| 锁定Issue   | ✅ 已完成 |
+| 解锁Issue   | ✅ 已完成 |
+| 更新Issue评论 | ✅ 已完成 |
 
   </details>
 
@@ -87,19 +104,28 @@ API 封装进度：
 
 ### 获取实例
 ```ts
-import { github } from "git-neko-kit";
-const gh = new github.Base(options)
+import Client from "@candriajs/git-neko-kit";
+const options = {
+  github: {
+    Client_ID: '',
+    Client_Secret: '',
+    Private_Key: '',
+    WebHook_Secret: '', // 可选，如果没设置密钥的话，可以不填
+    format: false  // 是否开启格式化，默认为false, 开启后对日期，提交信息等格式化拆分
+  }
+}
+const git_api = new Client(options)
+```
+
+### 获取GitHub实例
+```ts
+const gh = git_api.github
 ```
 
 ### 获取GitHub仓库信息
 ```ts
 const repo = await gh.get_repo() // 获取Repo仓库实例
-const info = await repo.get_repo_info() // 获取仓库信息
-```
-或者直接实例化Repo类使用：
-```ts
-const repo = new github.Repo(options) // 创建Repo仓库实例
-const info = await repo.get_repo_info() // 获取仓库信息
+const info = await repo.get_repo_info({ owner: 'username', repo: 'repo_name' }) // 获取仓库信息
 ```
 
 > [!Tip]
