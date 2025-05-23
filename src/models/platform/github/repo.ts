@@ -1,10 +1,12 @@
 import {
   formatDate,
+  get_langage_color,
   isNotPerrmissionMsg,
   NotOrgMsg,
   NotOrgOrUserMsg,
   NotParamMsg,
   NotPerrmissionMsg,
+  NotRepoMsg,
   NotRepoOrPerrmissionMsg,
   NotUserMsg,
   NotUserParamMsg,
@@ -14,17 +16,22 @@ import { Base } from '@/models/platform/github/base'
 import type {
   AddCollaboratorResponseType,
   ApiResponseType,
+  CollaboratorInfoResponseType,
   CollaboratorListParamType,
   CollaboratorListResponseType,
   CollaboratorParamType,
   OrgRepoCreateParamType,
-  OrgRepoListParmsType,
+  OrgRepoCreateResponseType,
+  OrgRepoListParmType,
   OrgRepoListType,
   RemoveCollaboratorParamType,
   RemoveCollaboratorResponseType,
   RepoDefaultBranchResponseType,
   RepoInfoParamType,
   RepoInfoResponseType,
+  RepoLanguagesListParamType,
+  RepoLanguagesListType,
+  RepoMainLanguageResponseType,
   RepoVisibilityResponseType,
   UserByTokenRepoListParamType,
   UserRepoListParamType,
@@ -67,7 +74,7 @@ export class Repo extends Base {
    * ```
    */
   public async get_org_repos_list (
-    options: OrgRepoListParmsType
+    options: OrgRepoListParmType
   ): Promise<ApiResponseType<OrgRepoListType>> {
     if (!options.org) {
       throw new Error(NotParamMsg)
@@ -84,24 +91,56 @@ export class Repo extends Base {
       if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
       if (queryOptions?.page) params.page = queryOptions.page.toString()
       const url = `/orgs/${org}/repos`
-      const res = await this.get(url, params)
-      if (res.statusCode === 404) {
-        throw new Error(NotOrgMsg)
-      } else if (res.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
+      const res = await this.get(url, params) as ApiResponseType<OrgRepoListType>
+      switch (res.statusCode) {
+        case 404:
+          throw new Error(NotOrgMsg)
+        case 401:
+          throw new Error(NotPerrmissionMsg)
       }
       const isFormat = options.format ?? this.format
-      if (isFormat) {
-        if (res.data) {
-          res.data = await Promise.all(
-            res.data.map(async (repo: RepoInfoResponseType) => ({
-              ...repo,
-              created_at: await formatDate(repo.created_at),
-              updated_at: await formatDate(repo.updated_at),
-              pushed_at: await formatDate(repo.pushed_at)
-            }))
-          )
-        }
+      if (res.data) {
+        res.data = await Promise.all(
+          res.data.map(async (repo: RepoInfoResponseType) => ({
+            id: repo.id,
+            name: repo.name,
+            full_name: repo.full_name,
+            owner: {
+              id: repo.owner.id,
+              login: repo.owner.login,
+              name: repo.owner.name,
+              avatar_url: repo.owner.avatar_url,
+              type: repo.owner.type,
+              html_url: repo.owner.html_url,
+              company: repo.owner.company,
+              email: repo.owner.email,
+              bio: repo.owner.bio,
+              blog: repo.owner.blog,
+              followers: repo.owner.followers,
+              following: repo.owner.following
+            },
+            public: !repo.private,
+            private: repo.private,
+            visibility: repo.private ? 'private' : 'public',
+            fork: repo.fork,
+            archived: repo.archived,
+            disabled: repo.disabled,
+            html_url: repo.html_url,
+            description: repo.description,
+            created_at: isFormat
+              ? await formatDate(repo.created_at)
+              : repo.created_at,
+            updated_at: isFormat
+              ? await formatDate(repo.updated_at)
+              : repo.updated_at,
+            stargazers_count: repo.stargazers_count,
+            watchers_count: repo.watchers_count,
+            language: repo.language,
+            forks_count: repo.forks_count,
+            open_issues_count: repo.open_issues_count,
+            default_branch: repo.default_branch
+          }))
+        )
       }
       return res
     } catch (error) {
@@ -136,31 +175,68 @@ export class Repo extends Base {
       })
       const { ...queryOptions } = options
       const params: Record<string, string> = {}
-      if (!options?.visibility && !options?.affiliation && queryOptions?.type) params.type = queryOptions.type
+      if (!options?.visibility && !options?.affiliation && queryOptions?.type) {
+        params.type = queryOptions.type
+      }
       if (queryOptions?.visibility) params.visibility = queryOptions.visibility
-      if (queryOptions?.affiliation) params.affiliation = queryOptions.affiliation
+      if (queryOptions?.affiliation) {
+        params.affiliation = queryOptions.affiliation
+      }
       if (queryOptions?.sort) params.sort = queryOptions.sort
       if (queryOptions?.direction) params.direction = queryOptions.direction
-      if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions?.per_page) {
+        params.per_page = queryOptions.per_page.toString()
+      }
       if (queryOptions?.page) params.page = queryOptions.page.toString()
 
       const url = '/uses/repos'
-      const res = await this.get(url, params)
+      const res = await this.get(url, params) as ApiResponseType<UserRepoListType>
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
       const isFormat = options?.format ?? this.format
-      if (isFormat) {
-        if (res.data) {
-          res.data = await Promise.all(
-            res.data.map(async (repo: RepoInfoResponseType) => ({
-              ...repo,
-              created_at: await formatDate(repo.created_at),
-              updated_at: await formatDate(repo.updated_at),
-              pushed_at: await formatDate(repo.pushed_at)
-            }))
-          )
-        }
+      if (res.data) {
+        res.data = await Promise.all(
+          res.data.map(async (repo: RepoInfoResponseType) => ({
+            id: repo.id,
+            name: repo.name,
+            full_name: repo.full_name,
+            owner: {
+              id: repo.owner.id,
+              login: repo.owner.login,
+              name: repo.owner.name,
+              avatar_url: repo.owner.avatar_url,
+              type: repo.owner.type,
+              html_url: repo.owner.html_url,
+              company: repo.owner.company,
+              email: repo.owner.email,
+              bio: repo.owner.bio,
+              blog: repo.owner.blog,
+              followers: repo.owner.followers,
+              following: repo.owner.following
+            },
+            public: !repo.private,
+            private: repo.private,
+            visibility: repo.private ? 'private' : 'public',
+            fork: repo.fork,
+            archived: repo.archived,
+            disabled: repo.disabled,
+            html_url: repo.html_url,
+            description: repo.description,
+            created_at: isFormat
+              ? await formatDate(repo.created_at)
+              : repo.created_at,
+            updated_at: isFormat
+              ? await formatDate(repo.updated_at)
+              : repo.updated_at,
+            stargazers_count: repo.stargazers_count,
+            watchers_count: repo.watchers_count,
+            language: repo.language,
+            forks_count: repo.forks_count,
+            open_issues_count: repo.open_issues_count,
+            default_branch: repo.default_branch
+          }))
+        )
       }
       return res
     } catch (error) {
@@ -195,20 +271,14 @@ export class Repo extends Base {
       if (queryOptions?.type) params.type = queryOptions.type
       if (queryOptions?.sort) params.sort = queryOptions.sort
       if (queryOptions?.direction) params.direction = queryOptions.direction
-      if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions?.per_page) {
+        params.per_page = queryOptions.per_page.toString()
+      }
       if (queryOptions?.page) params.page = queryOptions.page.toString()
 
       const isFormat = options?.format ?? this.format
-      let res
-      try {
-        res = await this.get_user_repos_list_by_token({
-          ...options,
-          format: isFormat
-        })
-      } catch (error) {
-        const url = `/users/${username}/repos`
-        res = await this.get(url, params)
-      }
+      const url = `/users/${username}/repos`
+      const res = await this.get(url, params) as ApiResponseType<UserRepoListType>
 
       switch (res.statusCode) {
         case 404:
@@ -217,17 +287,48 @@ export class Repo extends Base {
           throw new Error(NotPerrmissionMsg)
       }
 
-      if (isFormat) {
-        if (res.data) {
-          res.data = await Promise.all(
-            res.data.map(async (repo: RepoInfoResponseType) => ({
-              ...repo,
-              created_at: await formatDate(repo.created_at),
-              updated_at: await formatDate(repo.updated_at),
-              pushed_at: await formatDate(repo.pushed_at)
-            }))
-          )
-        }
+      if (res.data) {
+        res.data = await Promise.all(
+          res.data.map(async (repo: RepoInfoResponseType) => ({
+            id: repo.id,
+            name: repo.name,
+            full_name: repo.full_name,
+            owner: {
+              id: repo.owner.id,
+              login: repo.owner.login,
+              name: repo.owner.name,
+              avatar_url: repo.owner.avatar_url,
+              type: repo.owner.type,
+              html_url: repo.owner.html_url,
+              company: repo.owner.company,
+              email: repo.owner.email,
+              bio: repo.owner.bio,
+              blog: repo.owner.blog,
+              followers: repo.owner.followers,
+              following: repo.owner.following
+            },
+            public: !repo.private,
+            private: repo.private,
+            visibility: repo.private ? 'private' : 'public',
+            fork: repo.fork,
+            archived: repo.archived,
+            disabled: repo.disabled,
+            html_url: repo.html_url,
+            description: repo.description,
+            created_at: isFormat
+              ? await formatDate(repo.created_at)
+              : repo.created_at,
+            updated_at: isFormat
+              ? await formatDate(repo.updated_at)
+              : repo.updated_at,
+            stargazers_count: repo.stargazers_count,
+            watchers_count: repo.watchers_count,
+            language: repo.language,
+            forks_count: repo.forks_count,
+            open_issues_count: repo.open_issues_count,
+            default_branch: repo.default_branch
+          }))
+        )
       }
 
       return res
@@ -247,7 +348,7 @@ export class Repo extends Base {
    * url参数和owner、repo参数传入其中的一种
    * @example
    * ```ts
-   * const repo = await repo.get_repo_info({ url: 'https://github.com/ClarityJS/git-neko-kit' })
+   * const repo = await repo.get_repo_info({ url: 'https://github.com/CandriaJS/git-neko-kit' })
    * console.log(repo)
    * ```
    */
@@ -271,7 +372,7 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get(`/repos/${owner}/${repo}`)
+      const res = await this.get(`/repos/${owner}/${repo}`) as ApiResponseType<RepoInfoResponseType>
       switch (res.statusCode) {
         case 401:
           throw new Error(NotPerrmissionMsg)
@@ -279,16 +380,98 @@ export class Repo extends Base {
           throw new Error(NotOrgOrUserMsg)
       }
       const isFormat = options?.format ?? this.format
-      if (isFormat) {
-        if (res.data) {
-          res.data.created_at = await formatDate(res.data.created_at)
-          res.data.updated_at = await formatDate(res.data.updated_at)
-          res.data.pushed_at = await formatDate(res.data.pushed_at)
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          name: res.data.name,
+          full_name: res.data.full_name,
+          owner: {
+            id: res.data.owner.id,
+            login: res.data.owner.login,
+            name: res.data.owner.name,
+            avatar_url: res.data.owner.avatar_url,
+            type: res.data.owner.type,
+            html_url: res.data.owner.html_url,
+            company: res.data.owner.company,
+            email: res.data.owner.email,
+            bio: res.data.owner.bio,
+            blog: res.data.owner.blog,
+            followers: res.data.owner.followers,
+            following: res.data.owner.following
+          },
+          public: !res.data.private,
+          private: res.data.private,
+          visibility: res.data.private ? 'private' : 'public',
+          fork: res.data.fork,
+          archived: res.data.archived,
+          disabled: res.data.disabled,
+          html_url: res.data.html_url,
+          description: res.data.description,
+          created_at: isFormat
+            ? await formatDate(res.data.created_at)
+            : res.data.created_at,
+          updated_at: isFormat
+            ? await formatDate(res.data.updated_at)
+            : res.data.updated_at,
+          stargazers_count: res.data.stargazers_count,
+          watchers_count: res.data.watchers_count,
+          language: res.data.language,
+          forks_count: res.data.forks_count,
+          open_issues_count: res.data.open_issues_count,
+          default_branch: res.data.default_branch
         }
       }
       return res
     } catch (error) {
       throw new Error(`获取仓库信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  public async get_repo_languages_list (
+    options: RepoLanguagesListParamType
+  ): Promise<ApiResponseType<RepoLanguagesListType>> {
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      let owner, repo
+      if ('url' in options) {
+        const url = options.url.trim()
+        const info = parse_git_url(url)
+        owner = info?.owner
+        repo = info?.repo
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options?.owner
+        repo = options?.repo
+      } else {
+        throw new Error(NotParamMsg)
+      }
+      const res = await this.get(`/repos/${owner}/${repo}/languages`) as ApiResponseType<RepoLanguagesListType>
+      switch (res.statusCode) {
+        case 401:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotRepoMsg)
+      }
+      if (res.data) {
+        const totalBytes = Object.values(res.data).reduce<number>((sum, bytes) => sum + (bytes as number), 0)
+        res.data = {
+          languages: await Promise.all(
+            Object.entries(res.data).map(([language, bytes]) => {
+              const languageLower = String(language).toLowerCase()
+              return {
+                language,
+                color: get_langage_color(languageLower),
+                percent: Number(((bytes as number / totalBytes) * 100).toFixed(2)),
+                bytes: bytes as number
+              }
+            })
+          )
+        }
+      }
+      return res
+    } catch (error) {
+      throw new Error(`获取仓库语言列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -325,23 +508,56 @@ export class Repo extends Base {
    */
   public async create_org_repo (
     options: OrgRepoCreateParamType
-  ): Promise<ApiResponseType<RepoInfoResponseType>> {
+  ): Promise<ApiResponseType<OrgRepoCreateResponseType>> {
     try {
-      const { owner, name, ...repoOptions } = options
+      const { owner, ...repoOptions } = options
       const body = {
-        name,
         ...repoOptions
       }
-      const res = await this.post(`/orgs/${owner}/repos`, body)
+      const res = await this.post(`/orgs/${owner}/repos`, body) as ApiResponseType<OrgRepoCreateResponseType>
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
       const isFormat = options?.format ?? this.format
-      if (isFormat) {
-        if (res.data) {
-          res.data.created_at = await formatDate(res.data.created_at)
-          res.data.updated_at = await formatDate(res.data.updated_at)
-          res.data.pushed_at = await formatDate(res.data.pushed_at)
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          name: res.data.name,
+          full_name: res.data.full_name,
+          owner: {
+            id: res.data.owner.id,
+            login: res.data.owner.login,
+            name: res.data.owner.name,
+            avatar_url: res.data.owner.avatar_url,
+            type: res.data.owner.type,
+            html_url: res.data.owner.html_url,
+            company: res.data.owner.company,
+            email: res.data.owner.email,
+            bio: res.data.owner.bio,
+            blog: res.data.owner.blog,
+            followers: res.data.owner.followers,
+            following: res.data.owner.following
+          },
+          public: !res.data.private,
+          private: res.data.private,
+          visibility: res.data.private ? 'private' : 'public',
+          fork: res.data.fork,
+          archived: res.data.archived,
+          disabled: res.data.disabled,
+          html_url: res.data.html_url,
+          description: res.data.description,
+          created_at: isFormat
+            ? await formatDate(res.data.created_at)
+            : res.data.created_at,
+          updated_at: isFormat
+            ? await formatDate(res.data.updated_at)
+            : res.data.updated_at,
+          stargazers_count: res.data.stargazers_count,
+          watchers_count: res.data.watchers_count,
+          language: res.data.language,
+          forks_count: res.data.forks_count,
+          open_issues_count: res.data.open_issues_count,
+          default_branch: res.data.default_branch
         }
       }
       return res
@@ -366,11 +582,11 @@ export class Repo extends Base {
    * @returns 返回获取协作者列表结果
    * @example
    * ```ts
-   * const result = await collaborator.get_collaborator_list(options)
+   * const result = await collaborator.get_collaborators_list(options)
    * console.log(result)
    * ```
    */
-  public async get_collaborator_list (
+  public async get_collaborators_list (
     options: CollaboratorListParamType
   ): Promise<ApiResponseType<CollaboratorListResponseType>> {
     try {
@@ -389,9 +605,26 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get(`/repos/${owner}/${repo}/collaborators`, {
-        ...options
-      })
+      const { ...queryOptions } = options
+      const params: Record<string, string> = {}
+      if (queryOptions.affiliation) params.milestone = queryOptions.affiliation.toString()
+      if (queryOptions.permission) params.permission = queryOptions.permission.toString()
+      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.page) params.page = queryOptions.page.toString()
+      const res = await this.get(`/repos/${owner}/${repo}/collaborators`, params) as ApiResponseType<CollaboratorListResponseType>
+      if (res.data) {
+        res.data = await Promise.all(
+          res.data.map((repo: CollaboratorInfoResponseType) => ({
+            id: repo.id,
+            login: repo.login,
+            avatar_url: repo.avatar_url,
+            email: repo.email,
+            name: repo.name,
+            permissions: repo.permissions,
+            role_name: repo.role_name
+          }))
+        )
+      }
       return res
     } catch (error) {
       throw new Error(`获取仓库协作者列表失败: ${(error as Error).message}`)
@@ -446,14 +679,61 @@ export class Repo extends Base {
         {
           permission: options.permission ?? 'pull'
         }
-      )
+      ) as ApiResponseType<AddCollaboratorResponseType>
       if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
-      if (res.statusCode === 422 && res.data.message) {
-        if (res.data.message.includes('is not a valid permission.')) {
-          throw new Error(isNotPerrmissionMsg)
+      if (res.statusCode === 422) {
+        const msg = (res.data as unknown as { message: string }).message
+        if (msg) {
+          if (msg.includes('is not a valid permission')) throw new Error(isNotPerrmissionMsg)
         }
       }
 
+      const isFormat = options?.format ?? this.format
+
+      if (res.data) {
+        res.data = {
+          id: res.data.id,
+          repository: {
+            id: res.data.repository.id,
+            name: res.data.repository.name,
+            full_name: res.data.repository.full_name,
+            owner: {
+              id: res.data.repository.owner.id,
+              login: res.data.repository.owner.login,
+              name: res.data.repository.owner.name,
+              avatar_url: res.data.repository.owner.avatar_url,
+              type: res.data.repository.owner.type,
+              html_url: res.data.repository.owner.html_url,
+              company: res.data.repository.owner.company,
+              email: res.data.repository.owner.email,
+              bio: res.data.repository.owner.bio,
+              blog: res.data.repository.owner.blog,
+              followers: res.data.repository.owner.followers,
+              following: res.data.repository.owner.following
+            },
+            public: !res.data.repository.private,
+            private: res.data.repository.private,
+            visibility: res.data.repository.private ? 'private' : 'public',
+            fork: res.data.repository.fork,
+            archived: res.data.repository.archived,
+            disabled: res.data.repository.disabled,
+            html_url: res.data.repository.html_url,
+            description: res.data.repository.description,
+            created_at: isFormat
+              ? await formatDate(res.data.repository.created_at)
+              : res.data.repository.created_at,
+            updated_at: isFormat
+              ? await formatDate(res.data.repository.updated_at)
+              : res.data.repository.updated_at,
+            stargazers_count: res.data.repository.stargazers_count,
+            watchers_count: res.data.repository.watchers_count,
+            language: res.data.repository.language,
+            forks_count: res.data.repository.forks_count,
+            open_issues_count: res.data.repository.open_issues_count,
+            default_branch: res.data.repository.default_branch
+          }
+        }
+      }
       return res
     } catch (error) {
       throw new Error(`添加协作者${username}失败: ${(error as Error).message}`)
@@ -501,23 +781,42 @@ export class Repo extends Base {
         throw new Error(NotParamMsg)
       }
       username = options?.username
-      const res = await this.delete(
-        `/repos/${owner}/${repo}/collaborators/${username}`
-      )
+      const res = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`) as ApiResponseType<RemoveCollaboratorResponseType>
       if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
       if (res.status && res.statusCode === 204) {
         res.data = {
-          info: `删除协作者${username}成功`
+          info: `移除协作者${username}成功`
         }
       } else {
         res.data = {
-          info: `删除协作者${username}失败`
+          info: `移除协作者${username}失败`
         }
       }
       return res
     } catch (error) {
-      throw new Error(`删除协作者${username}失败: ${(error as Error).message}`)
+      throw new Error(`移除协作者${username}失败: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 删除协作者
+   * @deprecated 请使用remove_collaborator方法
+   * @param options 删除协作者对象
+   * @returns 返回删除协作者结果
+   * @example
+   * ```ts
+   * const result = await collaborator.delete_collaborator({
+   *  owner: 'owner',
+   *  repo:'repo',
+   *  username: 'username'
+   * })
+   * console.log(result)
+  * ```
+  */
+  public async delete_collaborator (
+    options: RemoveCollaboratorParamType
+  ): Promise<ApiResponseType<RemoveCollaboratorResponseType>> {
+    return this.remove_collaborator(options)
   }
 
   /**
@@ -533,13 +832,13 @@ export class Repo extends Base {
    * @returns 仓库可见性，
    * @example
    * ```ts
-   * const visibility = await repo.get_repo_visibility({url: 'https://github.com/ClarityJS/git-neko-kit'})
+   * const visibility = await repo.get_repo_visibility({url: 'https://github.com/CandriaJS/git-neko-kit'})
    * console.log(visibility) // 输出 public 或 private
    * ```
    */
   public async get_repo_visibility (
     options: RepoInfoParamType
-  ): Promise<RepoVisibilityResponseType['visibility'] | null> {
+  ): Promise<RepoVisibilityResponseType['visibility']> {
     try {
       let owner, repo
       if ('url' in options) {
@@ -553,14 +852,9 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get_repo_info({ owner, repo })
-      let visibility = 'public'
-      if (res.data) {
-        visibility = res.data?.visibility
-      }
-      return visibility
+      return (await this.get_repo_info({ owner, repo })).data.visibility
     } catch (error) {
-      return null
+      throw new Error(`获取仓库可见性失败: ${(error as Error).message}`)
     }
   }
 
@@ -575,13 +869,13 @@ export class Repo extends Base {
    * url参数和owner、repo参数传入其中的一种
    * @example
    * ```ts
-   * const defaultBranch = await repo.get_repo_default_branch({url: 'https://github.com/ClarityJS/meme-plugin')}
+   * const defaultBranch = await repo.get_repo_default_branch({url: 'https://github.com/CandriaJS/meme-plugin')}
    * console.log(defaultBranch) // 输出 main
    * ```ts
    */
   public async get_repo_default_branch (
     options: RepoInfoParamType
-  ): Promise<RepoDefaultBranchResponseType['default_branch']> {
+  ): Promise<RepoDefaultBranchResponseType['default_branch'] | null> {
     try {
       let owner, repo
       if ('url' in options) {
@@ -595,14 +889,46 @@ export class Repo extends Base {
       } else {
         throw new Error(NotParamMsg)
       }
-      const res = await this.get_repo_info({ owner, repo })
-      let default_branch = 'main'
-      if (res.data) {
-        default_branch = res.data?.default_branch
-      }
-      return default_branch
+      return (await this.get_repo_info({ owner, repo })).data.default_branch
     } catch (error) {
       throw new Error(`获取仓库默认分支失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取仓库主要语言
+   * 权限:
+   * - Metadata: Read-only, 如果只获取公开仓库可无需此权限
+   * @param options
+   * - url 仓库URL地址
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * url参数和owner、repo参数传入其中的一种
+   * @example
+   * ```ts
+   * const language =  await repo.get_repo_language({url: 'URL_ADDRESS.com/CandriaJS/meme-plugin')}
+   * console.log(language) // 输出 JavaScript
+   * ```ts
+   */
+  public async get_repo_main_language (
+    options: RepoInfoParamType
+  ): Promise<RepoMainLanguageResponseType['language']> {
+    try {
+      let owner, repo
+      if ('url' in options) {
+        const url = options.url.trim()
+        const info = parse_git_url(url)
+        owner = info?.owner
+        repo = info?.repo
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options?.owner
+        repo = options?.repo
+      } else {
+        throw new Error(NotParamMsg)
+      }
+      return (await this.get_repo_info({ owner, repo })).data.language
+    } catch (error) {
+      throw new Error(`获取仓库语言失败: ${(error as Error).message}`)
     }
   }
 }

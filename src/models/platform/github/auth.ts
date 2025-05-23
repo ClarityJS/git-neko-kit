@@ -89,7 +89,7 @@ export class Auth extends Base {
         client_id: this.Client_ID,
         client_secret: this.Client_Secret,
         code: options.code
-      }, { Accept: 'application/json' })
+      }, { Accept: 'application/json' }) as ApiResponseType<GithubOauthTokenResponseType>
       return res
     } catch (error) {
       throw new Error(`请求获取访问令牌失败: ${(error as Error).message}`)
@@ -122,15 +122,15 @@ export class Auth extends Base {
       })
       const res = await this.post(`/applications/${this.Client_ID}/token`, {
         access_token
-      })
-      const status = !((res.status === 'ok' && (res.statusCode === 404 || res.statusCode === 422)))
-      return {
-        ...res,
-        data: {
+      }) as ApiResponseType<GithubOauthCheckTokenResponseType>
+      if (res.data) {
+        const status = !((res.status === 'ok' && (res.statusCode === 404 || res.statusCode === 422)))
+        res.data = {
           success: status,
           info: status ? AccessTokenSuccessMsg : isNotSuccessAccessTokenMsg
         }
       }
+      return res
     } catch (error) {
       throw new Error(`请求获取访问令牌状态失败: ${(error as Error).message}`)
     }
@@ -162,12 +162,12 @@ export class Auth extends Base {
         client_secret: this.Client_Secret,
         grant_type: 'refresh_token',
         refresh_token: options.refresh_token
-      }, { Accept: 'application/json' })
+      }, { Accept: 'application/json' }) as ApiResponseType<GithubOauthRefreshTokenResponseType>
 
-      const isSuccess = res.status === 'ok' && res.statusCode === 200 && !res.data.error
+      const isSuccess = res.status === 'ok' && res.statusCode === 200 && !(res.data as unknown as { error: string }).error
 
       let errorMsg = NotRefreshTokenSuccessMsg
-      switch (res.data.error) {
+      switch ((res.data as unknown as { error: string }).error) {
         case 'bad_refresh_token':
           errorMsg = isNotRefreshTokenMsg
           break
@@ -176,18 +176,22 @@ export class Auth extends Base {
           break
       }
 
-      if (!isSuccess) {
-        throw new Error(errorMsg)
-      }
-
-      return {
-        ...res,
-        data: {
+      if (res.data) {
+        if (!isSuccess) {
+          throw new Error(errorMsg)
+        }
+        res.data = {
           success: isSuccess,
           info: RefreshAccessTokenSuccessMsg,
-          ...res.data
+          access_token: res.data.access_token,
+          expires_in: res.data.expires_in ?? null,
+          refresh_token: res.data.refresh_token ?? null,
+          refresh_token_expires_in: res.data.refresh_token_expires_in ?? null,
+          scope: res.data.scope,
+          token_type: res.data.token_type
         }
       }
+      return res
     } catch (error) {
       throw new Error(`请求刷新访问令牌失败: ${(error as Error).message}`)
     }

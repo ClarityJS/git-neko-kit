@@ -1,49 +1,51 @@
-import { formatParamType, RepoNameParamType, RepoOwnerParamType, RepoUrlParamType, ShaParamType } from '@/types/platform/github/base'
-import { AccountBaseType } from '@/types/platform/github/user'
+import {
+  formatParamType,
+  RepoBaseParamType,
+  RepoUrlParamType,
+  ShaParamType
+} from '@/types/platform/base'
+import { UserInfoResponseType } from '@/types/platform/github/user'
 
 export interface CommitInfoCommonParamType {
   /** 提交SHA */
   sha?: ShaParamType['sha'];
   /** 是否格式化消息和日期 */
-  format: formatParamType['format'];
+  format?: formatParamType['format'];
 }
 
 /**
  * 提交信息基础参数类型
  * 用于获取提交信息的基础参数类型，包含仓库的拥有者、仓库名称、提交SHA等信息。
  * */
-export interface CommitInfoBaseParamType extends RepoOwnerParamType, RepoNameParamType, CommitInfoCommonParamType {}
+export type CommitInfoBaseParamType = RepoBaseParamType & CommitInfoCommonParamType
 
 /**
  * 提交信息URL参数类型
  * 用于获取提交信息的URL参数类型，包含仓库的URL和提交SHA等信息。
  * */
-export interface CommitInfoUrlParamType extends RepoUrlParamType, CommitInfoCommonParamType {}
+export type CommitInfoUrlParamType = RepoUrlParamType & CommitInfoCommonParamType
 
-/** 提交参数类型 */
-export type CommitInfoParamType = CommitInfoBaseParamType | CommitInfoUrlParamType
-export interface GitUser {
-  /** 用户姓名 */
-  name: string | null;
-  /** 用户邮箱 */
-  email: string | null;
+/** Git提交用户信息 */
+export interface GitUser extends Omit<UserInfoResponseType, 'company' | 'bio' | 'blog' | 'followers' | 'following'> {
   /** 日期字符串 */
   date: string;
 }
-
-/** 验证信息类型 */
-export interface Verification {
-  /** 是否已验证 */
-  verified: boolean;
-  /** 验证原因 */
-  reason: string;
-  /** 验证负载 */
-  payload: string | null;
-  /** 验证签名 */
-  signature: string | null;
-  /** 验证时间 */
-  verified_at: string | null;
-}
+/**
+ * 验证信息类型
+ * 这个只有GitHub平台返回
+ */
+// export interface Verification {
+//   /** 是否已验证 */
+//   verified: boolean;
+//   /** 验证原因 */
+//   reason: string;
+//   /** 验证负载 */
+//   payload: string | null;
+//   /** 验证签名 */
+//   signature: string | null;
+//   /** 验证时间 */
+//   verified_at: string | null;
+// }
 
 export interface Commit {
   /** 提交的URL */
@@ -62,11 +64,9 @@ export interface Commit {
   title?: string;
   /** 提交正文
    * 仅在开启格式化消息时返回
-   * @example "This is a new feature that adds a new feature to the application."
+   * @example "-  add new feature"
    */
   body?: string;
-  /** 评论数量 */
-  comment_count: number;
   /** 提交树信息 */
   tree: {
     /** 树对象的SHA */
@@ -75,7 +75,7 @@ export interface Commit {
     url: string;
   };
   /** 验证信息 */
-  verification: Verification;
+  // verification: Verification;
 }
 
 export interface DiffEntry {
@@ -95,12 +95,11 @@ export interface DiffEntry {
   blob_url: string;
   /** 文件原始URL */
   raw_url: string;
-  /** 文件内容URL */
-  contents_url: string;
-  /** 文件差异补丁 */
-  patch: string;
-  /** 之前的文件名 */
-  previous_filename: string | null;
+  /** gitcode不返回这个两个 */
+  // /** 文件内容URL */
+  // contents_url: string;
+  // /** 文件差异补丁 */
+  // patch: string;
 }
 
 export interface CommitStats {
@@ -117,31 +116,26 @@ export interface ParentCommit {
   sha: string;
   /** 父提交URL */
   url: string;
-  /** 父提交HTML URL */
-  html_url: string;
 }
 
+/** 提交参数类型 */
+export type CommitInfoParamType = CommitInfoBaseParamType | CommitInfoUrlParamType
+/** 提交信息响应类型 */
 export interface CommitInfoResponseType {
   /** 提交URL */
   url: string;
   /** 提交SHA */
   sha: string;
-  /** 节点ID */
-  node_id: string;
   /** HTML URL */
   html_url: string;
   /** 评论URL */
   comments_url: string;
   /** 提交信息 */
   commit: Commit;
-  /** 提交作者 */
-  author: AccountBaseType | null;
-  /** 提交者 */
-  committer: AccountBaseType | null;
   /** 父提交列表 */
   parents: ParentCommit[];
   /** 提交统计信息 */
-  stats?: CommitStats;
+  stats: CommitStats;
   /** 变更文件列表 */
-  files?: DiffEntry[];
+  files: DiffEntry[];
 }

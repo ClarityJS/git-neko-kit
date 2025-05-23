@@ -14,6 +14,7 @@ export class Request {
   private readonly tokenType: RequestTokenType
   private readonly authorization?: string | null
   private readonly proxy?: ProxyParamsType
+  private readonly defaultHeaders?: Record<string, string>
 
   /**
    * 创建Request实例
@@ -21,17 +22,20 @@ export class Request {
    * @param tokenType - 认证类型，默认为'Bearer'
    * @param authorization - 认证令牌
    * @param proxy - 代理配置
+   * @param defaultHeaders - 默认请求头信息
    */
   constructor (
     baseUrl: string,
     tokenType: RequestTokenType = 'Bearer',
     authorization?: string | null,
-    proxy?: ProxyParamsType
+    proxy?: ProxyParamsType,
+    defaultHeaders?: Record<string, string>
   ) {
     this.baseUrl = baseUrl.replace(/\/$/, '')
     this.authorization = authorization
     this.proxy = proxy
     this.tokenType = tokenType
+    this.defaultHeaders = defaultHeaders
   }
 
   /**
@@ -106,19 +110,34 @@ export class Request {
         default:
           throw new Error(`不支持的请求方法: ${method}`)
       }
-      console.log(response)
+
+      const headers = Object.fromEntries(
+        Object.entries(response.headers)
+          .filter(([_, v]) => v !== undefined)
+          .map(([k, v]) => [k.toLowerCase(), v])
+      )
       return {
         success: true,
         statusCode: response.status,
+        headers,
         data: response.data,
         msg: response.status >= 200 && response.status < 500 ? '请求成功' : '请求异常'
       }
     } catch (error) {
-      console.error(error)
+      const axiosError = error as AxiosError
+      const errorHeaders = axiosError.response?.headers
+        ? Object.fromEntries(
+          Object.entries(axiosError.response.headers)
+            .filter(([_, v]) => v !== undefined)
+            .map(([k, v]) => [k, v])
+        )
+        : {}
+
       return {
         success: false,
-        statusCode: 500,
-        msg: (error as AxiosError).message ?? '网络连接失败',
+        statusCode: axiosError.response?.status ?? 500,
+        headers: errorHeaders,
+        msg: axiosError.message ?? '网络连接失败',
         data: null
       }
     }
@@ -191,7 +210,8 @@ export class Request {
   private createHeaders (customHeaders?: Record<string, string>) {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'User-Agent': `${pkg.name}/v${pkg.version}`
+      'User-Agent': `${pkg.name}/v${pkg.version}`,
+      ...(this.defaultHeaders ?? {})
     }
 
     if (this.authorization) {

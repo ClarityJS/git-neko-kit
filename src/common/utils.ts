@@ -1,31 +1,51 @@
-import fs from 'node:fs'
+import fs from 'node:fs/promises'
 
+import convert, { type RGB } from 'color-convert'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime.js'
 import GitUrlParse from 'git-url-parse'
+import LanguageColors from 'language-colors'
 
 import { basePath } from '@/root'
 import { ContributionResult, RepoBaseParamType } from '@/types'
 
+/**
+ * 判断文件是否存在
+ * @param path - 文件路径
+ * @returns 是否存在
+ * @example
+ * ```ts
+ * console.log(await exists('package.json')) // 输出 true
+ * console.log(await exists('not-exists.json')) // 输出 false
+ * ```
+ */
+export async function exists (path: string) {
+  try {
+    await fs.access(path)
+    return true
+  } catch {
+    return false
+  }
+}
 /**
  * 读取 JSON 文件
  * @param file - 文件名
  * @param root - 根目录
  * @returns JSON 对象
  */
-export function readJSON<T = Record<string, unknown>> (file = '', root = ''): T {
+export async function readJSON (file = '', root = ''): Promise<any> {
   root = root || basePath
   try {
     const filePath = `${root}/${file}`
-    if (!fs.existsSync(filePath)) {
+    if (!await exists(filePath)) {
       console.warn(`文件不存在: ${filePath}`)
-      return {} as T
+      return {}
     }
-    const data = fs.readFileSync(filePath, 'utf8')
-    return JSON.parse(data) as T
+    const data = await fs.readFile(filePath, 'utf8')
+    return JSON.parse(data)
   } catch (e) {
     console.error(`读取 JSON 文件失败: ${file}`, e)
-    return {} as T
+    return {}
   }
 }
 
@@ -33,7 +53,7 @@ export function readJSON<T = Record<string, unknown>> (file = '', root = ''): T 
  * @param options - 初始化 日期
  */
 async function initDate (locale: string = 'zh-cn') {
-  const normalizedLocale = locale.toLowerCase()
+  const normalizedLocale = String(locale).toLowerCase()
   await import(`dayjs/locale/${normalizedLocale}.js`)
   dayjs.locale(normalizedLocale)
 }
@@ -108,6 +128,43 @@ export function parse_git_url (url: string): RepoBaseParamType {
 }
 
 /**
+ * 将 RGB 颜色值转换为十六进制颜色代码
+ * @param rgb - RGB颜色值数组，必须是包含3个0-255之间整数的数组
+ * @returns 十六进制颜色代码
+ * @example
+ * ```ts
+ * console.log(RgbToHex([255, 128, 0])) // 输出 "#ff8000"
+ * ```
+ */
+export function RgbToHex (rgb: RGB): string {
+  if (!Array.isArray(rgb)) {
+    throw new Error('RGB值必须是数组类型')
+  }
+  if (rgb.length !== 3) {
+    throw new Error('RGB数组必须包含且仅包含3个值')
+  }
+
+  if (!rgb.every(n => Number.isInteger(n) && n >= 0 && n <= 255)) {
+    throw new Error('RGB值必须都是0-255之间的整数')
+  }
+
+  return `#${convert.rgb.hex(rgb)}`
+}
+
+/**
+ * 根据语言名称获取对应的颜色值
+ * @param language - 语言名称
+ * @returns 颜色值的十六进制字符串
+ * @example
+ * ```ts
+ * console.log(get_langage_color('JavaScript')) // 输出 "#f1e05a"
+ * ```
+ */
+export function get_langage_color (language: string): string {
+  language = String(language).toLowerCase()
+  return RgbToHex(LanguageColors[language].color) ?? '#cccccc'
+}
+/**
  * 将数组按指定大小分割成二维数组
  * @param items - 要分割的数组
  * @param n - 每个子数组的大小
@@ -130,7 +187,7 @@ export async function getContributionData (html: string): Promise<ContributionRe
   const countRegex = /<tool-tip .*?class="sr-only position-absolute">(.*?) contribution/g
   const dates = Array.from(html.matchAll(dateRegex), m => m[1])
   const counts = Array.from(html.matchAll(countRegex), m =>
-    m[1].toLowerCase() === 'no' ? 0 : parseInt(m[1])
+    String(m[1]).toLowerCase() === 'no' ? 0 : parseInt(m[1])
   )
   if (!dates.length || !counts.length) {
     return { total: 0, contributions: [] }
