@@ -1,5 +1,34 @@
 # 变更日志
 
+## [0.6.0](https://github.com/CandriaJS/git-neko-kit/compare/v0.5.2...v0.6.0) (2025-05-24)
+
+
+### ✨ 新功能
+
+* **platform/github:** 添加 Release 操作类并更新相关类型定义 ([b08e3b4](https://github.com/CandriaJS/git-neko-kit/commit/b08e3b47ccde814eafb2023f7e73a2fbfff2dbb3))
+* **src:** 重构并添加新功能 ([b2ebd4e](https://github.com/CandriaJS/git-neko-kit/commit/b2ebd4e611b80d9ba3a458c5eacb7b28bb65c638))
+
+
+### 📝 文档更新
+
+* 更新 issue 模板中的文档链接和标题格式 ([247d980](https://github.com/CandriaJS/git-neko-kit/commit/247d980cfac5574e978982ffd0cda272696d16ad))
+
+
+### ♻️ 代码重构
+
+* **src:** 重构 GitHub 客户端并优化导出 ([98a3d54](https://github.com/CandriaJS/git-neko-kit/commit/98a3d546073dc0c60db677faaeefad5d4f71b213))
+* 统一并标准化所有平台的返回结构 ([#45](https://github.com/CandriaJS/git-neko-kit/issues/45)) ([6014e34](https://github.com/CandriaJS/git-neko-kit/commit/6014e342d3a7cb52c46980c639ddd3c2e8a2a21b))
+
+
+### 📦️ 构建系统
+
+* **tsup:** 重构项目构建配置 ([dcc1a77](https://github.com/CandriaJS/git-neko-kit/commit/dcc1a77ef9720e84c3cac80370d64ed29edec84d))
+
+
+### 🎡 持续集成
+
+* 使用 GitHub App 令牌处理过期和新创建的问题 ([d11e6d6](https://github.com/CandriaJS/git-neko-kit/commit/d11e6d6a7218d2e934baab1c78a2389bce369328))
+
 ## [0.5.2](https://github.com/CandriaJS/git-neko-kit/compare/v0.5.1...v0.5.2) (2025-05-12)
 
 
