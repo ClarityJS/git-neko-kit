@@ -21,7 +21,7 @@ import {
   NotSubIssueNumberMsg,
   parse_git_url
 } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/base'
 import type {
   AddSubIssueParamType,
   AddSubIssueResponseType,
@@ -76,8 +76,8 @@ import type {
  *
  * @remarks 每个拉取请求都是一个议题，但并非每个议题都是拉取请求。
  */
-export class Issue extends Base {
-  constructor (base: Base) {
+export class Issue extends GitHubClient {
+  constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
     this.ApiUrl = base.ApiUrl

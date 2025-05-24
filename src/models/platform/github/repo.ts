@@ -12,7 +12,7 @@ import {
   NotUserParamMsg,
   parse_git_url
 } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/base'
 import type {
   AddCollaboratorResponseType,
   ApiResponseType,
@@ -48,8 +48,8 @@ import type {
  * - 支持通过URL或owner/repo两种方式操作仓库
  *
  */
-export class Repo extends Base {
-  constructor (base: Base) {
+export class Repo extends GitHubClient {
+  constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
     this.ApiUrl = base.ApiUrl

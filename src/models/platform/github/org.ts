@@ -1,5 +1,5 @@
 import { NotOrgMsg, NotOrgParamMsg } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
   OrgInfoParamType,
@@ -12,8 +12,8 @@ import type {
  * 提供对GitHub组织的CRUD操作，包括：
  * - 获取组织信息
  */
-export class Org extends Base {
-  constructor (base: Base) {
+export class Org extends GitHubClient {
+  constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
     this.ApiUrl = base.ApiUrl

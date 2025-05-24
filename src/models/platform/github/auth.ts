@@ -9,7 +9,7 @@ import {
   NotRefreshTokenSuccessMsg,
   RefreshAccessTokenSuccessMsg
 } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/base'
 import type {
   AccessCodeType,
   AccessTokenType,
@@ -32,8 +32,8 @@ import type {
  * @class Auth
  * @extends Base GitHub基础操作类
  */
-export class Auth extends Base {
-  constructor (base: Base) {
+export class Auth extends GitHubClient {
+  constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
     this.ApiUrl = base.ApiUrl

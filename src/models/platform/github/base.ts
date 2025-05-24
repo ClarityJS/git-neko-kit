@@ -47,7 +47,7 @@ const type = 'github'
  * });
  * ```
  */
-export class Base {
+export class GitHubClient {
   declare app: App
   declare auth: Auth
   declare commit: Commit

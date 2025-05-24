@@ -6,7 +6,7 @@ import {
   NotWebHookSignatureMsg,
   WebHookSignatureSuccessMsg
 } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
   WebHookSignatureParamType,
@@ -19,8 +19,8 @@ import type {
  * 提供对GitHub WebHook的CRUD操作，包括：
  * - 检查webhook签名是否正确
  */
-export class WebHook extends Base {
-  constructor (base: Base) {
+export class WebHook extends GitHubClient {
+  constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
     this.ApiUrl = base.ApiUrl

@@ -13,7 +13,7 @@ import {
   NotUserMsg,
   NotUserParamMsg
 } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/base'
 import {
   ApiResponseType,
   ContributionResult,
@@ -31,8 +31,8 @@ import {
  * - 获取用户信息
  * - 关注指定用户
  */
-export class User extends Base {
-  constructor (base: Base) {
+export class User extends GitHubClient {
+  constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
     this.ApiUrl = base.ApiUrl

@@ -44,7 +44,7 @@ API 封装进度：
 | 获取用户贡献数据   | ✅ 已完成 |
 
   </details>
-  
+
   <details>
     <summary>仓库</summary>
 
@@ -120,6 +120,18 @@ const git_api = new Client(options)
 ### 获取GitHub实例
 ```ts
 const gh = git_api.github
+```
+或者
+```ts
+import { GitHubClient } "@candriajs/git-neko-kit";
+const options = {
+  Client_ID: '',
+  Client_Secret: '',
+  Private_Key: '',
+  WebHook_Secret: '', // 可选，如果没设置密钥的话，可以不填
+  format: false  // 是否开启格式化，默认为false, 开启后对日期，提交信息等格式化拆分
+}
+const gh = new GitHubClient(options)
 ```
 
 ### 获取GitHub仓库信息

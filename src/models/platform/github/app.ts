@@ -7,7 +7,7 @@ import {
   NotRepoMsg,
   parse_git_url
 } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
   AppInfoParamType,
@@ -25,8 +25,8 @@ import type {
  * - 生成应用配置链接
  *
  */
-export class App extends Base {
-  constructor (base: Base) {
+export class App extends GitHubClient {
+  constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
     this.ApiUrl = base.ApiUrl

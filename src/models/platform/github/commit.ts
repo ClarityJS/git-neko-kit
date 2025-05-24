@@ -8,7 +8,7 @@ import {
   NotPerrmissionMsg,
   parse_git_url
 } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/base'
 import {
   ApiResponseType,
   CommitInfoParamType,
@@ -23,8 +23,8 @@ import {
  * 提供对GitHub Commit的CRUD操作，包括：
  * - 获取一个提交信息
  */
-export class Commit extends Base {
-  constructor (base: Base) {
+export class Commit extends GitHubClient {
+  constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
     this.ApiUrl = base.ApiUrl

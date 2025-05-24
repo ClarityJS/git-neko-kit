@@ -9,7 +9,7 @@ import {
   NotReleaseOrRepoMsg,
   parse_git_url
 } from '@/common'
-import { Base } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/base'
 import type {
   ApiResponseType,
   CreateReleaseParamType,
@@ -35,8 +35,8 @@ import type {
  * - 获取一个Release信息
  * - 获取一个仓库下Release列表
  */
-export class Release extends Base {
-  constructor (base: Base) {
+export class Release extends GitHubClient {
+  constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
     this.ApiUrl = base.ApiUrl

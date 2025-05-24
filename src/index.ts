@@ -1,12 +1,15 @@
 import { formatDate, get_langage_color, get_relative_time } from '@/common'
 import { create_state_id } from '@/models'
-import { Base as GithubClient } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/base'
 import { ClientType } from '@/types'
 
 class Client {
-  public github: GithubClient
+  public github: GitHubClient
   constructor (options: ClientType) {
-    this.github = new GithubClient(options.github)
+    if (!options.github) {
+      throw new Error('GitHub 客户端未配置')
+    }
+    this.github = new GitHubClient(options.github)
   }
 }
 
@@ -17,6 +20,6 @@ const utils = {
   get_langage_color
 }
 
-export { Client, utils }
+export { Client, GitHubClient, utils }
 export default Client
 export * from '@/types'
