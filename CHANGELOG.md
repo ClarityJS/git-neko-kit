@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.6.1](https://github.com/CandriaJS/git-neko-kit/compare/v0.6.0...v0.6.1) (2025-05-24)
+
+
+### 📦️ 构建系统
+
+* **deps:** 调整项目依赖项 ([814999c](https://github.com/CandriaJS/git-neko-kit/commit/814999c7677cfdab994c9aa17da1f5c5af9d2101))
+
 ## [0.6.0](https://github.com/CandriaJS/git-neko-kit/compare/v0.5.2...v0.6.0) (2025-05-24)
 
 
