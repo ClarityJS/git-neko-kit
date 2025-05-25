@@ -14,10 +14,10 @@ import type {
   AccessCodeType,
   AccessTokenType,
   ApiResponseType,
-  GithubOauthCheckTokenResponseType,
-  GithubOauthRefreshTokenResponseType,
-  GithubOauthTokenResponseType,
-  RefreshTokenType
+  CheckTokenResponseType,
+  RefreshTokenResponseType,
+  RefreshTokenType,
+  TokenResponseType
 } from '@/types'
 
 /**
@@ -78,7 +78,7 @@ export class Auth extends GitHubClient {
    */
   public async get_token_by_code (
     options: AccessCodeType
-  ): Promise<ApiResponseType<GithubOauthTokenResponseType>> {
+  ): Promise<ApiResponseType<TokenResponseType>> {
     try {
       if (!options.code) throw new Error(NotAccessCodeMsg)
       this.setRequestConfig(
@@ -89,7 +89,7 @@ export class Auth extends GitHubClient {
         client_id: this.Client_ID,
         client_secret: this.Client_Secret,
         code: options.code
-      }, { Accept: 'application/json' }) as ApiResponseType<GithubOauthTokenResponseType>
+      }, { Accept: 'application/json' }) as ApiResponseType<TokenResponseType>
       return res
     } catch (error) {
       throw new Error(`请求获取访问令牌失败: ${(error as Error).message}`)
@@ -110,7 +110,7 @@ export class Auth extends GitHubClient {
    */
   public async check_token_status (
     options?: AccessTokenType
-  ): Promise<ApiResponseType<GithubOauthCheckTokenResponseType>> {
+  ): Promise<ApiResponseType<CheckTokenResponseType>> {
     try {
       const access_token = options?.access_token ?? this.userToken
       if (!access_token) throw new Error(NotAccessTokenMsg)
@@ -122,7 +122,7 @@ export class Auth extends GitHubClient {
       })
       const res = await this.post(`/applications/${this.Client_ID}/token`, {
         access_token
-      }) as ApiResponseType<GithubOauthCheckTokenResponseType>
+      }) as ApiResponseType<CheckTokenResponseType>
       if (res.data) {
         const status = !((res.status === 'ok' && (res.statusCode === 404 || res.statusCode === 422)))
         res.data = {
@@ -149,7 +149,7 @@ export class Auth extends GitHubClient {
    */
   public async refresh_token (
     options: RefreshTokenType
-  ): Promise<ApiResponseType<GithubOauthRefreshTokenResponseType>> {
+  ): Promise<ApiResponseType<RefreshTokenResponseType>> {
     try {
       if (!options.refresh_token) throw new Error(NotAccessCodeMsg)
       if (!options.refresh_token.startsWith('ghr_')) throw new Error(isNotRefreshTokenMsg)
@@ -162,7 +162,7 @@ export class Auth extends GitHubClient {
         client_secret: this.Client_Secret,
         grant_type: 'refresh_token',
         refresh_token: options.refresh_token
-      }, { Accept: 'application/json' }) as ApiResponseType<GithubOauthRefreshTokenResponseType>
+      }, { Accept: 'application/json' }) as ApiResponseType<RefreshTokenResponseType>
 
       const isSuccess = res.status === 'ok' && res.statusCode === 200 && !(res.data as unknown as { error: string }).error
 
