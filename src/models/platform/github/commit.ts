@@ -96,34 +96,30 @@ export class Commit extends GitHubClient {
           comments_url: res.data.comments_url,
           commit: {
             url: res.data.commit.url,
-            author: res.data.commit.author
-              ? {
-                  id: res.data.commit.author.id,
-                  login: res.data.commit.author.login,
-                  name: res.data.commit.author.name,
-                  avatar_url: res.data.commit.author.avatar_url,
-                  email: res.data.commit.author.email,
-                  html_url: res.data.commit.author.html_url,
-                  type: capitalize(String(res.data.commit.author.type).toLowerCase()),
-                  date: isFormat
-                    ? await formatDate(res.data.commit.author.date)
-                    : res.data.commit.author.date
-                }
-              : null,
-            committer: res.data.commit.committer
-              ? {
-                  id: res.data.commit.committer.id,
-                  login: res.data.commit.committer.login,
-                  name: res.data.commit.committer.name,
-                  avatar_url: res.data.commit.committer.avatar_url,
-                  email: res.data.commit.committer.email,
-                  html_url: res.data.commit.committer.html_url,
-                  type: capitalize(String(res.data.commit.committer.type).toLowerCase()),
-                  date: isFormat
-                    ? await formatDate(res.data.commit.committer.date)
-                    : res.data.commit.committer.date
-                }
-              : null,
+            author: {
+              id: res.data.commit.author.id,
+              login: res.data.commit.author.login,
+              name: res.data.commit.author.name,
+              avatar_url: res.data.commit.author.avatar_url,
+              email: res.data.commit.author.email,
+              html_url: res.data.commit.author.html_url,
+              type: capitalize(String(res.data.commit.author.type).toLowerCase()),
+              date: isFormat
+                ? await formatDate(res.data.commit.author.date)
+                : res.data.commit.author.date
+            },
+            committer: {
+              id: res.data.commit.committer.id,
+              login: res.data.commit.committer.login,
+              name: res.data.commit.committer.name,
+              avatar_url: res.data.commit.committer.avatar_url,
+              email: res.data.commit.committer.email,
+              html_url: res.data.commit.committer.html_url,
+              type: capitalize(String(res.data.commit.committer.type).toLowerCase()),
+              date: isFormat
+                ? await formatDate(res.data.commit.committer.date)
+                : res.data.commit.committer.date
+            },
             message: res.data.commit.message,
             ...(isFormat && {
               title,

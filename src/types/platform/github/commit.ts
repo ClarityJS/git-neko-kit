@@ -51,9 +51,9 @@ export interface Commit {
   /** 提交的URL */
   url: string;
   /** 提交作者信息 */
-  author: GitUser | null;
+  author: GitUser;
   /** 提交者信息 */
-  committer: GitUser | null;
+  committer: GitUser;
   /** 提交信息 */
   message: string;
   /**
