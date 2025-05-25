@@ -170,10 +170,6 @@ export interface RepoInfoResponseType {
   html_url: string;
   /** * 仓库的描述信息 */
   description: string | null;
-  /** * 仓库的创建时间 */
-  created_at: string;
-  /** * 仓库的更新时间 */
-  updated_at: string;
   /** * 仓库的 Stargazer 数量 */
   stargazers_count: number;
   /** * 仓库的 Watcher 数量 */
@@ -186,6 +182,12 @@ export interface RepoInfoResponseType {
   open_issues_count: number;
   /** * 仓库的默认分支 */
   default_branch: string;
+  /** * 仓库的创建时间 */
+  created_at: string;
+  /** * 仓库的更新时间 */
+  updated_at: string;
+  /** * 仓库的推送时间 */
+  pushed_at: string;
 }
 
 /** 组织仓库列表参数类型 */
@@ -329,10 +331,18 @@ export type CollaboratorParamType = RepoInfoParamType & UserNameParamType & {
 
 /** 邀请协作者响应类型 */
 export interface AddCollaboratorResponseType {
-  /** 邀请唯一id */
+  /** 被邀请者ID */
   id: number;
-  /** 邀请仓库信息 */
-  repository: RepoInfoResponseType;
+  /** 被邀请者用户名 */
+  login: string;
+  /** 被邀请者的别名 */
+  name: string | null;
+  /** 被邀请者的头像URL */
+  avatar_url: string;
+  /** 仓库的地址 */
+  html_url: string;
+  /** 被邀请者的权限 */
+  permissions: string;
 }
 
 /** 协作者列表参数类型 */

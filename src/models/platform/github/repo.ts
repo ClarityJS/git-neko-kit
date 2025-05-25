@@ -127,18 +127,21 @@ export class Repo extends GitHubClient {
             disabled: repo.disabled,
             html_url: repo.html_url,
             description: repo.description,
+            stargazers_count: repo.stargazers_count,
+            watchers_count: repo.watchers_count,
+            language: repo.language,
+            forks_count: repo.forks_count,
+            open_issues_count: repo.open_issues_count,
+            default_branch: repo.default_branch,
             created_at: isFormat
               ? await formatDate(repo.created_at)
               : repo.created_at,
             updated_at: isFormat
               ? await formatDate(repo.updated_at)
               : repo.updated_at,
-            stargazers_count: repo.stargazers_count,
-            watchers_count: repo.watchers_count,
-            language: repo.language,
-            forks_count: repo.forks_count,
-            open_issues_count: repo.open_issues_count,
-            default_branch: repo.default_branch
+            pushed_at: isFormat
+              ? await formatDate(repo.pushed_at)
+              : repo.pushed_at
           }))
         )
       }
@@ -223,18 +226,21 @@ export class Repo extends GitHubClient {
             disabled: repo.disabled,
             html_url: repo.html_url,
             description: repo.description,
+            stargazers_count: repo.stargazers_count,
+            watchers_count: repo.watchers_count,
+            language: repo.language,
+            forks_count: repo.forks_count,
+            open_issues_count: repo.open_issues_count,
+            default_branch: repo.default_branch,
             created_at: isFormat
               ? await formatDate(repo.created_at)
               : repo.created_at,
             updated_at: isFormat
               ? await formatDate(repo.updated_at)
               : repo.updated_at,
-            stargazers_count: repo.stargazers_count,
-            watchers_count: repo.watchers_count,
-            language: repo.language,
-            forks_count: repo.forks_count,
-            open_issues_count: repo.open_issues_count,
-            default_branch: repo.default_branch
+            pushed_at: isFormat
+              ? await formatDate(repo.pushed_at)
+              : repo.pushed_at
           }))
         )
       }
@@ -315,18 +321,22 @@ export class Repo extends GitHubClient {
             disabled: repo.disabled,
             html_url: repo.html_url,
             description: repo.description,
+            stargazers_count: repo.stargazers_count,
+            watchers_count: repo.watchers_count,
+            language: repo.language,
+            forks_count: repo.forks_count,
+            open_issues_count: repo.open_issues_count,
+            default_branch: repo.default_branch,
             created_at: isFormat
               ? await formatDate(repo.created_at)
               : repo.created_at,
             updated_at: isFormat
               ? await formatDate(repo.updated_at)
               : repo.updated_at,
-            stargazers_count: repo.stargazers_count,
-            watchers_count: repo.watchers_count,
-            language: repo.language,
-            forks_count: repo.forks_count,
-            open_issues_count: repo.open_issues_count,
-            default_branch: repo.default_branch
+            pushed_at: isFormat
+              ? await formatDate(repo.pushed_at)
+              : repo.pushed_at
+
           }))
         )
       }
@@ -407,18 +417,22 @@ export class Repo extends GitHubClient {
           disabled: res.data.disabled,
           html_url: res.data.html_url,
           description: res.data.description,
+          stargazers_count: res.data.stargazers_count,
+          watchers_count: res.data.watchers_count,
+          language: res.data.language,
+          forks_count: res.data.forks_count,
+          open_issues_count: res.data.open_issues_count,
+          default_branch: res.data.default_branch,
           created_at: isFormat
             ? await formatDate(res.data.created_at)
             : res.data.created_at,
           updated_at: isFormat
             ? await formatDate(res.data.updated_at)
             : res.data.updated_at,
-          stargazers_count: res.data.stargazers_count,
-          watchers_count: res.data.watchers_count,
-          language: res.data.language,
-          forks_count: res.data.forks_count,
-          open_issues_count: res.data.open_issues_count,
-          default_branch: res.data.default_branch
+          pushed_at: isFormat
+            ? await formatDate(res.data.pushed_at)
+            : res.data.pushed_at
+
         }
       }
       return res
@@ -546,18 +560,22 @@ export class Repo extends GitHubClient {
           disabled: res.data.disabled,
           html_url: res.data.html_url,
           description: res.data.description,
+          stargazers_count: res.data.stargazers_count,
+          watchers_count: res.data.watchers_count,
+          language: res.data.language,
+          forks_count: res.data.forks_count,
+          open_issues_count: res.data.open_issues_count,
+          default_branch: res.data.default_branch,
           created_at: isFormat
             ? await formatDate(res.data.created_at)
             : res.data.created_at,
           updated_at: isFormat
             ? await formatDate(res.data.updated_at)
             : res.data.updated_at,
-          stargazers_count: res.data.stargazers_count,
-          watchers_count: res.data.watchers_count,
-          language: res.data.language,
-          forks_count: res.data.forks_count,
-          open_issues_count: res.data.open_issues_count,
-          default_branch: res.data.default_branch
+          pushed_at: isFormat
+            ? await formatDate(res.data.pushed_at)
+            : res.data.pushed_at
+
         }
       }
       return res
@@ -679,7 +697,7 @@ export class Repo extends GitHubClient {
         {
           permission: options.permission ?? 'pull'
         }
-      ) as ApiResponseType<AddCollaboratorResponseType>
+      )
       if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
       if (res.statusCode === 422) {
         const msg = (res.data as unknown as { message: string }).message
@@ -688,51 +706,16 @@ export class Repo extends GitHubClient {
         }
       }
 
-      const isFormat = options?.format ?? this.format
-
       if (res.data) {
-        res.data = {
-          id: res.data.id,
-          repository: {
-            id: res.data.repository.id,
-            name: res.data.repository.name,
-            full_name: res.data.repository.full_name,
-            owner: {
-              id: res.data.repository.owner.id,
-              login: res.data.repository.owner.login,
-              name: res.data.repository.owner.name,
-              avatar_url: res.data.repository.owner.avatar_url,
-              type: res.data.repository.owner.type,
-              html_url: res.data.repository.owner.html_url,
-              company: res.data.repository.owner.company,
-              email: res.data.repository.owner.email,
-              bio: res.data.repository.owner.bio,
-              blog: res.data.repository.owner.blog,
-              followers: res.data.repository.owner.followers,
-              following: res.data.repository.owner.following
-            },
-            public: !res.data.repository.private,
-            private: res.data.repository.private,
-            visibility: res.data.repository.private ? 'private' : 'public',
-            fork: res.data.repository.fork,
-            archived: res.data.repository.archived,
-            disabled: res.data.repository.disabled,
-            html_url: res.data.repository.html_url,
-            description: res.data.repository.description,
-            created_at: isFormat
-              ? await formatDate(res.data.repository.created_at)
-              : res.data.repository.created_at,
-            updated_at: isFormat
-              ? await formatDate(res.data.repository.updated_at)
-              : res.data.repository.updated_at,
-            stargazers_count: res.data.repository.stargazers_count,
-            watchers_count: res.data.repository.watchers_count,
-            language: res.data.repository.language,
-            forks_count: res.data.repository.forks_count,
-            open_issues_count: res.data.repository.open_issues_count,
-            default_branch: res.data.repository.default_branch
-          }
+        const collaboratorData: AddCollaboratorResponseType = {
+          id: res.data.inviter.id,
+          login: res.data.inviter.login,
+          name: res.data.inviter.name,
+          avatar_url: res.data.inviter.avatar_url,
+          html_url: res.data.repository.html_url,
+          permissions: res.data.permissions
         }
+        res.data = collaboratorData
       }
       return res
     } catch (error) {
