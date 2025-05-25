@@ -1,5 +1,22 @@
 # 变更日志
 
+## [0.6.1](https://github.com/CandriaJS/git-neko-kit/compare/v0.6.0...v0.6.1) (2025-05-25)
+
+
+### 🐛 错误修复
+
+* 类型错误 ([45ab2e5](https://github.com/CandriaJS/git-neko-kit/commit/45ab2e529d8cd8bf0c89974de4c197d112de137a))
+
+
+### ♻️ 代码重构
+
+* **src:** 重构代码导出方式并优化代码格式 ([1fa44b4](https://github.com/CandriaJS/git-neko-kit/commit/1fa44b4808c98922c3be87496b8f5de2365601bc))
+
+
+### 📦️ 构建系统
+
+* **deps:** 调整项目依赖项 ([814999c](https://github.com/CandriaJS/git-neko-kit/commit/814999c7677cfdab994c9aa17da1f5c5af9d2101))
+
 ## [0.6.0](https://github.com/CandriaJS/git-neko-kit/compare/v0.5.2...v0.6.0) (2025-05-24)
 
 
