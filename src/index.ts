@@ -1,8 +1,13 @@
-import { formatDate, get_langage_color, get_relative_time } from '@/common'
+import {
+  formatDate,
+  get_langage_color,
+  get_relative_time
+} from '@/common'
 import { create_state_id } from '@/models'
-import { GitHubClient } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github'
 import { ClientType } from '@/types'
 
+/** 基本客户端 */
 class Client {
   public github: GitHubClient
   constructor (options: ClientType) {
@@ -13,13 +18,22 @@ class Client {
   }
 }
 
-const utils = {
-  create_state_id,
-  formatDate,
-  get_relative_time,
-  get_langage_color
+export {
+  Client
 }
 
-export { Client, GitHubClient, utils }
+/** GitHub 模块 */
+export {
+  GitHubClient
+}
+export * as github from '@/models/platform/github'
+
+/** 工具函数 */
+export {
+  create_state_id,
+  formatDate,
+  get_langage_color,
+  get_relative_time
+}
 export default Client
 export * from '@/types'
