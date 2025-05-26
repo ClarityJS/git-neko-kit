@@ -209,20 +209,37 @@ export class GitHubClient {
    * ```
    */
   public setProxy (proxy: ProxyParamsType): void {
-    if (proxy?.address) {
+    if (!proxy?.address) {
+      this.proxy = null
+      return
+    }
+    try {
       const url = new URL(proxy.address)
-      if (!['http:', 'https:', 'socks:'].includes(url.protocol)) {
-        throw new Error(NotProxyAddressMsg)
+
+      switch (url.protocol) {
+        case 'http:':
+        case 'https:':
+        case 'socks:':
+        case 'socks5:':
+          proxy.address = `${url.protocol}//${url.host}`
+          break
+        default:
+          throw new Error(NotProxyAddressMsg)
       }
 
-      proxy.address = proxy.address.replace(/\/$/, '')
-    }
+      switch (proxy?.type) {
+        case 'common':
+        case 'reverse':
+          this.BaseUrl = BaseUrl(type, proxy.address, proxy.type)
+          this.ApiUrl = ApiBaseUrl(type, proxy.address, proxy.type)
+          break
+      }
 
-    if (proxy?.type === 'common') {
-      this.BaseUrl = BaseUrl(type, proxy.address)
-      this.ApiUrl = ApiBaseUrl(type, proxy.address)
+      this.proxy = proxy
+    } catch (error) {
+      this.proxy = null
+      throw new Error(NotProxyAddressMsg)
     }
-    this.proxy = proxy
   }
 
   /**
@@ -236,7 +253,6 @@ export class GitHubClient {
    */
   public setToken (token: string): this {
     if (!token.startsWith('ghu_')) {
-      console.log('token 必须以 ghu_ 开头')
       this.userToken = null
       throw new Error(isNotAccessTokeMsg)
     }
@@ -296,7 +312,11 @@ export class GitHubClient {
    * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
-  public async get (path: string, parms?: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
+  public async get (
+    path: string,
+    parms?: any,
+    customHeaders?: Record<string, string>
+  ): Promise<ApiResponseType> {
     try {
       const request = this.createRequest()
       const req = await request.get(path, parms, customHeaders)
@@ -322,7 +342,11 @@ export class GitHubClient {
    * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
-  public async post (path: string, data: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
+  public async post (
+    path: string,
+    data: any,
+    customHeaders?: Record<string, string>
+  ): Promise<ApiResponseType> {
     try {
       const request = this.createRequest()
       const req = await request.post(path, data, customHeaders)
@@ -349,7 +373,12 @@ export class GitHubClient {
    * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
-  public async patch (path: string, params: Record<string, string> | null = null, data: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
+  public async patch (
+    path: string,
+    params: Record<string, string> | null = null,
+    data: any,
+    customHeaders?: Record<string, string>
+  ): Promise<ApiResponseType> {
     try {
       const request = this.createRequest()
       const req = await request.patch(path, params, data, customHeaders)
@@ -375,7 +404,11 @@ export class GitHubClient {
    * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
-  public async put (path: string, data: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
+  public async put (
+    path: string,
+    data: any,
+    customHeaders?: Record<string, string>
+  ): Promise<ApiResponseType> {
     try {
       const request = this.createRequest()
       const req = await request.put(path, data, customHeaders)
@@ -402,7 +435,12 @@ export class GitHubClient {
    * @param customHeaders - 请求头，选项
    * @returns 请求结果
    */
-  public async delete (path: string, params: Record<string, string> | null = null, data?: any, customHeaders?: Record<string, string>): Promise<ApiResponseType> {
+  public async delete (
+    path: string,
+    params: Record<string, string> | null = null,
+    data?: any,
+    customHeaders?: Record<string, string>
+  ): Promise<ApiResponseType> {
     try {
       const request = this.createRequest()
       const req = await request.delete(path, params, data, customHeaders)

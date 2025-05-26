@@ -142,11 +142,6 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
-      - name: 设置用户信息
-        run: |
-          git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
-          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
-
       - name: 设置 pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -165,7 +160,7 @@ jobs:
           echo "## 成功推送的Package包 :" >> $GITHUB_STEP_SUMMARY
           echo "包名: \`${{ needs.beta-version.outputs.package_name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "版本号: \`${{ needs.beta-version.outputs.beta_version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "commit: \`${{ needs.beta-version.outputs.short_commit_hash }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "提交: \`${{ needs.beta-version.outputs.short_commit_hash }}\`" >> $GITHUB_STEP_SUMMARY
           echo "发布时间: \`${{ needs.beta-version.outputs.build_timestamp }}\`" >> $GITHUB_STEP_SUMMARY
           echo "发布者: \`${{ github.actor }}\`" >> $GITHUB_STEP_SUMMARY
           echo "使用 pnpm:" >> $GITHUB_STEP_SUMMARY

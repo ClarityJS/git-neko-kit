@@ -33,8 +33,8 @@ export async function exists (path: string) {
  * @param root - 根目录
  * @returns JSON 对象
  */
-export function readJSON (file = '', root = ''): any {
-  root = root ?? basePath
+export function readJSON (file: string = '', root: string = ''): any {
+  root = root || basePath
   try {
     const filePath = `${root}/${file}`
     if (!fs.existsSync(filePath)) {
@@ -43,8 +43,8 @@ export function readJSON (file = '', root = ''): any {
     }
     const data = fs.readFileSync(filePath, 'utf8')
     return JSON.parse(data)
-  } catch (e) {
-    console.error(`读取 JSON 文件失败: ${file}`, e)
+  } catch (error) {
+    console.error(`读取 JSON 文件失败: ${file}`, error as Error)
     return {}
   }
 }

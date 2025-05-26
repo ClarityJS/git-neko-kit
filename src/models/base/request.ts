@@ -67,17 +67,18 @@ export class Request {
       const proxyAddress = this.proxy.address
 
       switch (proxyType) {
+        /** HTTP代理配置 */
         case 'http':
-          /** HTTP代理配置 */
           config.httpAgent = new HttpProxyAgent(proxyAddress)
           config.httpsAgent = new HttpsProxyAgent(proxyAddress)
           break
-        case 'https':
           /** HTTPS代理配置 */
+        case 'https':
           config.httpsAgent = new HttpsProxyAgent(proxyAddress)
           break
+          /** SOCKS代理配置 */
         case 'socks':
-        /** SOCKS代理配置 */
+        case 'socks5':
         {
           const socksAgent = new SocksProxyAgent(proxyAddress)
           config.httpAgent = socksAgent
@@ -150,7 +151,11 @@ export class Request {
    * @param customHeaders - 自定义请求头
    * @returns 响应结果
    */
-  public async get (path: string, params?: Record<string, string>, customHeaders?: Record<string, string>): Promise<ResponseType> {
+  public async get (
+    path: string,
+    params?: Record<string, string>,
+    customHeaders?: Record<string, string>
+  ): Promise<ResponseType> {
     return this.request('get', path, params, null, customHeaders)
   }
 
@@ -162,7 +167,11 @@ export class Request {
    * @param customHeaders - 自定义请求头
    * @returns 响应结果
    */
-  public async post (path: string, params?: Record<string, string>, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
+  public async post (
+    path: string,
+    params?: Record<string, string>,
+    data?: any, customHeaders?: Record<string, string>
+  ): Promise<ResponseType> {
     return this.request('post', path, params, data, customHeaders)
   }
 
@@ -174,7 +183,11 @@ export class Request {
    * @param customHeaders - 自定义请求头
    * @returns 响应结果
    */
-  public async patch (path: string, params: Record<string, string> | null = null, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
+  public async patch (
+    path: string,
+    params: Record<string, string> | null = null,
+    data?: any, customHeaders?: Record<string, string>
+  ): Promise<ResponseType> {
     return this.request('patch', path, params, data, customHeaders)
   }
 
@@ -186,7 +199,12 @@ export class Request {
    * @param customHeaders - 自定义请求头
    * @returns 响应结果
    */
-  public async put (path: string, params?: Record<string, string>, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
+  public async put (
+    path: string,
+    params?: Record<string, string>,
+    data?: any,
+    customHeaders?: Record<string, string>
+  ): Promise<ResponseType> {
     return this.request('put', path, params, data, customHeaders)
   }
 
@@ -198,7 +216,12 @@ export class Request {
    * @param customHeaders - 自定义请求头
    * @returns 响应结果
    */
-  public async delete (path: string, params: Record<string, string> | null = null, data?: any, customHeaders?: Record<string, string>): Promise<ResponseType> {
+  public async delete (
+    path: string,
+    params: Record<string, string> | null = null,
+    data?: any,
+    customHeaders?: Record<string, string>
+  ): Promise<ResponseType> {
     return this.request('delete', path, params, data, customHeaders)
   }
 
