@@ -328,7 +328,7 @@ export type CollaboratorParamType = RepoInfoParamType & UserNameParamType & {
    * maintain - 允许管理仓库中的代码和议题，但不能更改仓库设置。
    * admin - 拥有仓库的完全控制权，包括更改设置和删除仓库。
    */
-  permission?: 'pull' | 'triage' | 'push' | 'maintain' | 'admin';
+  permission?: string;
   /** 是否格式化日期 */
   format: formatParamType['format']
 }
