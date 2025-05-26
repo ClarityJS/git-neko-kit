@@ -1,7 +1,7 @@
 import { AccessTokenType } from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
 
-export type AppOwner = Omit<UserInfoResponseType, 'company' | 'bio' | 'blog' | 'followers' | 'following'>
+export type AppUser = Omit<UserInfoResponseType, 'company' | 'bio' | 'blog' | 'followers' | 'following'>
 
 /**
  * 定义 Base 应用所需的权限
@@ -40,7 +40,7 @@ export interface AppInfoResponseType {
   /** 应用的标识符（slug） */
   slug: string;
   /** 应用所有者的信息 */
-  owner: AppOwner;
+  owner: AppUser;
   /** 应用的描述 */
   description: string;
   /** 应用的外部 URL */
@@ -72,7 +72,7 @@ export interface AppRepoInfoResponseType {
   /** 目标类型（如'Organization'） */
   target_type: string;
   /** 安装的账户信息，可以是用户或企业 */
-  account: AppOwner | null;
+  account: AppUser;
   /** 仓库选择类型 */
   repository_selection: 'all' | 'selected';
   /** 访问令牌URL */

@@ -5,6 +5,7 @@ import {
   isNotSuccessAccessTokenMsg,
   NotAccessCodeMsg,
   NotAccessTokenMsg,
+  NotAccessTokenSuccessMsg,
   NotPerrmissionMsg,
   NotRefreshTokenSuccessMsg,
   RefreshAccessTokenSuccessMsg
@@ -41,31 +42,6 @@ export class Auth extends GitHubClient {
   }
 
   /**
-   * 生成Github App 授权链接
-   * @param state_id - 随机生成的 state_id，用于验证授权请求的状态，可选，默认不使用
-   * @returns 返回授权链接对象
-   * @returns create_auth_link 授权链接，用于跳转 Github 授权页
-   * @example
-   * ```ts
-   * const link = await auth.create_auth_link('state_id')
-   * console.log(link) // https://github.com/login/oauth/authorize?client_id=<client_id>&state=<state_id>
-   * ```
-   */
-  public async create_auth_link (state_id?: string): Promise<string> {
-    try {
-      const url = new URL('/login/oauth/authorize', this.BaseUrl)
-      url.search = new URLSearchParams({
-        client_id: this.Client_ID,
-        ...(state_id && { state: state_id })
-      }).toString()
-
-      return Promise.resolve(url.toString())
-    } catch (error) {
-      throw new Error(`生成授权链接失败: ${(error as Error).message}`)
-    }
-  }
-
-  /**
    * 通过 code 获取 token
    * @param options - 获取 token 的参数
    * - options.code - Github 返回的 code
@@ -89,7 +65,25 @@ export class Auth extends GitHubClient {
         client_id: this.Client_ID,
         client_secret: this.Client_Secret,
         code: options.code
-      }, { Accept: 'application/json' }) as ApiResponseType<TokenResponseType>
+      }, { Accept: 'application/json' })
+      const isSuccess = res.status === 'ok' && res.statusCode === 200 && !(res.data).error
+
+      if (res.data) {
+        if (!isSuccess) {
+          throw new Error(NotAccessTokenSuccessMsg)
+        }
+        const AuthData: TokenResponseType = {
+          success: isSuccess,
+          info: AccessTokenSuccessMsg,
+          access_token: res.data.access_token,
+          expires_in: res.data.expires_in ?? null,
+          refresh_token: res.data.refresh_token ?? null,
+          refresh_token_expires_in: res.data.refresh_token_expires_in ?? null,
+          scope: res.data.scope,
+          token_type: res.data.token_type
+        }
+        res.data = AuthData
+      }
       return res
     } catch (error) {
       throw new Error(`请求获取访问令牌失败: ${(error as Error).message}`)
@@ -122,7 +116,7 @@ export class Auth extends GitHubClient {
       })
       const res = await this.post(`/applications/${this.Client_ID}/token`, {
         access_token
-      }) as ApiResponseType<CheckTokenResponseType>
+      })
       if (res.data) {
         const status = !((res.status === 'ok' && (res.statusCode === 404 || res.statusCode === 422)))
         res.data = {
@@ -162,9 +156,9 @@ export class Auth extends GitHubClient {
         client_secret: this.Client_Secret,
         grant_type: 'refresh_token',
         refresh_token: options.refresh_token
-      }, { Accept: 'application/json' }) as ApiResponseType<RefreshTokenResponseType>
+      }, { Accept: 'application/json' })
 
-      const isSuccess = res.status === 'ok' && res.statusCode === 200 && !(res.data as unknown as { error: string }).error
+      const isSuccess = res.status === 'ok' && res.statusCode === 200 && !(res.data).error
 
       let errorMsg = NotRefreshTokenSuccessMsg
       switch ((res.data as unknown as { error: string }).error) {
@@ -180,7 +174,7 @@ export class Auth extends GitHubClient {
         if (!isSuccess) {
           throw new Error(errorMsg)
         }
-        res.data = {
+        const AuthData: RefreshTokenResponseType = {
           success: isSuccess,
           info: RefreshAccessTokenSuccessMsg,
           access_token: res.data.access_token,
@@ -190,10 +184,36 @@ export class Auth extends GitHubClient {
           scope: res.data.scope,
           token_type: res.data.token_type
         }
+        res.data = AuthData
       }
       return res
     } catch (error) {
       throw new Error(`请求刷新访问令牌失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 生成Github App 授权链接
+   * @param state_id - 随机生成的 state_id，用于验证授权请求的状态，可选，默认不使用
+   * @returns 返回授权链接对象
+   * @returns create_auth_link 授权链接，用于跳转 Github 授权页
+   * @example
+   * ```ts
+   * const link = await auth.create_auth_link('state_id')
+   * console.log(link) // https://github.com/login/oauth/authorize?client_id=<client_id>&state=<state_id>
+   * ```
+   */
+  public async create_auth_link (state_id?: string): Promise<string> {
+    try {
+      const url = new URL('/login/oauth/authorize', this.BaseUrl)
+      url.search = new URLSearchParams({
+        client_id: this.Client_ID,
+        ...(state_id && { state: state_id })
+      }).toString()
+
+      return Promise.resolve(url.toString())
+    } catch (error) {
+      throw new Error(`生成授权链接失败: ${(error as Error).message}`)
     }
   }
 }

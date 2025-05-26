@@ -2,9 +2,9 @@ import { capitalize } from 'lodash-es'
 
 import {
   formatDate,
+  MissingRepoIdentifierMsg,
   NotCommitMsg,
   NotCommitOrRepoMsg,
-  NotParamMsg,
   NotPerrmissionMsg,
   parse_git_url
 } from '@/common'
@@ -38,8 +38,6 @@ export class Commit extends GitHubClient {
    * @param options - 提交信息参数对象
    * - url 仓库URL地址
    * - owner 仓库拥有者
-   * - repo 仓库名称
-   * url参数和owner、repo参数传入其中的一种
    * - sha 提交的SHA值，如果不提供，则默认获取仓库的默认分支的最新提交信息
    * - format - 可选，是否格式化提交信息, 默认为false
    * @returns 提交信息
@@ -66,7 +64,7 @@ export class Commit extends GitHubClient {
         owner = options.owner
         repo = options.repo
       } else {
-        throw new Error(NotParamMsg)
+        throw new Error(MissingRepoIdentifierMsg)
       }
       if (!options.sha) {
         const repoInfo = await this.get_repo()
@@ -75,7 +73,7 @@ export class Commit extends GitHubClient {
       } else {
         sha = options.sha
       }
-      const res = await this.get(`/repos/${owner}/${repo}/commits/${sha}`) as ApiResponseType<CommitInfoResponseType>
+      const res = await this.get(`/repos/${owner}/${repo}/commits/${sha}`)
       switch (res.statusCode) {
         case 401:
           throw new Error(NotPerrmissionMsg)
@@ -89,10 +87,9 @@ export class Commit extends GitHubClient {
       if (res.data) {
         const message = res.data?.commit?.message ?? ''
         const [title, ...bodyParts] = message.split('\n')
-        res.data = {
-          url: res.data.url,
-          sha: res.data.sha,
+        const CommitData: CommitInfoResponseType = {
           html_url: res.data.html_url,
+          sha: res.data.sha,
           comments_url: res.data.comments_url,
           commit: {
             url: res.data.commit.url,
@@ -150,6 +147,7 @@ export class Commit extends GitHubClient {
             raw_url: file.raw_url
           }))
         }
+        res.data = CommitData
       }
       return res
     } catch (error) {

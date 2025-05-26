@@ -209,7 +209,7 @@ export class User extends GitHubClient {
    * ```
    */
 
-  public async get_user_info_by_token (options: UserInfoByAuthParamType):
+  public async get_user_info_by_token (options?: UserInfoByAuthParamType):
   Promise<ApiResponseType<UserInfoResponseType>> {
     return this.get_user_info_by_auth(options)
   }
@@ -273,7 +273,7 @@ export class User extends GitHubClient {
    * console.log(userId)
    */
   public async get_user_id (): Promise<number | null> {
-    return (await this.get_user_info_by_auth({})).data.id
+    return (await this.get_user_info_by_auth()).data.id
   }
 
   /**

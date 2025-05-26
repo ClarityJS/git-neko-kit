@@ -2,8 +2,10 @@ import { capitalize } from 'lodash-es'
 
 import {
   AppRepoMovedMsg,
+  MissingRepoIdentifierMsg,
+  MissingRepoOwnerOrNameMsg,
   NotAccessTokenMsg,
-  NotParamMsg,
+  NotAppSlugMsg,
   NotRepoMsg,
   parse_git_url
 } from '@/common'
@@ -35,7 +37,7 @@ export class App extends GitHubClient {
 
   public async get_app_info (options: AppInfoParamType): Promise<ApiResponseType<AppInfoResponseType>> {
     const token = options.access_token ?? this.userToken
-    if (!options.app_slug) throw new Error(NotParamMsg)
+    if (!options.app_slug) throw new Error(NotAppSlugMsg)
     if (!token) throw new Error(NotAccessTokenMsg)
     try {
       this.setRequestConfig(
@@ -44,7 +46,7 @@ export class App extends GitHubClient {
         })
       const res = await this.get(`/apps/${options.app_slug}`)
       if (res.statusCode === 200) {
-        res.data = {
+        const AppData: AppInfoResponseType = {
           id: res.data.id,
           name: res.data.name,
           client_id: res.data.client_id,
@@ -66,6 +68,7 @@ export class App extends GitHubClient {
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
         }
+        res.data = AppData
       }
       return res
     } catch (error) {
@@ -89,9 +92,9 @@ export class App extends GitHubClient {
           url: this.ApiUrl,
           token: this.jwtToken
         })
-      const res = await this.get('/app') as ApiResponseType<AppInfoResponseType>
+      const res = await this.get('/app')
       if (res.statusCode === 200) {
-        res.data = {
+        const AppData: AppInfoResponseType = {
           id: res.data.id,
           name: res.data.name,
           client_id: res.data.client_id,
@@ -113,6 +116,7 @@ export class App extends GitHubClient {
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
         }
+        res.data = AppData
       }
       return res
     } catch (error) {
@@ -138,24 +142,14 @@ export class App extends GitHubClient {
   public async get_app_installation_by_repo (
     options: RepoInfoParamType
   ): Promise<ApiResponseType<AppRepoInfoResponseType>> {
-    let owner, repo
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig(
         {
           token: this.jwtToken
         })
-      if ('url' in options) {
-        const url = options.url.trim()
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options?.owner
-        repo = options?.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
-      const res = await this.get(`/repos/${owner}/${repo}/installation`) as ApiResponseType<AppRepoInfoResponseType>
+      const { owner, repo } = options
+      const res = await this.get(`/repos/${owner}/${repo}/installation`)
       switch (res.statusCode) {
         case 404:
           throw new Error(NotRepoMsg)
@@ -163,24 +157,22 @@ export class App extends GitHubClient {
           throw new Error(AppRepoMovedMsg)
       }
       if (res.data) {
-        res.data = {
+        const AppData: AppRepoInfoResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
           app_id: res.data.app_id,
           app_slug: res.data.app_slug,
           target_id: res.data.target_id,
           target_type: res.data.target_type,
-          account: res.data.account
-            ? {
-                id: res.data.account.id,
-                login: res.data.account.login,
-                name: res.data.account.name,
-                email: res.data.account.email,
-                html_url: res.data.account.html_url,
-                avatar_url: res.data.account.avatar_url,
-                type: capitalize(res.data.account.type.toLowerCase())
-              }
-            : null,
+          account: {
+            id: res.data.account.id,
+            login: res.data.account.login,
+            name: res.data.account.name,
+            email: res.data.account.email,
+            html_url: res.data.account.html_url,
+            avatar_url: res.data.account.avatar_url,
+            type: capitalize(res.data.account.type.toLowerCase())
+          },
           repository_selection: res.data.repository_selection,
           access_tokens_url: res.data.access_tokens_url,
           repositories_url: res.data.repositories_url,
@@ -189,6 +181,7 @@ export class App extends GitHubClient {
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
         }
+        res.data = AppData
       }
       return res
     } catch (error) {

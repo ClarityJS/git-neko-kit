@@ -1,6 +1,5 @@
 import {
-  RepoBaseParamType,
-  RepoParamType
+  RepoBaseParamType
 } from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
 
@@ -38,7 +37,7 @@ export interface ReleaseAssetsType {
 }
 
 /** 获取Release信息参数类型 */
-export type ReleaseInfoParamType = RepoParamType & {
+export type ReleaseInfoParamType = RepoBaseParamType & {
   /** 发布ID */
   release_id: number
 }
@@ -68,12 +67,12 @@ export interface ReleaseInfoResponseType {
 }
 
 /** 获取最新Release参数类型 */
-export type ReleaseLatestParamTypeType = RepoParamType
+export type ReleaseLatestParamTypeType = RepoBaseParamType
 /** 获取最新Release响应类型 */
 export type ReleaseLatestResponseType = ReleaseInfoResponseType
 
 /** 通过Tag获取Release信息参数类型 */
-export type ReleaseInfoByTagParamType = RepoParamType & {
+export type ReleaseInfoByTagParamType = RepoBaseParamType & {
   /** 标签名称 */
   tag: string
 }
@@ -81,7 +80,7 @@ export type ReleaseInfoByTagParamType = RepoParamType & {
 export type ReleaseInfoByTagResponseType = ReleaseInfoResponseType
 
 /** 获取Release列表参数类型 */
-export type ReleaseListParamType = RepoParamType & {
+export type ReleaseListParamType = RepoBaseParamType & {
   /** 每页数量 */
   per_page?: number
   /** 页码 */

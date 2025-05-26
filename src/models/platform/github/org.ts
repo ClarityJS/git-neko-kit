@@ -48,7 +48,7 @@ export class Org extends GitHubClient {
         throw new Error(NotOrgMsg)
       }
       if (res.data) {
-        res.data = {
+        const OrgData: OrgInfoResponseType = {
           id: res.data.id,
           login: res.data.login,
           name: res.data.name,
@@ -56,6 +56,7 @@ export class Org extends GitHubClient {
           description: res.data.description,
           html_url: res.data.html_url
         }
+        res.data = OrgData
       }
       return res
     } catch (error) {

@@ -1,4 +1,4 @@
-import { IssueIdParamType, RepoBaseParamType, RepoParamType } from '@/types/platform/base'
+import { IssueIdParamType, RepoBaseParamType } from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 议题用户信息响应类型 */
@@ -43,7 +43,7 @@ export interface MilestoneType {
 }
 
 /** 议题信息参数类型 */
-export type IssueInfoParamType = RepoParamType & {
+export type IssueInfoParamType = RepoBaseParamType & {
   /** 议题ID */
   issue_number: IssueIdParamType['issue_id']
 }
@@ -66,7 +66,7 @@ export interface IssueInfoResponseType {
   /** 议题正文内容 */
   body: string | null;
   /** 议题创建者用户信息 */
-  user: IssueUser | null;
+  user: IssueUser;
   /** 议题标签 */
   labels: Array<IssueLabelType> | null;
   /**
@@ -90,7 +90,7 @@ export interface IssueInfoResponseType {
 }
 
 /** 议题列表参数类型 */
-export type RepoIssueListParamType = RepoParamType & {
+export type RepoIssueListParamType = RepoBaseParamType & {
   /**
    * 里程碑筛选
    * @default *
@@ -265,7 +265,7 @@ export interface IssueCommentInfoResponseType {
   /** 评论内容 */
   body: string;
   /** 评论用户信息 */
-  user: IssueUser | null;
+  user: IssueUser;
   /** 创建时间 */
   created_at: string;
   /** 更新时间 */

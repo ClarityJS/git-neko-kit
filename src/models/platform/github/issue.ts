@@ -8,18 +8,16 @@ import {
   IssueCommentCreateSuccessMsg,
   IssueMovedMsg,
   IssueUnlockSuccessMsg,
+  MissingRepoOwnerOrNameMsg,
   NotIssueCommentBodyMsg,
   NotIssueCommentMsg,
   NotIssueCommentNumberMsg,
   NotIssueMsg,
   NotIssueNumberMsg,
   NotIssueTitleMsg,
-  NotOwnerOrRepoParamMsg,
-  NotParamMsg,
   NotPerrmissionMsg,
   NotRepoMsg,
-  NotSubIssueNumberMsg,
-  parse_git_url
+  NotSubIssueNumberMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
 import type {
@@ -89,11 +87,9 @@ export class Issue extends GitHubClient {
    * 权限:
    * - Issues: Read-only
    * @param options 请求参数列表
-   * - url 仓库URL地址
    * - owner 仓库拥有者
    * - repo 仓库名称
    * - issue_number Issue编号
-   * url参数和owner、repo参数传入其中的一种
    * @returns 包含Issue信息的响应对象
    * @example
    * ```ts
@@ -105,23 +101,15 @@ export class Issue extends GitHubClient {
   public async get_issue_info (
     options: IssueInfoParamType
   ): Promise<ApiResponseType<IssueInfoResponseType>> {
-    let owner, repo
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
       })
-      if ('url' in options) {
-        const url = options?.url?.trim()
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options?.owner
-        repo = options?.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
-      const res = await this.get(`/repos/${owner}/${repo}/issues/${Number(options.issue_number)}`) as ApiResponseType<IssueInfoResponseType>
+      const { owner, repo, issue_number } = options
+      const res = await this.get(
+        `/repos/${owner}/${repo}/issues/${Number(issue_number)}`
+      )
       switch (res.statusCode) {
         case 404:
           throw new Error(NotIssueMsg)
@@ -129,7 +117,7 @@ export class Issue extends GitHubClient {
           throw new Error(IssueMovedMsg)
       }
       if (res.data) {
-        res.data = {
+        const IssueData: IssueInfoResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
           number: res.data.number,
@@ -138,17 +126,15 @@ export class Issue extends GitHubClient {
           state_reason: res.data.state_reason,
           title: res.data.title,
           body: res.data.body,
-          user: res.data.user
-            ? {
-                id: res.data.user.id,
-                login: res.data.user.login,
-                name: res.data.user.name,
-                email: res.data.user.email,
-                html_url: res.data.user.html_url,
-                avatar_url: res.data.user.avatar_url,
-                type: capitalize((res.data.user).type.toLowerCase())
-              }
-            : null,
+          user: {
+            id: res.data.user.id,
+            login: res.data.user.login,
+            name: res.data.user.name,
+            email: res.data.user.email,
+            html_url: res.data.user.html_url,
+            avatar_url: res.data.user.avatar_url,
+            type: capitalize(res.data.user.type.toLowerCase())
+          },
           labels: res.data.labels
             ? res.data.labels.map((label: IssueLabelType) => ({
               id: label.id,
@@ -164,7 +150,7 @@ export class Issue extends GitHubClient {
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
                 avatar_url: res.data.assignee.avatar_url,
-                type: capitalize((res.data.assignee).type.toLowerCase())
+                type: capitalize(res.data.assignee.type.toLowerCase())
               }
             : null,
           milestone: res.data.milestone
@@ -187,6 +173,7 @@ export class Issue extends GitHubClient {
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
         }
+        res.data = IssueData
       }
       return res
     } catch (error) {
@@ -199,10 +186,8 @@ export class Issue extends GitHubClient {
    * 权限:
    * - Issues:Read-only
    * @param options 请求参数列表
-   * - url 仓库URL地址
    * - owner 仓库拥有者
    * - repo 仓库名称
-   * url参数和owner、repo参数传入其中的一种
    * - milestones 里程碑ID列表
    * - state  Issue状态，可选 'open' | 'closed' | 'all', 默认为'all'
    * - labels 标签名称列表
@@ -226,28 +211,16 @@ export class Issue extends GitHubClient {
   public async get_repo_issue_list (
     options: RepoIssueListParamType
   ): Promise<ApiResponseType<IssueListResponseType>> {
-    let owner, repo
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
-      this.setRequestConfig(
-        {
-          token: this.userToken
-        })
-      /* 解析仓库地址 */
-      if ('url' in options) {
-        const url = options?.url?.trim()
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options?.owner
-        repo = options?.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
-
-      const { ...queryOptions } = options
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, ...queryOptions } = options
       const params: Record<string, string> = {}
-      if (queryOptions.milestone) params.milestone = queryOptions.milestone.toString()
+      if (queryOptions.milestone) {
+        params.milestone = queryOptions.milestone.toString()
+      }
       if (queryOptions.state) params.state = queryOptions.state
       if (queryOptions.assignee) params.assignee = queryOptions.assignee
       if (queryOptions.creator) params.creator = queryOptions.creator
@@ -255,77 +228,82 @@ export class Issue extends GitHubClient {
       if (queryOptions.sort) params.sort = queryOptions.sort
       if (queryOptions.direction) params.direction = queryOptions.direction
       if (queryOptions.since) params.since = queryOptions.since
-      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.per_page) {
+        params.per_page = queryOptions.per_page.toString()
+      }
       if (queryOptions.page) params.page = queryOptions.page.toString()
 
       const apiPath = `/repos/${owner}/${repo}/issues`
-      const res = await this.get(apiPath, params) as ApiResponseType<IssueListResponseType>
+      const res = await this.get(apiPath, params)
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
       if (res.data) {
-        res.data = res.data.map(issue => ({
-          id: issue.id,
-          html_url: issue.html_url,
-          number: issue.number,
-          comments: issue.comments,
-          state: issue.state,
-          state_reason: issue.state_reason,
-          title: issue.title,
-          body: issue.body,
-          user: issue.user
-            ? {
-                id: issue.user.id,
-                login: issue.user.login,
-                name: issue.user.name,
-                email: issue.user.email,
-                html_url: issue.user.html_url,
-                avatar_url: issue.user.avatar_url,
-                type: capitalize((issue.user).type.toLowerCase())
-              }
-            : null,
-          labels: issue.labels
-            ? issue.labels.map((label: IssueLabelType) => ({
-              id: label.id,
-              name: label.name,
-              color: label.color
-            }))
-            : null,
-          assignee: issue.assignee
-            ? {
-                id: issue.assignee.id,
-                login: issue.assignee.login,
-                name: issue.assignee.name,
-                email: issue.assignee.email,
-                html_url: issue.assignee.html_url,
-                avatar_url: issue.assignee.avatar_url,
-                type: capitalize((issue.assignee).type.toLowerCase())
-              }
-            : null,
-          milestone: issue.milestone
-            ? {
-                id: issue.milestone.id,
-                url: issue.milestone.url,
-                number: issue.milestone.number,
-                state: issue.milestone.state,
-                title: issue.milestone.title,
-                description: issue.milestone.description,
-                open_issues: issue.milestone.open_issues,
-                closed_issues: issue.milestone.closed_issues,
-                created_at: issue.milestone.created_at,
-                updated_at: issue.milestone.updated_at,
-                closed_at: issue.milestone.closed_at,
-                due_on: issue.milestone.due_on
-              }
-            : null,
-          closed_at: issue.closed_at,
-          created_at: issue.created_at,
-          updated_at: issue.updated_at
-        }))
+        const IssueData: IssueListResponseType = res.data.map(
+          (issue: IssueInfoResponseType) => ({
+            id: issue.id,
+            html_url: issue.html_url,
+            number: issue.number,
+            comments: issue.comments,
+            state: issue.state,
+            state_reason: issue.state_reason,
+            title: issue.title,
+            body: issue.body,
+            user: issue.user
+              ? {
+                  id: issue.user.id,
+                  login: issue.user.login,
+                  name: issue.user.name,
+                  email: issue.user.email,
+                  html_url: issue.user.html_url,
+                  avatar_url: issue.user.avatar_url,
+                  type: capitalize(issue.user.type.toLowerCase())
+                }
+              : null,
+            labels: issue.labels
+              ? issue.labels.map((label: IssueLabelType) => ({
+                id: label.id,
+                name: label.name,
+                color: label.color
+              }))
+              : null,
+            assignee: issue.assignee
+              ? {
+                  id: issue.assignee.id,
+                  login: issue.assignee.login,
+                  name: issue.assignee.name,
+                  email: issue.assignee.email,
+                  html_url: issue.assignee.html_url,
+                  avatar_url: issue.assignee.avatar_url,
+                  type: capitalize(issue.assignee.type.toLowerCase())
+                }
+              : null,
+            milestone: issue.milestone
+              ? {
+                  id: issue.milestone.id,
+                  url: issue.milestone.url,
+                  number: issue.milestone.number,
+                  state: issue.milestone.state,
+                  title: issue.milestone.title,
+                  description: issue.milestone.description,
+                  open_issues: issue.milestone.open_issues,
+                  closed_issues: issue.milestone.closed_issues,
+                  created_at: issue.milestone.created_at,
+                  updated_at: issue.milestone.updated_at,
+                  closed_at: issue.milestone.closed_at,
+                  due_on: issue.milestone.due_on
+                }
+              : null,
+            closed_at: issue.closed_at,
+            created_at: issue.created_at,
+            updated_at: issue.updated_at
+          })
+        )
+        res.data = IssueData
       }
       return res
     } catch (error) {
-      throw new Error(`获取仓库${owner}/${repo}的Issue列表失败: ${(error as Error).message}`)
+      throw new Error(`获取仓库${options.owner}/${options.repo}的Issue列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -354,7 +332,7 @@ export class Issue extends GitHubClient {
     options: CreteIssueParamType
   ): Promise<ApiResponseType<CreateIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.title) {
       throw new Error(NotIssueTitleMsg)
@@ -367,13 +345,20 @@ export class Issue extends GitHubClient {
       const issueParams = {
         ...IssueOptions,
         ...(IssueOptions.labels && {
-          labels: Array.isArray(IssueOptions.labels) ? IssueOptions.labels : [IssueOptions.labels]
+          labels: Array.isArray(IssueOptions.labels)
+            ? IssueOptions.labels
+            : [IssueOptions.labels]
         }),
         ...(IssueOptions.assignees && {
-          assignees: Array.isArray(IssueOptions.assignees) ? IssueOptions.assignees : [IssueOptions.assignees]
+          assignees: Array.isArray(IssueOptions.assignees)
+            ? IssueOptions.assignees
+            : [IssueOptions.assignees]
         })
       }
-      const res = await this.post(`/repos/${owner}/${repo}/issues`, issueParams) as ApiResponseType<CreateIssueResponseType>
+      const res = await this.post(
+        `/repos/${owner}/${repo}/issues`,
+        issueParams
+      )
       switch (res.statusCode) {
         case 403:
           throw new Error(NotPerrmissionMsg)
@@ -382,7 +367,7 @@ export class Issue extends GitHubClient {
       }
       if (res.data) {
         if (res.data) {
-          res.data = {
+          const IssueData: CreateIssueResponseType = {
             id: res.data.id,
             html_url: res.data.html_url,
             number: res.data.number,
@@ -391,17 +376,15 @@ export class Issue extends GitHubClient {
             state_reason: res.data.state_reason,
             title: res.data.title,
             body: res.data.body,
-            user: res.data.user
-              ? {
-                  id: res.data.user.id,
-                  login: res.data.user.login,
-                  name: res.data.user.name,
-                  email: res.data.user.email,
-                  html_url: res.data.user.html_url,
-                  avatar_url: res.data.user.avatar_url,
-                  type: capitalize((res.data.user).type.toLowerCase())
-                }
-              : null,
+            user: {
+              id: res.data.user.id,
+              login: res.data.user.login,
+              name: res.data.user.name,
+              email: res.data.user.email,
+              html_url: res.data.user.html_url,
+              avatar_url: res.data.user.avatar_url,
+              type: capitalize(res.data.user.type.toLowerCase())
+            },
             labels: res.data.labels
               ? res.data.labels.map((label: IssueLabelType) => ({
                 id: label.id,
@@ -417,7 +400,7 @@ export class Issue extends GitHubClient {
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
                   avatar_url: res.data.assignee.avatar_url,
-                  type: capitalize((res.data.assignee).type.toLowerCase())
+                  type: capitalize(res.data.assignee.type.toLowerCase())
                 }
               : null,
             milestone: res.data.milestone
@@ -440,6 +423,7 @@ export class Issue extends GitHubClient {
             created_at: res.data.created_at,
             updated_at: res.data.updated_at
           }
+          res.data = IssueData
         }
       }
       return res
@@ -470,13 +454,13 @@ export class Issue extends GitHubClient {
    * const issue = get_issue() // 获取issue实例
    * const res = await issue.update_issue({ owner: 'owner', repo:'repo', issue_number:1, title:'title', body:'body' })
    * console.log(res) // { data: CreateIssueResponseType }
-  * ```
+   * ```
    */
   public async update_issue (
     options: UpdateIssueParamType
   ): Promise<ApiResponseType<UpdateIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueNumberMsg)
@@ -489,13 +473,21 @@ export class Issue extends GitHubClient {
       const issueParams = {
         ...updateData,
         ...(updateData.labels && {
-          labels: Array.isArray(updateData.labels) ? updateData.labels : [updateData.labels]
+          labels: Array.isArray(updateData.labels)
+            ? updateData.labels
+            : [updateData.labels]
         }),
         ...(updateData.assignees && {
-          assignees: Array.isArray(updateData.assignees) ? updateData.assignees : [updateData.assignees]
+          assignees: Array.isArray(updateData.assignees)
+            ? updateData.assignees
+            : [updateData.assignees]
         })
       }
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/${Number(issue_number)}`, null, issueParams) as ApiResponseType<UpdateIssueResponseType>
+      const res = await this.patch(
+        `/repos/${owner}/${repo}/issues/${Number(issue_number)}`,
+        null,
+        issueParams
+      )
       switch (res.statusCode) {
         case 404:
           throw new Error(NotIssueMsg)
@@ -506,7 +498,7 @@ export class Issue extends GitHubClient {
       }
       if (res.data) {
         if (res.data) {
-          res.data = {
+          const IssueData: UpdateIssueResponseType = {
             id: res.data.id,
             html_url: res.data.html_url,
             number: res.data.number,
@@ -515,17 +507,15 @@ export class Issue extends GitHubClient {
             state_reason: res.data.state_reason,
             title: res.data.title,
             body: res.data.body,
-            user: res.data.user
-              ? {
-                  id: res.data.user.id,
-                  login: res.data.user.login,
-                  name: res.data.user.name,
-                  email: res.data.user.email,
-                  html_url: res.data.user.html_url,
-                  avatar_url: res.data.user.avatar_url,
-                  type: capitalize((res.data.user).type.toLowerCase())
-                }
-              : null,
+            user: {
+              id: res.data.user.id,
+              login: res.data.user.login,
+              name: res.data.user.name,
+              email: res.data.user.email,
+              html_url: res.data.user.html_url,
+              avatar_url: res.data.user.avatar_url,
+              type: capitalize(res.data.user.type.toLowerCase())
+            },
             labels: res.data.labels
               ? res.data.labels.map((label: IssueLabelType) => ({
                 id: label.id,
@@ -541,7 +531,7 @@ export class Issue extends GitHubClient {
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
                   avatar_url: res.data.assignee.avatar_url,
-                  type: capitalize((res.data.assignee).type.toLowerCase())
+                  type: capitalize(res.data.assignee.type.toLowerCase())
                 }
               : null,
             milestone: res.data.milestone
@@ -564,6 +554,7 @@ export class Issue extends GitHubClient {
             created_at: res.data.created_at,
             updated_at: res.data.updated_at
           }
+          res.data = IssueData
         }
       }
       return res
@@ -594,7 +585,7 @@ export class Issue extends GitHubClient {
     options: OpenIssueParamType
   ): Promise<ApiResponseType<OpenIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueNumberMsg)
@@ -604,11 +595,13 @@ export class Issue extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo, issue_number } = options
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`,
+      const res = await this.patch(
+        `/repos/${owner}/${repo}/issues/${issue_number}`,
         null,
         {
           state: 'open'
-        }) as ApiResponseType<OpenIssueResponseType>
+        }
+      )
       switch (res.statusCode) {
         case 404:
           throw new Error(NotIssueMsg)
@@ -619,7 +612,7 @@ export class Issue extends GitHubClient {
       }
       if (res.data) {
         if (res.data) {
-          res.data = {
+          const IssueData: OpenIssueResponseType = {
             id: res.data.id,
             html_url: res.data.html_url,
             number: res.data.number,
@@ -628,17 +621,15 @@ export class Issue extends GitHubClient {
             state_reason: res.data.state_reason,
             title: res.data.title,
             body: res.data.body,
-            user: res.data.user
-              ? {
-                  id: res.data.user.id,
-                  login: res.data.user.login,
-                  name: res.data.user.name,
-                  email: res.data.user.email,
-                  html_url: res.data.user.html_url,
-                  avatar_url: res.data.user.avatar_url,
-                  type: capitalize((res.data.user).type.toLowerCase())
-                }
-              : null,
+            user: {
+              id: res.data.user.id,
+              login: res.data.user.login,
+              name: res.data.user.name,
+              email: res.data.user.email,
+              html_url: res.data.user.html_url,
+              avatar_url: res.data.user.avatar_url,
+              type: capitalize(res.data.user.type.toLowerCase())
+            },
             labels: res.data.labels
               ? res.data.labels.map((label: IssueLabelType) => ({
                 id: label.id,
@@ -654,7 +645,7 @@ export class Issue extends GitHubClient {
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
                   avatar_url: res.data.assignee.avatar_url,
-                  type: capitalize((res.data.assignee).type.toLowerCase())
+                  type: capitalize(res.data.assignee.type.toLowerCase())
                 }
               : null,
             milestone: res.data.milestone
@@ -677,6 +668,7 @@ export class Issue extends GitHubClient {
             created_at: res.data.created_at,
             updated_at: res.data.updated_at
           }
+          res.data = IssueData
         }
       }
       return res
@@ -722,7 +714,7 @@ export class Issue extends GitHubClient {
     options: CloseIssueParamType
   ): Promise<ApiResponseType<CloseIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueNumberMsg)
@@ -732,11 +724,13 @@ export class Issue extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo, issue_number } = options
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/${issue_number}`,
+      const res = (await this.patch(
+        `/repos/${owner}/${repo}/issues/${issue_number}`,
         null,
         {
           state: 'closed'
-        }) as ApiResponseType<CloseIssueResponseType>
+        }
+      ))
       switch (res.statusCode) {
         case 404:
           throw new Error(NotIssueMsg)
@@ -747,7 +741,7 @@ export class Issue extends GitHubClient {
       }
       if (res.data) {
         if (res.data) {
-          res.data = {
+          const IssueData: CloseIssueResponseType = {
             id: res.data.id,
             html_url: res.data.html_url,
             number: res.data.number,
@@ -756,17 +750,15 @@ export class Issue extends GitHubClient {
             state_reason: res.data.state_reason,
             title: res.data.title,
             body: res.data.body,
-            user: res.data.user
-              ? {
-                  id: res.data.user.id,
-                  login: res.data.user.login,
-                  name: res.data.user.name,
-                  email: res.data.user.email,
-                  html_url: res.data.user.html_url,
-                  avatar_url: res.data.user.avatar_url,
-                  type: capitalize((res.data.user).type.toLowerCase())
-                }
-              : null,
+            user: {
+              id: res.data.user.id,
+              login: res.data.user.login,
+              name: res.data.user.name,
+              email: res.data.user.email,
+              html_url: res.data.user.html_url,
+              avatar_url: res.data.user.avatar_url,
+              type: capitalize(res.data.user.type.toLowerCase())
+            },
             labels: res.data.labels
               ? res.data.labels.map((label: IssueLabelType) => ({
                 id: label.id,
@@ -782,7 +774,7 @@ export class Issue extends GitHubClient {
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
                   avatar_url: res.data.assignee.avatar_url,
-                  type: capitalize((res.data.assignee).type.toLowerCase())
+                  type: capitalize(res.data.assignee.type.toLowerCase())
                 }
               : null,
             milestone: res.data.milestone
@@ -805,6 +797,7 @@ export class Issue extends GitHubClient {
             created_at: res.data.created_at,
             updated_at: res.data.updated_at
           }
+          res.data = IssueData
         }
       }
       return res
@@ -837,7 +830,7 @@ export class Issue extends GitHubClient {
     options: LockIssueParamType
   ): Promise<ApiResponseType<LockIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueNumberMsg)
@@ -847,10 +840,13 @@ export class Issue extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo, issue_number, lock_reason } = options
-      const res = await this.put(`/repos/${owner}/${repo}/issues/${Number(issue_number)}`, {
-        locked: true,
-        lock_reason
-      }) as ApiResponseType<LockIssueResponseType>
+      const res = await this.put(
+        `/repos/${owner}/${repo}/issues/${Number(issue_number)}`,
+        {
+          locked: true,
+          lock_reason
+        }
+      )
       switch (res.statusCode) {
         case 404:
           throw new Error(NotIssueMsg)
@@ -859,18 +855,22 @@ export class Issue extends GitHubClient {
         case 301:
           throw new Error(NotRepoMsg)
       }
-      let msg
+      let issueData
       if (res.statusCode === 204) {
-        msg = IssucLockSuccessMsg
+        issueData = {
+          info: IssucLockSuccessMsg
+        }
       } else {
-        msg = isNotIssucLockMsg
+        issueData = {
+          info: isNotIssucLockMsg
+        }
       }
-      res.data = {
-        info: msg
-      }
+      res.data = issueData
       return res
     } catch (error) {
-      throw new Error(`锁定Issue${options.issue_number}失败: ${(error as Error).message}`)
+      throw new Error(
+        `锁定Issue${options.issue_number}失败: ${(error as Error).message}`
+      )
     }
   }
 
@@ -897,7 +897,7 @@ export class Issue extends GitHubClient {
     options: UnLockIssueParamType
   ): Promise<ApiResponseType<UnLockIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueNumberMsg)
@@ -907,7 +907,9 @@ export class Issue extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo, issue_number } = options
-      const res = await this.delete(`/repos/${owner}/${repo}/issues/${issue_number}/lock`) as ApiResponseType<UnLockIssueResponseType>
+      const res = await this.delete(
+        `/repos/${owner}/${repo}/issues/${issue_number}/lock`
+      )
       switch (res.statusCode) {
         case 404:
           throw new Error(NotIssueMsg)
@@ -916,15 +918,17 @@ export class Issue extends GitHubClient {
         case 301:
           throw new Error(NotRepoMsg)
       }
-      let msg
+      let issueData
       if (res.statusCode === 204) {
-        msg = IssueUnlockSuccessMsg
+        issueData = {
+          info: IssueUnlockSuccessMsg
+        }
       } else {
-        msg = isNotUnLockIssueMsg
+        issueData = {
+          info: isNotUnLockIssueMsg
+        }
       }
-      res.data = {
-        info: msg
-      }
+      res.data = issueData
       return res
     } catch (error) {
       throw new Error(`解锁Issue失败: ${(error as Error).message}`)
@@ -957,7 +961,7 @@ export class Issue extends GitHubClient {
     options: RepoCommentListParamType
   ): Promise<ApiResponseType<RepoCommentListResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     try {
       this.setRequestConfig({
@@ -967,40 +971,48 @@ export class Issue extends GitHubClient {
 
       const params: Record<string, string> = {}
       if (queryOptions.sort) params.sort = queryOptions.sort
-      if (queryOptions.sort && queryOptions.direction) params.direction = queryOptions.direction
+      if (queryOptions.sort && queryOptions.direction) {
+        params.direction = queryOptions.direction
+      }
       if (queryOptions.since) params.since = queryOptions.since
-      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.per_page) {
+        params.per_page = queryOptions.per_page.toString()
+      }
       if (queryOptions.page) params.page = queryOptions.page.toString()
 
       const apiPath = `/repos/${owner}/${repo}/issues/comments/`
 
-      const res = await this.get(apiPath, params) as ApiResponseType<RepoCommentListResponseType>
+      const res = (await this.get(
+        apiPath,
+        params
+      ))
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
       }
       if (res.data) {
-        res.data = res.data.map((comment: IssueCommentInfoResponseType) => ({
-          id: comment.id,
-          html_url: comment.html_url,
-          body: comment.body,
-          user: comment.user
-            ? {
-                id: comment.user.id,
-                login: comment.user.login,
-                name: comment.user.name,
-                email: comment.user.email,
-                html_url: comment.user.html_url,
-                avatar_url: comment.user.avatar_url,
-                type: capitalize((comment.user).type.toLowerCase())
-              }
-            : null,
-          created_at: comment.created_at,
-          updated_at: comment.updated_at
-        }))
+        const IssueData: RepoCommentListResponseType = res.data.map(
+          (comment: IssueCommentInfoResponseType) => ({
+            id: comment.id,
+            html_url: comment.html_url,
+            body: comment.body,
+            user: {
+              id: comment.user.id,
+              login: comment.user.login,
+              name: comment.user.name,
+              email: comment.user.email,
+              html_url: comment.user.html_url,
+              avatar_url: comment.user.avatar_url,
+              type: capitalize(comment.user.type.toLowerCase())
+            },
+            created_at: comment.created_at,
+            updated_at: comment.updated_at
+          })
+        )
+        res.data = IssueData
       }
       return res
     } catch (error) {
-      throw new Error(`获取仓库评论列表失败: ${(error as Error).message}`)
+      throw new Error(`获取仓库${options.owner}/${options.repo}评论列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -1029,7 +1041,7 @@ export class Issue extends GitHubClient {
     options: IssueCommentListParamType
   ): Promise<ApiResponseType<IssueCommentListResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueNumberMsg)
@@ -1042,33 +1054,41 @@ export class Issue extends GitHubClient {
       const params: Record<string, string> = {}
 
       if (queryOptions.since) params.since = queryOptions.since
-      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.per_page) {
+        params.per_page = queryOptions.per_page.toString()
+      }
       if (queryOptions.page) params.page = queryOptions.page.toString()
 
-      const apiPath = `/repos/${owner}/${repo}/issues/${Number(issue_number)}/comments`
-      const res = await this.get(apiPath, params) as ApiResponseType<IssueCommentListResponseType>
+      const apiPath = `/repos/${owner}/${repo}/issues/${Number(
+        issue_number
+      )}/comments`
+      const res = (await this.get(
+        apiPath,
+        params
+      ))
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
       }
       if (res.data) {
-        res.data = res.data.map((comment: IssueCommentInfoResponseType) => ({
-          id: comment.id,
-          html_url: comment.html_url,
-          body: comment.body,
-          user: comment.user
-            ? {
-                id: comment.user.id,
-                login: comment.user.login,
-                name: comment.user.name,
-                email: comment.user.email,
-                html_url: comment.user.html_url,
-                avatar_url: comment.user.avatar_url,
-                type: capitalize((comment.user).type.toLowerCase())
-              }
-            : null,
-          created_at: comment.created_at,
-          updated_at: comment.updated_at
-        }))
+        const IssueData: IssueCommentListResponseType = res.data.map(
+          (comment: IssueCommentInfoResponseType) => ({
+            id: comment.id,
+            html_url: comment.html_url,
+            body: comment.body,
+            user: {
+              id: comment.user.id,
+              login: comment.user.login,
+              name: comment.user.name,
+              email: comment.user.email,
+              html_url: comment.user.html_url,
+              avatar_url: comment.user.avatar_url,
+              type: capitalize(comment.user.type.toLowerCase())
+            },
+            created_at: comment.created_at,
+            updated_at: comment.updated_at
+          })
+        )
+        res.data = IssueData
       }
       return res
     } catch (error) {
@@ -1098,7 +1118,7 @@ export class Issue extends GitHubClient {
     options: IssueCommentInfoParamType
   ): Promise<ApiResponseType<IssueCommentInfoResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.comment_id) {
       throw new Error(NotIssueCommentNumberMsg)
@@ -1108,29 +1128,30 @@ export class Issue extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo, comment_id } = options
-      const res = await this.get(`/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`) as ApiResponseType<IssueCommentInfoResponseType>
+      const res = (await this.get(
+        `/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`
+      ))
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
       }
       if (res.data) {
-        res.data = {
+        const IssueData: IssueCommentInfoResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
           body: res.data.body,
-          user: res.data.user
-            ? {
-                id: res.data.user.id,
-                login: res.data.user.login,
-                name: res.data.user.name,
-                email: res.data.user.email,
-                html_url: res.data.user.html_url,
-                avatar_url: res.data.user.avatar_url,
-                type: capitalize((res.data.user).type.toLowerCase())
-              }
-            : null,
+          user: {
+            id: res.data.user.id,
+            login: res.data.user.login,
+            name: res.data.user.name,
+            email: res.data.user.email,
+            html_url: res.data.user.html_url,
+            avatar_url: res.data.user.avatar_url,
+            type: capitalize(res.data.user.type.toLowerCase())
+          },
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
         }
+        res.data = IssueData
       }
       return res
     } catch (error) {
@@ -1161,7 +1182,7 @@ export class Issue extends GitHubClient {
     options: CreteIssueCommentParamType
   ): Promise<ApiResponseType<CreteIssueCommentResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueCommentMsg)
@@ -1174,31 +1195,33 @@ export class Issue extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo, issue_number, body } = options
-      const res = await this.post(`/repos/${owner}/${repo}/issues/${Number(issue_number)}/comments`, {
-        body
-      }) as ApiResponseType<CreteIssueCommentResponseType>
+      const res = (await this.post(
+        `/repos/${owner}/${repo}/issues/${Number(issue_number)}/comments`,
+        {
+          body
+        }
+      ))
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
       }
       if (res.data) {
-        res.data = {
+        const IssueData: CreteIssueCommentResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
           body: res.data.body,
-          user: res.data.user
-            ? {
-                id: res.data.user.id,
-                login: res.data.user.login,
-                name: res.data.user.name,
-                email: res.data.user.email,
-                html_url: res.data.user.html_url,
-                avatar_url: res.data.user.avatar_url,
-                type: capitalize((res.data.user).type.toLowerCase())
-              }
-            : null,
+          user: {
+            id: res.data.user.id,
+            login: res.data.user.login,
+            name: res.data.user.name,
+            email: res.data.user.email,
+            html_url: res.data.user.html_url,
+            avatar_url: res.data.user.avatar_url,
+            type: capitalize(res.data.user.type.toLowerCase())
+          },
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
         }
+        res.data = IssueData
       }
       return res
     } catch (error) {
@@ -1229,7 +1252,7 @@ export class Issue extends GitHubClient {
     options: UpdateIssueCommentParamType
   ): Promise<ApiResponseType<UpdateIssueCommentResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.comment_id) {
       throw new Error(NotIssueCommentNumberMsg)
@@ -1239,29 +1262,32 @@ export class Issue extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo, comment_id, ...updateData } = options
-      const res = await this.patch(`/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`, null, updateData)
+      const res = await this.patch(
+        `/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`,
+        null,
+        updateData
+      )
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
       }
       if (res.data) {
-        res.data = {
+        const IssueData: UpdateIssueCommentResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
           body: res.data.body,
-          user: res.data.user
-            ? {
-                id: res.data.user.id,
-                login: res.data.user.login,
-                name: res.data.user.name,
-                email: res.data.user.email,
-                html_url: res.data.user.html_url,
-                avatar_url: res.data.user.avatar_url,
-                type: capitalize((res.data.user).type.toLowerCase())
-              }
-            : null,
+          user: {
+            id: res.data.user.id,
+            login: res.data.user.login,
+            name: res.data.user.name,
+            email: res.data.user.email,
+            html_url: res.data.user.html_url,
+            avatar_url: res.data.user.avatar_url,
+            type: capitalize(res.data.user.type.toLowerCase())
+          },
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
         }
+        res.data = IssueData
       }
       return res
     } catch (error) {
@@ -1291,7 +1317,7 @@ export class Issue extends GitHubClient {
     options: RemoveIssueCommentParamType
   ): Promise<ApiResponseType<RemoveCollaboratorResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.comment_id) {
       throw new Error(NotIssueCommentNumberMsg)
@@ -1301,19 +1327,23 @@ export class Issue extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo, comment_id } = options
-      const res = await this.delete(`/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`)
+      const res = await this.delete(
+        `/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`
+      )
       if (res.statusCode === 404) {
         throw new Error(NotIssueCommentMsg)
       }
-      let msg
+      let IssueData: RemoveCollaboratorResponseType
       if (res.statusCode === 204) {
-        msg = IssueCommentCreateSuccessMsg
+        IssueData = {
+          info: IssueCommentCreateSuccessMsg
+        }
       } else {
-        msg = isNotIssueCommentCreateMsg
+        IssueData = {
+          info: isNotIssueCommentCreateMsg
+        }
       }
-      res.data = {
-        info: msg
-      }
+      res.data = IssueData
       return res
     } catch (error) {
       throw new Error(`删除议题评论信息失败: ${(error as Error).message}`)
@@ -1336,6 +1366,7 @@ export class Issue extends GitHubClient {
 
   /**
    * 获取子议题列表
+   * @github
    * 仅GitHub 平台使用
    * 权限:
    * - Issues: Read-only
@@ -1347,17 +1378,17 @@ export class Issue extends GitHubClient {
    * - issue_number 议题编号
    * @returns 子议题列表
    * @example
-  * ```ts
-  * const issue = get_issue() // 获取issue实例
-  * const res = await issue.get_sub_issue_list({ owner: 'owner', repo:'repo', issue_number:1 })
-  * console.log(res) // { data: SubIssueListResponseType }
-  * ```
-  */
+   * ```ts
+   * const issue = get_issue() // 获取issue实例
+   * const res = await issue.get_sub_issue_list({ owner: 'owner', repo:'repo', issue_number:1 })
+   * console.log(res) // { data: SubIssueListResponseType }
+   * ```
+   */
   public async get_sub_issue_list (
     options: SubIssueListParamType
   ): Promise<ApiResponseType<SubIssueListResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueCommentMsg)
@@ -1369,73 +1400,81 @@ export class Issue extends GitHubClient {
       const { owner, repo, issue_number, ...queryOptions } = options
       const params: Record<string, string> = {}
 
-      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.per_page) {
+        params.per_page = queryOptions.per_page.toString()
+      }
       if (queryOptions.page) params.page = queryOptions.page.toString()
 
-      const apiPath = `/repos/${owner}/${repo}/issues/${Number(issue_number)}/sub_issues`
-      const res = await this.get(apiPath, params) as ApiResponseType<SubIssueListResponseType>
+      const apiPath = `/repos/${owner}/${repo}/issues/${Number(
+        issue_number
+      )}/sub_issues`
+      const res = (await this.get(
+        apiPath,
+        params
+      ))
       if (res.statusCode === 404) {
         throw new Error(NotIssueMsg)
       }
       if (res.data) {
-        res.data = res.data.map(issue => ({
-          id: issue.id,
-          html_url: issue.html_url,
-          number: issue.number,
-          comments: issue.comments,
-          state: issue.state,
-          state_reason: issue.state_reason,
-          title: issue.title,
-          body: issue.body,
-          user: issue.user
-            ? {
-                id: issue.user.id,
-                login: issue.user.login,
-                name: issue.user.name,
-                email: issue.user.email,
-                html_url: issue.user.html_url,
-                avatar_url: issue.user.avatar_url,
-                type: capitalize((issue.user).type.toLowerCase())
-              }
-            : null,
-          labels: issue.labels
-            ? issue.labels.map((label: IssueLabelType) => ({
-              id: label.id,
-              name: label.name,
-              color: label.color
-            }))
-            : null,
-          assignee: issue.assignee
-            ? {
-                id: issue.assignee.id,
-                login: issue.assignee.login,
-                name: issue.assignee.name,
-                email: issue.assignee.email,
-                html_url: issue.assignee.html_url,
-                avatar_url: issue.assignee.avatar_url,
-                type: capitalize((issue.assignee).type.toLowerCase())
-              }
-            : null,
-          milestone: issue.milestone
-            ? {
-                id: issue.milestone.id,
-                url: issue.milestone.url,
-                number: issue.milestone.number,
-                state: issue.milestone.state,
-                title: issue.milestone.title,
-                description: issue.milestone.description,
-                open_issues: issue.milestone.open_issues,
-                closed_issues: issue.milestone.closed_issues,
-                created_at: issue.milestone.created_at,
-                updated_at: issue.milestone.updated_at,
-                closed_at: issue.milestone.closed_at,
-                due_on: issue.milestone.due_on
-              }
-            : null,
-          closed_at: issue.closed_at,
-          created_at: issue.created_at,
-          updated_at: issue.updated_at
-        }))
+        const IssueData: SubIssueListResponseType = res.data.map(
+          (issue: IssueInfoResponseType) => ({
+            id: issue.id,
+            html_url: issue.html_url,
+            number: issue.number,
+            comments: issue.comments,
+            state: issue.state,
+            state_reason: issue.state_reason,
+            title: issue.title,
+            body: issue.body,
+            user: {
+              id: issue.user.id,
+              login: issue.user.login,
+              name: issue.user.name,
+              email: issue.user.email,
+              html_url: issue.user.html_url,
+              avatar_url: issue.user.avatar_url,
+              type: capitalize(issue.user.type.toLowerCase())
+            },
+            labels: issue.labels
+              ? issue.labels.map((label: IssueLabelType) => ({
+                id: label.id,
+                name: label.name,
+                color: label.color
+              }))
+              : null,
+            assignee: issue.assignee
+              ? {
+                  id: issue.assignee.id,
+                  login: issue.assignee.login,
+                  name: issue.assignee.name,
+                  email: issue.assignee.email,
+                  html_url: issue.assignee.html_url,
+                  avatar_url: issue.assignee.avatar_url,
+                  type: capitalize(issue.assignee.type.toLowerCase())
+                }
+              : null,
+            milestone: issue.milestone
+              ? {
+                  id: issue.milestone.id,
+                  url: issue.milestone.url,
+                  number: issue.milestone.number,
+                  state: issue.milestone.state,
+                  title: issue.milestone.title,
+                  description: issue.milestone.description,
+                  open_issues: issue.milestone.open_issues,
+                  closed_issues: issue.milestone.closed_issues,
+                  created_at: issue.milestone.created_at,
+                  updated_at: issue.milestone.updated_at,
+                  closed_at: issue.milestone.closed_at,
+                  due_on: issue.milestone.due_on
+                }
+              : null,
+            closed_at: issue.closed_at,
+            created_at: issue.created_at,
+            updated_at: issue.updated_at
+          })
+        )
+        res.data = IssueData
       }
       return res
     } catch (error) {
@@ -1446,6 +1485,7 @@ export class Issue extends GitHubClient {
   /**
    * 添加子议题
    * 添加一个子议题到指定的议题中
+   * @github
    * 仅GitHub 平台使用
    * 权限：
    * - Issues：Write
@@ -1467,7 +1507,7 @@ export class Issue extends GitHubClient {
     options: AddSubIssueParamType
   ): Promise<ApiResponseType<AddSubIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueCommentMsg)
@@ -1479,16 +1519,20 @@ export class Issue extends GitHubClient {
       this.setRequestConfig({
         token: this.userToken
       })
-      const { owner, repo, issue_number, sub_issue_id, replace_parent } = options
-      const res = await this.post(`/repos/${owner}/${repo}/issues/${issue_number}/sub_issues`, {
-        sub_issue_id,
-        replace_parent
-      }) as ApiResponseType<AddSubIssueResponseType>
+      const { owner, repo, issue_number, sub_issue_id, replace_parent } =
+        options
+      const res = (await this.post(
+        `/repos/${owner}/${repo}/issues/${issue_number}/sub_issues`,
+        {
+          sub_issue_id,
+          replace_parent
+        }
+      ))
       if (res.statusCode === 404) {
         throw new Error(NotIssueMsg)
       }
       if (res.data) {
-        res.data = {
+        const IssueData: AddSubIssueResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
           number: res.data.number,
@@ -1497,17 +1541,15 @@ export class Issue extends GitHubClient {
           state_reason: res.data.state_reason,
           title: res.data.title,
           body: res.data.body,
-          user: res.data.user
-            ? {
-                id: res.data.user.id,
-                login: res.data.user.login,
-                name: res.data.user.name,
-                email: res.data.user.email,
-                html_url: res.data.user.html_url,
-                avatar_url: res.data.user.avatar_url,
-                type: capitalize((res.data.user).type.toLowerCase())
-              }
-            : null,
+          user: {
+            id: res.data.user.id,
+            login: res.data.user.login,
+            name: res.data.user.name,
+            email: res.data.user.email,
+            html_url: res.data.user.html_url,
+            avatar_url: res.data.user.avatar_url,
+            type: capitalize(res.data.user.type.toLowerCase())
+          },
           labels: res.data.labels
             ? res.data.labels.map((label: IssueLabelType) => ({
               id: label.id,
@@ -1523,7 +1565,7 @@ export class Issue extends GitHubClient {
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
                 avatar_url: res.data.assignee.avatar_url,
-                type: capitalize((res.data.assignee).type.toLowerCase())
+                type: capitalize(res.data.assignee.type.toLowerCase())
               }
             : null,
           milestone: res.data.milestone
@@ -1546,6 +1588,7 @@ export class Issue extends GitHubClient {
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
         }
+        res.data = IssueData
       }
       return res
     } catch (error) {
@@ -1555,6 +1598,8 @@ export class Issue extends GitHubClient {
 
   /**
    * 删除子议题
+   * @github
+   * 仅GitHub 平台使用
    * 权限：
    * - Issues：Write
    * @param options 删除子议题的参数对象
@@ -1563,18 +1608,18 @@ export class Issue extends GitHubClient {
    * - issue_number 父议题编号
    * - sub_issue_id 子议题编号
    * @returns 删除结果信息
-  * @example
-  * ```ts
-  * const issue = get_issue() // 获取issue实例
-  * const res = await issue.remove_sub_issue({ owner: 'owner', repo:'repo', issue_number:1, sub_issue_id:1 })
-  * console.log(res) // { data: RemoveSubIssueResponseType }
-  * ```
-  */
+   * @example
+   * ```ts
+   * const issue = get_issue() // 获取issue实例
+   * const res = await issue.remove_sub_issue({ owner: 'owner', repo:'repo', issue_number:1, sub_issue_id:1 })
+   * console.log(res) // { data: RemoveSubIssueResponseType }
+   * ```
+   */
   public async remove_sub_issue (
     options: RemoveSubIssueParamType
   ): Promise<ApiResponseType<RemoveSubIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueCommentMsg)
@@ -1587,14 +1632,18 @@ export class Issue extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo, issue_number, sub_issue_id } = options
-      const res = await this.delete(`/repos/${owner}/${repo}/issues/${issue_number}/sub_issue`, null, {
-        sub_issue_id
-      }) as ApiResponseType<RemoveSubIssueResponseType>
+      const res = (await this.delete(
+        `/repos/${owner}/${repo}/issues/${issue_number}/sub_issue`,
+        null,
+        {
+          sub_issue_id
+        }
+      ))
       if (res.statusCode === 404) {
         throw new Error(NotIssueMsg)
       }
       if (res.data) {
-        res.data = {
+        const IssueData: RemoveSubIssueResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
           number: res.data.number,
@@ -1603,17 +1652,15 @@ export class Issue extends GitHubClient {
           state_reason: res.data.state_reason,
           title: res.data.title,
           body: res.data.body,
-          user: res.data.user
-            ? {
-                id: res.data.user.id,
-                login: res.data.user.login,
-                name: res.data.user.name,
-                email: res.data.user.email,
-                html_url: res.data.user.html_url,
-                avatar_url: res.data.user.avatar_url,
-                type: capitalize((res.data.user).type.toLowerCase())
-              }
-            : null,
+          user: {
+            id: res.data.user.id,
+            login: res.data.user.login,
+            name: res.data.user.name,
+            email: res.data.user.email,
+            html_url: res.data.user.html_url,
+            avatar_url: res.data.user.avatar_url,
+            type: capitalize(res.data.user.type.toLowerCase())
+          },
           labels: res.data.labels
             ? res.data.labels.map((label: IssueLabelType) => ({
               id: label.id,
@@ -1629,7 +1676,7 @@ export class Issue extends GitHubClient {
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
                 avatar_url: res.data.assignee.avatar_url,
-                type: capitalize((res.data.assignee).type.toLowerCase())
+                type: capitalize(res.data.assignee.type.toLowerCase())
               }
             : null,
           milestone: res.data.milestone
@@ -1652,6 +1699,7 @@ export class Issue extends GitHubClient {
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
         }
+        res.data = IssueData
       }
       return res
     } catch (error) {
@@ -1675,6 +1723,8 @@ export class Issue extends GitHubClient {
   /**
    * 重新排序子议题
    * 重新确定子议题优先级
+   * @github
+   * 仅GitHub 平台使用
    * 权限：
    * - Issues：Write
    * @param options 重新排序子议题的参数对象
@@ -1695,7 +1745,7 @@ export class Issue extends GitHubClient {
     options: ReprioritizeSubIssueParamType
   ): Promise<ApiResponseType<ReprioritizeSubIssueResponseType>> {
     if (!options.owner || !options.repo) {
-      throw new Error(NotOwnerOrRepoParamMsg)
+      throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
       throw new Error(NotIssueCommentMsg)
@@ -1707,20 +1757,25 @@ export class Issue extends GitHubClient {
       this.setRequestConfig({
         token: this.userToken
       })
-      const { owner, repo, issue_number, sub_issue_id, ...queryOptions } = options
+      const { owner, repo, issue_number, sub_issue_id, ...queryOptions } =
+        options
       const params: Record<string, string> = {}
 
-      if (queryOptions.before_id && !queryOptions.after_id) params.before_id = queryOptions.before_id.toString()
-      if (queryOptions.after_id && !queryOptions.before_id) params.after_id = queryOptions.after_id.toString()
+      if (queryOptions.before_id && !queryOptions.after_id) {
+        params.before_id = queryOptions.before_id.toString()
+      }
+      if (queryOptions.after_id && !queryOptions.before_id) {
+        params.after_id = queryOptions.after_id.toString()
+      }
       const url = `/repos/${owner}/${repo}/issues/${issue_number}/sub_issues/priority`
-      const res = await this.patch(url, params, {
+      const res = (await this.patch(url, params, {
         sub_issue_id: String(sub_issue_id)
-      }) as ApiResponseType<ReprioritizeSubIssueResponseType>
+      }))
       if (res.statusCode === 404) {
         throw new Error(NotIssueMsg)
       }
       if (res.data) {
-        res.data = {
+        const IssueData: ReprioritizeSubIssueResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
           number: res.data.number,
@@ -1729,17 +1784,15 @@ export class Issue extends GitHubClient {
           state_reason: res.data.state_reason,
           title: res.data.title,
           body: res.data.body,
-          user: res.data.user
-            ? {
-                id: res.data.user.id,
-                login: res.data.user.login,
-                name: res.data.user.name,
-                email: res.data.user.email,
-                html_url: res.data.user.html_url,
-                avatar_url: res.data.user.avatar_url,
-                type: capitalize((res.data.user).type.toLowerCase())
-              }
-            : null,
+          user: {
+            id: res.data.user.id,
+            login: res.data.user.login,
+            name: res.data.user.name,
+            email: res.data.user.email,
+            html_url: res.data.user.html_url,
+            avatar_url: res.data.user.avatar_url,
+            type: capitalize(res.data.user.type.toLowerCase())
+          },
           labels: res.data.labels
             ? res.data.labels.map((label: IssueLabelType) => ({
               id: label.id,
@@ -1755,7 +1808,7 @@ export class Issue extends GitHubClient {
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
                 avatar_url: res.data.assignee.avatar_url,
-                type: capitalize((res.data.assignee).type.toLowerCase())
+                type: capitalize(res.data.assignee.type.toLowerCase())
               }
             : null,
           milestone: res.data.milestone
@@ -1778,6 +1831,7 @@ export class Issue extends GitHubClient {
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
         }
+        res.data = IssueData
       }
       return res
     } catch (error) {

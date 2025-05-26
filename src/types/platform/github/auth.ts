@@ -1,5 +1,9 @@
 /** Github 授权令牌接口返回类型 */
 export interface TokenResponseType {
+  /** 是否成功刷新 */
+  success: boolean;
+  /** 获取访问令牌信息 */
+  info: string;
   /** 用户访问令牌， 格式为 ghu_ 开头 */
   access_token: string;
   /** access_token 过期前的秒数，默认值为 28800（8小时） */
@@ -18,7 +22,7 @@ export interface TokenResponseType {
 export interface RefreshTokenResponseType {
   /** 是否成功刷新 */
   success: boolean;
-  /** 刷新令牌信息 */
+  /** 获取刷新令牌信息 */
   info: string;
   /** 用户访问令牌，格式为 ghu_ 开头 */
   access_token: string;

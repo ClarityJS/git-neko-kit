@@ -1,4 +1,5 @@
 /** 参数验证 */
+export const NotAppSlugMsg = '喵呜~ 应用标识符不能为空'
 export const NotAccessCodeMsg = '喵呜~ 授权码不能为空'
 export const NotAccessTokenMsg = '喵呜~ 访问令牌不能为空'
 export const NotIssueBodyMsg = '喵呜~ 这个议题内容不能为空哦'
@@ -10,7 +11,8 @@ export const NotReleaseIdMsg = '喵呜~ 发行版本编号不能为空哦'
 export const NotOrgOrRepoParamMsg = '喵呜~ 组织名或仓库名不能为空'
 export const NotOrgOrUserParamMsg = '喵呜~ 组织名或用户名不能为空'
 export const NotOrgParamMsg = '喵呜~ 组织名不能为空'
-export const NotOwnerOrRepoParamMsg = '喵呜~ 仓库拥有者或仓库名不能为空'
+export const MissingRepoOwnerOrNameMsg = '喵呜~ 请提供仓库拥有者和仓库名称'
+export const MissingRepoIdentifierMsg = '喵呜~ 请提供仓库信息(仓库拥有者/仓库名或完整URL)'
 export const NotOwnerParamMsg = '喵呜~ 仓库拥有者不能为空'
 export const NotParamMsg = '喵呜~ 参数好像不太对呢'
 export const NotProxyAddressMsg = '喵呜~ 代理地址格式不正确哦'
@@ -20,6 +22,7 @@ export const NotSubIssueNumberMsg = '喵呜~ 这个子议题编号不能为空�
 export const NotUrlParamMsg = '喵呜~ 仓库URL不能为空'
 export const NotUserIdParamMsg = '喵呜~ 用户ID不能为空'
 export const NotUserParamMsg = '喵呜~ 用户名不能为空'
+export const NotTagParamMsg = '喵呜~ 标签不能为空'
 
 /** 授权消息 */
 export const isNotAccessTokeMsg = '喵呜~ 这个令牌似乎不是有效的'
@@ -29,6 +32,7 @@ export const isNotRefreshTokenMsg = '喵呜~ 这个刷新令牌似乎不是有�
 export const isNotSuccessAccessTokenMsg = '喵呜~ 访问令牌已过期'
 export const NotPerrmissionMsg = '喵呜~ 访问被拒绝啦，可能是令牌过期了或权限不足'
 export const NotRefreshTokenSuccessMsg = '喵呜~ 访问令牌刷新失败'
+export const NotAccessTokenSuccessMsg = '喵呜~ 获取访问令牌失败'
 
 /** 资源不存在消息 */
 export const isOrgMsg = '喵呜~ 组织账号暂不支持'

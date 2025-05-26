@@ -122,12 +122,10 @@ export interface ParentCommit {
 export type CommitInfoParamType = CommitInfoBaseParamType | CommitInfoUrlParamType
 /** 提交信息响应类型 */
 export interface CommitInfoResponseType {
-  /** 提交URL */
-  url: string;
-  /** 提交SHA */
-  sha: string;
   /** HTML URL */
   html_url: string;
+  /** 提交SHA */
+  sha: string;
   /** 评论URL */
   comments_url: string;
   /** 提交信息 */

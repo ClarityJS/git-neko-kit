@@ -3,11 +3,10 @@ import { capitalize } from 'lodash-es'
 import {
   DeleteReleaseSuccessMsg,
   isNotDeleteReleaseMsg,
-  NotOwnerOrRepoParamMsg,
-  NotParamMsg,
+  MissingRepoOwnerOrNameMsg,
   NotReleaseIdMsg,
   NotReleaseOrRepoMsg,
-  parse_git_url
+  NotTagParamMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
 import type {
@@ -52,8 +51,6 @@ export class Release extends GitHubClient {
    * - release_id: Release ID
    * - owner: 拥有者
    * - repo: 仓库名
-   * - url: 仓库地址
-   * ower和repo参数与url参数传入其中一种
    * @returns Release信息
    * @example
    * ```ts
@@ -64,21 +61,11 @@ export class Release extends GitHubClient {
   public async get_repo_release_info (
     options: ReleaseInfoParamType
   ): Promise<ApiResponseType<ReleaseInfoResponseType>> {
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.release_id) throw new Error(NotReleaseIdMsg)
     try {
-      let owner, repo
-      if ('url' in options) {
-        const url = options.url
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options.owner
-        repo = options.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
-      if (!options.release_id) throw new Error(NotReleaseIdMsg)
-      const res = await this.get(`/repos/${owner}/${repo}/releases/${options.release_id}`) as ApiResponseType<ReleaseInfoResponseType>
+      const { owner, repo, release_id } = options
+      const res = await this.get(`/repos/${owner}/${repo}/releases/${release_id}`) as ApiResponseType<ReleaseInfoResponseType>
       if (res.statusCode === 404) {
         throw new Error(NotReleaseOrRepoMsg)
       }
@@ -132,19 +119,9 @@ export class Release extends GitHubClient {
   public async get_release_latest (
     options: ReleaseLatestParamTypeType
   ): Promise<ApiResponseType<ReleaseLatestResponseType>> {
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
-      let owner, repo
-      if ('url' in options) {
-        const url = options.url
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options.owner
-        repo = options.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
+      const { owner, repo } = options
       const url = `/repos/${owner}/${repo}/releases/latest`
       const res = await this.get(url) as ApiResponseType<ReleaseLatestResponseType>
       if (res.statusCode === 404) {
@@ -199,20 +176,11 @@ export class Release extends GitHubClient {
   public async get_release_by_tag (
     options: ReleaseInfoByTagParamType
   ): Promise<ApiResponseType<ReleaseInfoByTagResponseType>> {
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.tag) throw new Error(NotTagParamMsg)
     try {
-      let owner, repo
-      if ('url' in options) {
-        const url = options.url
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options.owner
-        repo = options.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
-      const url = `/repos/${owner}/${repo}/releases/tags/${options.tag}`
+      const { owner, repo, tag } = options
+      const url = `/repos/${owner}/${repo}/releases/tags/${tag}`
       const res = await this.get(url) as ApiResponseType<ReleaseInfoResponseType>
       if (res.statusCode === 404) {
         throw new Error(NotReleaseOrRepoMsg)
@@ -269,19 +237,9 @@ export class Release extends GitHubClient {
   public async get_releases_list (
     options: ReleaseListParamType
   ): Promise<ApiResponseType<ReleaseListResponseType>> {
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
-      let owner, repo
-      if ('url' in options) {
-        const url = options.url
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options.owner
-        repo = options.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
+      const { owner, repo } = options
       const { ...queryOptions } = options
       const params: Record<string, string> = {}
       if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
@@ -347,7 +305,7 @@ export class Release extends GitHubClient {
   ): Promise<ApiResponseType<CreateReleaseResponseType>> {
     try {
       if (!options.owner || !options.repo) {
-        throw new Error(NotOwnerOrRepoParamMsg)
+        throw new Error(MissingRepoOwnerOrNameMsg)
       }
       const { owner, repo, ...ReleaseOptions } = options
       const url = `/repos/${owner}/${repo}/releases`
@@ -416,7 +374,7 @@ export class Release extends GitHubClient {
   ): Promise<ApiResponseType<UpdateReleaseResponseType>> {
     try {
       if (!options.owner || !options.repo) {
-        throw new Error(NotOwnerOrRepoParamMsg)
+        throw new Error(MissingRepoOwnerOrNameMsg)
       }
       const { owner, repo, ...ReleaseOptions } = options
       const url = `/repos/${owner}/${repo}/releases`
@@ -474,19 +432,9 @@ export class Release extends GitHubClient {
   public async delete_release (
     options: DeleteReleaseParamType
   ): Promise<ApiResponseType<DeleteReleaseResponseType>> {
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
-      let owner, repo
-      if ('url' in options) {
-        const url = options.url
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options.owner
-        repo = options.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
+      const { owner, repo } = options
       if (!options.release_id) throw new Error(NotReleaseIdMsg)
       const { release_id } = options
       const url = `/repos/${owner}/${repo}/releases/${release_id}`

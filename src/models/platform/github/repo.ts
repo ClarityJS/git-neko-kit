@@ -2,6 +2,7 @@ import {
   formatDate,
   get_langage_color,
   isNotPerrmissionMsg,
+  MissingRepoOwnerOrNameMsg,
   NotOrgMsg,
   NotOrgOrUserMsg,
   NotParamMsg,
@@ -365,23 +366,12 @@ export class Repo extends GitHubClient {
   public async get_repo_info (
     options: RepoInfoParamType
   ): Promise<ApiResponseType<RepoInfoResponseType>> {
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
       })
-      /* 解析仓库地址 */
-      let owner, repo
-      if ('url' in options) {
-        const url = options.url.trim()
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options?.owner
-        repo = options?.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
+      const { owner, repo } = options
       const res = await this.get(`/repos/${owner}/${repo}`) as ApiResponseType<RepoInfoResponseType>
       switch (res.statusCode) {
         case 401:
@@ -444,22 +434,12 @@ export class Repo extends GitHubClient {
   public async get_repo_languages_list (
     options: RepoLanguagesListParamType
   ): Promise<ApiResponseType<RepoLanguagesListType>> {
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
       })
-      let owner, repo
-      if ('url' in options) {
-        const url = options.url.trim()
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options?.owner
-        repo = options?.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
+      const { owner, repo } = options
       const res = await this.get(`/repos/${owner}/${repo}/languages`) as ApiResponseType<RepoLanguagesListType>
       switch (res.statusCode) {
         case 401:
@@ -607,22 +587,12 @@ export class Repo extends GitHubClient {
   public async get_collaborators_list (
     options: CollaboratorListParamType
   ): Promise<ApiResponseType<CollaboratorListResponseType>> {
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
       })
-      let owner, repo
-      if ('url' in options) {
-        const url = options.url.trim()
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options?.owner
-        repo = options?.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
+      const { owner, repo } = options
       const { ...queryOptions } = options
       const params: Record<string, string> = {}
       if (queryOptions.affiliation) params.milestone = queryOptions.affiliation.toString()
@@ -675,23 +645,12 @@ export class Repo extends GitHubClient {
   public async add_collaborator (
     options: CollaboratorParamType
   ): Promise<ApiResponseType<AddCollaboratorResponseType>> {
-    let owner, repo, username
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
       })
-      if ('url' in options) {
-        const url = options.url.trim()
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options?.owner
-        repo = options?.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
-      username = options?.username
+      const { owner, repo, username } = options
       const res = await this.put(
         `/repos/${owner}/${repo}/collaborators/${username}`,
         {
@@ -719,7 +678,7 @@ export class Repo extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`添加协作者${username}失败: ${(error as Error).message}`)
+      throw new Error(`添加协作者失败: ${(error as Error).message}`)
     }
   }
 
@@ -747,23 +706,12 @@ export class Repo extends GitHubClient {
   public async remove_collaborator (
     options: RemoveCollaboratorParamType
   ): Promise<ApiResponseType<RemoveCollaboratorResponseType>> {
-    let owner, repo, username
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
       })
-      if ('url' in options) {
-        const url = options.url.trim()
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options?.owner
-        repo = options?.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
-      username = options?.username
+      const { owner, repo, username } = options
       const res = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`) as ApiResponseType<RemoveCollaboratorResponseType>
       if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
       if (res.status && res.statusCode === 204) {
@@ -777,7 +725,7 @@ export class Repo extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`移除协作者${username}失败: ${(error as Error).message}`)
+      throw new Error(`移除协作者失败: ${(error as Error).message}`)
     }
   }
 
@@ -822,19 +770,9 @@ export class Repo extends GitHubClient {
   public async get_repo_visibility (
     options: RepoInfoParamType
   ): Promise<RepoVisibilityResponseType['visibility']> {
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
-      let owner, repo
-      if ('url' in options) {
-        const url = options.url.trim()
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options?.owner
-        repo = options?.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
+      const { owner, repo } = options
       return (await this.get_repo_info({ owner, repo })).data.visibility
     } catch (error) {
       throw new Error(`获取仓库可见性失败: ${(error as Error).message}`)
@@ -859,19 +797,9 @@ export class Repo extends GitHubClient {
   public async get_repo_default_branch (
     options: RepoInfoParamType
   ): Promise<RepoDefaultBranchResponseType['default_branch'] | null> {
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
-      let owner, repo
-      if ('url' in options) {
-        const url = options.url.trim()
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options?.owner
-        repo = options?.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
+      const { owner, repo } = options
       return (await this.get_repo_info({ owner, repo })).data.default_branch
     } catch (error) {
       throw new Error(`获取仓库默认分支失败: ${(error as Error).message}`)
@@ -896,19 +824,9 @@ export class Repo extends GitHubClient {
   public async get_repo_main_language (
     options: RepoInfoParamType
   ): Promise<RepoMainLanguageResponseType['language']> {
+    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
-      let owner, repo
-      if ('url' in options) {
-        const url = options.url.trim()
-        const info = parse_git_url(url)
-        owner = info?.owner
-        repo = info?.repo
-      } else if ('owner' in options && 'repo' in options) {
-        owner = options?.owner
-        repo = options?.repo
-      } else {
-        throw new Error(NotParamMsg)
-      }
+      const { owner, repo } = options
       return (await this.get_repo_info({ owner, repo })).data.language
     } catch (error) {
       throw new Error(`获取仓库语言失败: ${(error as Error).message}`)

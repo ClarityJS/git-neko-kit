@@ -1,7 +1,7 @@
 import {
   formatParamType,
+  RepoBaseParamType,
   RepoOwnerParamType,
-  RepoParamType,
   UserNameParamType
 } from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
@@ -29,7 +29,7 @@ export interface UserByTokenRepoListParamType extends RepoListBaseParamType {
 }
 
 /** 仓库信息请求参数 */
-export type RepoInfoParamType = RepoParamType & {
+export type RepoInfoParamType = RepoBaseParamType & {
   /** 是否格式化日期 */
   format?: formatParamType['format']
 }
@@ -287,7 +287,7 @@ export interface LanguageInfo {
 }
 
 /** 仓库语言列表参数类型 */
-export type RepoLanguagesListParamType = RepoParamType
+export type RepoLanguagesListParamType = RepoBaseParamType
 /** 仓库语言列表类型 */
 export interface RepoLanguagesListType {
   /** 仓库的语言统计信息列表 */
@@ -402,7 +402,7 @@ export interface CollaboratorInfoResponseType {
 export type CollaboratorListResponseType = CollaboratorInfoResponseType[]
 
 /** 移除协作者参数类型 */
-export type RemoveCollaboratorParamType = RepoParamType & UserNameParamType
+export type RemoveCollaboratorParamType = RepoBaseParamType & UserNameParamType
 /** 移除协作者响应类型 */
 export interface RemoveCollaboratorResponseType {
   /** 状态信息 */
