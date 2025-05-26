@@ -18,9 +18,9 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.mjs",
+      "import": "./dist/index.mjs",
       "types": "./dist/index.d.ts",
-      "require": "./dist/cjs/index.cjs"
+      "require": "./dist/index.cjs"
     },
     "./axios": {
       "types": "./dist/exports/axios.d.ts",

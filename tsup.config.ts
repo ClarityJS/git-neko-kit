@@ -35,26 +35,9 @@ const copyFiles = () => {
   const file_path = dirname(file_name_path)
 
   const distDir = path.join(file_path, 'dist')
-  const esmDir = path.join(distDir, 'esm')
-  const cjsDir = path.join(distDir, 'cjs')
 
-  // 创建 esm 和 cjs 目录
-  fs.mkdirSync(esmDir, { recursive: true })
-  fs.mkdirSync(cjsDir, { recursive: true })
-
-  // 移动 .mjs 文件到 esm 目录
+  // 删除 .d.cts 文件
   fs.readdirSync(distDir).forEach((file) => {
-    if (file.endsWith('.mjs')) {
-      fs.renameSync(path.join(distDir, file), path.join(esmDir, file))
-    }
-  })
-
-  // 移动 .cjs 文件到 cjs 目录
-  fs.readdirSync(distDir).forEach((file) => {
-    if (file.endsWith('.cjs')) {
-      fs.renameSync(path.join(distDir, file), path.join(cjsDir, file))
-    }
-    // 删除 .d.cts 文件
     if (file.endsWith('.d.cts')) {
       fs.rmSync(path.join(distDir, file))
     }

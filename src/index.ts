@@ -21,7 +21,6 @@ class Client {
 export {
   Client
 }
-
 /** GitHub 模块 */
 export {
   GitHubClient
