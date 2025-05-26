@@ -330,7 +330,7 @@ export type CollaboratorParamType = RepoInfoParamType & UserNameParamType & {
    */
   permission?: string;
   /** 是否格式化日期 */
-  format: formatParamType['format']
+  format?: formatParamType['format']
 }
 
 /** 邀请协作者响应类型 */
