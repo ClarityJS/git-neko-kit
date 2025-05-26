@@ -1,5 +1,20 @@
 # 变更日志
 
+## [0.7.0](https://github.com/CandriaJS/git-neko-kit/compare/v0.6.1...v0.7.0) (2025-05-26)
+
+
+### ✨ 新功能
+
+* **proxy:** 增加反向代理支持并优化代理配置 ([f96714a](https://github.com/CandriaJS/git-neko-kit/commit/f96714a1354a3c54d2fcecd72e3ca8ffbdb25d68))
+
+
+### ♻️ 代码重构
+
+* **github:** 优化 Commit 类中 author 和 committer 的处理逻辑 ([2e840a8](https://github.com/CandriaJS/git-neko-kit/commit/2e840a89bdbe23df96fb3ba9b6e1d57ecc3e59ea))
+* **github:** 优化仓库信息获取接口 ([1e72738](https://github.com/CandriaJS/git-neko-kit/commit/1e72738b1de14c00d01757aaea0b7a1d35b1945b))
+* **github:** 重构 GitHub 相关代码 ([8c1b883](https://github.com/CandriaJS/git-neko-kit/commit/8c1b8835e14d879acab0c358ca9f717e84077bdd))
+* **github:** 重构仓库信息接口 ([9a7a884](https://github.com/CandriaJS/git-neko-kit/commit/9a7a8842e1f8f281fc7940e013e136ab5acc1669))
+
 ## [0.6.1](https://github.com/CandriaJS/git-neko-kit/compare/v0.6.0...v0.6.1) (2025-05-25)
 
 
