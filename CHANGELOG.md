@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.7.1](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.0...v0.7.1) (2025-05-26)
+
+
+### 🐛 错误修复
+
+* 类型修复 ([3004a7a](https://github.com/CandriaJS/git-neko-kit/commit/3004a7a3dccadc8c51bd1e7e448dafbafd15aafc))
+
 ## [0.7.0](https://github.com/CandriaJS/git-neko-kit/compare/v0.6.1...v0.7.0) (2025-05-26)
 
 
