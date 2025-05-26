@@ -5,6 +5,10 @@ import {
   UserNameParamType
 } from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
+
+/** 仓库所有者参数类型 */
+export type RepoUser = Omit<UserInfoResponseType, 'followers' | 'following' | 'blog' | 'bio' | 'company'>
+
 /** 仓库列表参数类型 */
 export interface RepoListBaseParamType {
   /** 排序方式，可选created， updated， pushed， full_name， 默认为 full_name */
@@ -153,7 +157,7 @@ export interface RepoInfoResponseType {
   /** * 仓库的完整名称，包含用户名或组织名 */
   full_name: string;
   /** * 仓库拥有者的信息 */
-  owner: UserInfoResponseType;
+  owner: RepoUser;
   /** 仓库是否公开 */
   public: boolean;
   /** * 仓库是否私有 */

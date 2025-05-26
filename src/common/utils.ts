@@ -162,7 +162,7 @@ export function RgbToHex (rgb: RGB): string {
  */
 export function get_langage_color (language: string): string {
   language = String(language).toLowerCase()
-  return RgbToHex(LanguageColors[language].color) ?? '#cccccc'
+  return RgbToHex(LanguageColors[language].color) ?? '#ededed'
 }
 /**
  * 将数组按指定大小分割成二维数组

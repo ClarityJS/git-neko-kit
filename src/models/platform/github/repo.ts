@@ -10,8 +10,7 @@ import {
   NotRepoMsg,
   NotRepoOrPerrmissionMsg,
   NotUserMsg,
-  NotUserParamMsg,
-  parse_git_url
+  NotUserParamMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
 import type {
@@ -101,24 +100,19 @@ export class Repo extends GitHubClient {
       }
       const isFormat = options.format ?? this.format
       if (res.data) {
-        res.data = await Promise.all(
-          res.data.map(async (repo: RepoInfoResponseType) => ({
+        const RepoData: RepoInfoResponseType[] = await Promise.all(
+          res.data.map(async (repo: RepoInfoResponseType):Promise<RepoInfoResponseType> => ({
             id: repo.id,
             name: repo.name,
             full_name: repo.full_name,
             owner: {
               id: repo.owner.id,
               login: repo.owner.login,
-              name: repo.owner.name,
+              name: repo.owner.name ?? null,
               avatar_url: repo.owner.avatar_url,
               type: repo.owner.type,
               html_url: repo.owner.html_url,
-              company: repo.owner.company,
-              email: repo.owner.email,
-              bio: repo.owner.bio,
-              blog: repo.owner.blog,
-              followers: repo.owner.followers,
-              following: repo.owner.following
+              email: repo.owner.email ?? null
             },
             public: !repo.private,
             private: repo.private,
@@ -145,6 +139,7 @@ export class Repo extends GitHubClient {
               : repo.pushed_at
           }))
         )
+        res.data = RepoData
       }
       return res
     } catch (error) {
@@ -200,8 +195,8 @@ export class Repo extends GitHubClient {
       }
       const isFormat = options?.format ?? this.format
       if (res.data) {
-        res.data = await Promise.all(
-          res.data.map(async (repo: RepoInfoResponseType) => ({
+        const RepoData: RepoInfoResponseType[] = await Promise.all(
+          res.data.map(async (repo: RepoInfoResponseType): Promise<RepoInfoResponseType> => ({
             id: repo.id,
             name: repo.name,
             full_name: repo.full_name,
@@ -212,12 +207,7 @@ export class Repo extends GitHubClient {
               avatar_url: repo.owner.avatar_url,
               type: repo.owner.type,
               html_url: repo.owner.html_url,
-              company: repo.owner.company,
-              email: repo.owner.email,
-              bio: repo.owner.bio,
-              blog: repo.owner.blog,
-              followers: repo.owner.followers,
-              following: repo.owner.following
+              email: repo.owner.email
             },
             public: !repo.private,
             private: repo.private,
@@ -244,6 +234,7 @@ export class Repo extends GitHubClient {
               : repo.pushed_at
           }))
         )
+        res.data = RepoData
       }
       return res
     } catch (error) {
@@ -295,8 +286,8 @@ export class Repo extends GitHubClient {
       }
 
       if (res.data) {
-        res.data = await Promise.all(
-          res.data.map(async (repo: RepoInfoResponseType) => ({
+        const RepoData = await Promise.all(
+          res.data.map(async (repo: RepoInfoResponseType): Promise<RepoInfoResponseType> => ({
             id: repo.id,
             name: repo.name,
             full_name: repo.full_name,
@@ -307,12 +298,7 @@ export class Repo extends GitHubClient {
               avatar_url: repo.owner.avatar_url,
               type: repo.owner.type,
               html_url: repo.owner.html_url,
-              company: repo.owner.company,
-              email: repo.owner.email,
-              bio: repo.owner.bio,
-              blog: repo.owner.blog,
-              followers: repo.owner.followers,
-              following: repo.owner.following
+              email: repo.owner.email
             },
             public: !repo.private,
             private: repo.private,
@@ -340,6 +326,7 @@ export class Repo extends GitHubClient {
 
           }))
         )
+        res.data = RepoData
       }
 
       return res
@@ -381,7 +368,7 @@ export class Repo extends GitHubClient {
       }
       const isFormat = options?.format ?? this.format
       if (res.data) {
-        res.data = {
+        const RepoData: RepoInfoResponseType = {
           id: res.data.id,
           name: res.data.name,
           full_name: res.data.full_name,
@@ -392,12 +379,7 @@ export class Repo extends GitHubClient {
             avatar_url: res.data.owner.avatar_url,
             type: res.data.owner.type,
             html_url: res.data.owner.html_url,
-            company: res.data.owner.company,
-            email: res.data.owner.email,
-            bio: res.data.owner.bio,
-            blog: res.data.owner.blog,
-            followers: res.data.owner.followers,
-            following: res.data.owner.following
+            email: res.data.owner.email
           },
           public: !res.data.private,
           private: res.data.private,
@@ -422,8 +404,8 @@ export class Repo extends GitHubClient {
           pushed_at: isFormat
             ? await formatDate(res.data.pushed_at)
             : res.data.pushed_at
-
         }
+        res.data = RepoData
       }
       return res
     } catch (error) {
@@ -514,7 +496,7 @@ export class Repo extends GitHubClient {
       }
       const isFormat = options?.format ?? this.format
       if (res.data) {
-        res.data = {
+        const RepoData: OrgRepoCreateResponseType = {
           id: res.data.id,
           name: res.data.name,
           full_name: res.data.full_name,
@@ -525,12 +507,7 @@ export class Repo extends GitHubClient {
             avatar_url: res.data.owner.avatar_url,
             type: res.data.owner.type,
             html_url: res.data.owner.html_url,
-            company: res.data.owner.company,
-            email: res.data.owner.email,
-            bio: res.data.owner.bio,
-            blog: res.data.owner.blog,
-            followers: res.data.owner.followers,
-            following: res.data.owner.following
+            email: res.data.owner.email
           },
           public: !res.data.private,
           private: res.data.private,
@@ -555,8 +532,8 @@ export class Repo extends GitHubClient {
           pushed_at: isFormat
             ? await formatDate(res.data.pushed_at)
             : res.data.pushed_at
-
         }
+        res.data = RepoData
       }
       return res
     } catch (error) {

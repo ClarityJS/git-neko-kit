@@ -142,7 +142,7 @@ export class User extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`通过用户id获取用户${options.user_id}信息失败: ${(error as Error).message}`)
+      throw new Error(`通过用户id获取用户信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -258,7 +258,7 @@ export class User extends GitHubClient {
         data: ContributionData
       }
     } catch (error) {
-      throw new Error(`获取用户${options.username}贡献信息失败: ${(error as Error).message}`)
+      throw new Error(`获取用户贡献信息失败: ${(error as Error).message}`)
     }
   }
 

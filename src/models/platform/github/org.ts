@@ -60,7 +60,7 @@ export class Org extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取组织${options.org}信息失败: ${(error as Error).message}`)
+      throw new Error(`获取组织信息失败: ${(error as Error).message}`)
     }
   }
 }

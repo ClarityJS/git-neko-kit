@@ -303,7 +303,7 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取仓库${options.owner}/${options.repo}的Issue列表失败: ${(error as Error).message}`)
+      throw new Error(`获取仓库的Issue列表失败: ${(error as Error).message}`)
     }
   }
 
