@@ -55,7 +55,7 @@ export class WebHook extends GitHubClient {
     let status: 'ok' | 'error' = 'error'
     let statusCode = 400
     let msg = NotWebHookSignatureMsg
-    let data
+    let WebHookdata: WebHookSignatureResponseType
 
     try {
       const hmac = crypto.createHmac('sha256', secret)
@@ -76,7 +76,8 @@ export class WebHook extends GitHubClient {
         status = 'ok'
         statusCode = 200
         msg = '请求成功'
-        data = {
+        WebHookdata = {
+          success,
           info: WebHookSignatureSuccessMsg
         }
       } else {
@@ -84,7 +85,8 @@ export class WebHook extends GitHubClient {
         status = 'error'
         statusCode = 403
         msg = '请求失败'
-        data = {
+        WebHookdata = {
+          success,
           info: NotWebHookSignatureMsg
         }
       }
@@ -97,7 +99,8 @@ export class WebHook extends GitHubClient {
         status,
         statusCode,
         msg,
-        data
-      })
+        data: WebHookdata
+      }
+    )
   }
 }
