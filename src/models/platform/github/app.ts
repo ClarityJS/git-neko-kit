@@ -2,12 +2,10 @@ import { capitalize } from 'lodash-es'
 
 import {
   AppRepoMovedMsg,
-  MissingRepoIdentifierMsg,
   MissingRepoOwnerOrNameMsg,
   NotAccessTokenMsg,
   NotAppSlugMsg,
-  NotRepoMsg,
-  parse_git_url
+  NotRepoMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
 import type {

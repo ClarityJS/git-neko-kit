@@ -58,19 +58,19 @@ export class Release extends GitHubClient {
    * console.log(release) // Release信息
    * ```
    */
-  public async get_repo_release_info (
+  public async get_release_info (
     options: ReleaseInfoParamType
   ): Promise<ApiResponseType<ReleaseInfoResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     if (!options.release_id) throw new Error(NotReleaseIdMsg)
     try {
       const { owner, repo, release_id } = options
-      const res = await this.get(`/repos/${owner}/${repo}/releases/${release_id}`) as ApiResponseType<ReleaseInfoResponseType>
+      const res = await this.get(`/repos/${owner}/${repo}/releases/${release_id}`)
       if (res.statusCode === 404) {
         throw new Error(NotReleaseOrRepoMsg)
       }
       if (res.data) {
-        res.data = {
+        const ReleaseData: ReleaseInfoResponseType = {
           id: res.data.id,
           tag_name: res.data.tag_name,
           target_commitish: res.data.target_commitish,
@@ -86,12 +86,13 @@ export class Release extends GitHubClient {
             avatar_url: res.data.author.avatar_url,
             type: capitalize((res.data.author).type.toLowerCase())
           },
-          assets: res.data.assets.map(asset => ({
+          assets: res.data.assets.map((asset: Record<string, any>) => ({
             url: asset.url,
             browser_download_url: asset.browser_download_url
           })),
           created_at: res.data.created_at
         }
+        res.data = ReleaseData
       }
       return res
     } catch (error) {
@@ -123,12 +124,12 @@ export class Release extends GitHubClient {
     try {
       const { owner, repo } = options
       const url = `/repos/${owner}/${repo}/releases/latest`
-      const res = await this.get(url) as ApiResponseType<ReleaseLatestResponseType>
+      const res = await this.get(url)
       if (res.statusCode === 404) {
         throw new Error(NotReleaseOrRepoMsg)
       }
       if (res.data) {
-        res.data = {
+        const ReleaseData: ReleaseLatestResponseType = {
           id: res.data.id,
           tag_name: res.data.tag_name,
           target_commitish: res.data.target_commitish,
@@ -144,12 +145,13 @@ export class Release extends GitHubClient {
             avatar_url: res.data.author.avatar_url,
             type: capitalize((res.data.author).type.toLowerCase())
           },
-          assets: res.data.assets.map(asset => ({
+          assets: res.data.assets.map((asset: Record<string, any>) => ({
             url: asset.url,
             browser_download_url: asset.browser_download_url
           })),
           created_at: res.data.created_at
         }
+        res.data = ReleaseData
       }
       return res
     } catch (error) {
@@ -181,12 +183,12 @@ export class Release extends GitHubClient {
     try {
       const { owner, repo, tag } = options
       const url = `/repos/${owner}/${repo}/releases/tags/${tag}`
-      const res = await this.get(url) as ApiResponseType<ReleaseInfoResponseType>
+      const res = await this.get(url)
       if (res.statusCode === 404) {
         throw new Error(NotReleaseOrRepoMsg)
       }
       if (res.data) {
-        res.data = {
+        const ReleaseData: ReleaseInfoByTagResponseType = {
           id: res.data.id,
           tag_name: res.data.tag_name,
           target_commitish: res.data.target_commitish,
@@ -202,12 +204,13 @@ export class Release extends GitHubClient {
             avatar_url: res.data.author.avatar_url,
             type: capitalize((res.data.author).type.toLowerCase())
           },
-          assets: res.data.assets.map(asset => ({
+          assets: res.data.assets.map((asset: Record<string, any>) => ({
             url: asset.url,
             browser_download_url: asset.browser_download_url
           })),
           created_at: res.data.created_at
         }
+        res.data = ReleaseData
       }
       return res
     } catch (error) {
@@ -230,7 +233,7 @@ export class Release extends GitHubClient {
    * @returns Release列表
    * @example
    * ```ts
-   * const releases = await get_repo_releases_list({ owner: 'owner', repo: 'repo' })
+   * const releases = await get_releases_list({ owner: 'owner', repo: 'repo' })
    * console.log(releases) // Release列表
    * ```
    */
@@ -245,12 +248,13 @@ export class Release extends GitHubClient {
       if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
       if (queryOptions.page) params.per_page = queryOptions.page.toString()
       const url = `/repos/${owner}/${repo}/releases`
-      const res = await this.get(url, params) as ApiResponseType<ReleaseListResponseType>
+      const res = await this.get(url, params)
       if (res.statusCode === 404) {
         throw new Error(NotReleaseOrRepoMsg)
       }
       if (res.data) {
-        res.data = res.data.map(release => ({
+        const ReleaseData:ReleaseListResponseType = res.data.map((
+          release: Record<string, any>): ReleaseInfoResponseType => ({
           id: release.id,
           tag_name: release.tag_name,
           target_commitish: release.target_commitish,
@@ -266,12 +270,13 @@ export class Release extends GitHubClient {
             avatar_url: release.author.avatar_url,
             type: capitalize((release.author).type.toLowerCase())
           },
-          assets: release.assets.map(asset => ({
+          assets: release.assets.map((asset: any) => ({
             url: asset.url,
             browser_download_url: asset.browser_download_url
           })),
           created_at: release.created_at
         }))
+        res.data = ReleaseData
       }
       return res
     } catch (error) {
@@ -309,12 +314,12 @@ export class Release extends GitHubClient {
       }
       const { owner, repo, ...ReleaseOptions } = options
       const url = `/repos/${owner}/${repo}/releases`
-      const res = await this.post(url, ReleaseOptions) as ApiResponseType<CreateReleaseResponseType>
+      const res = await this.post(url, ReleaseOptions)
       if (res.statusCode === 404) {
         throw new Error(NotReleaseOrRepoMsg)
       }
       if (res.data) {
-        res.data = {
+        const ReleaseData: CreateReleaseResponseType = {
           id: res.data.id,
           tag_name: res.data.tag_name,
           target_commitish: res.data.target_commitish,
@@ -330,12 +335,13 @@ export class Release extends GitHubClient {
             avatar_url: res.data.author.avatar_url,
             type: capitalize((res.data.author).type.toLowerCase())
           },
-          assets: res.data.assets.map(asset => ({
+          assets: res.data.assets.map((asset: Record<string, any>) => ({
             url: asset.url,
             browser_download_url: asset.browser_download_url
           })),
           created_at: res.data.created_at
         }
+        res.data = ReleaseData
       }
       return res
     } catch (error) {
@@ -378,12 +384,12 @@ export class Release extends GitHubClient {
       }
       const { owner, repo, ...ReleaseOptions } = options
       const url = `/repos/${owner}/${repo}/releases`
-      const res = await this.patch(url, null, ReleaseOptions) as ApiResponseType<UpdateReleaseResponseType>
+      const res = await this.patch(url, null, ReleaseOptions)
       if (res.statusCode === 404) {
         throw new Error(NotReleaseOrRepoMsg)
       }
       if (res.data) {
-        res.data = {
+        const ReleaseData: UpdateReleaseResponseType = {
           id: res.data.id,
           tag_name: res.data.tag_name,
           target_commitish: res.data.target_commitish,
@@ -399,12 +405,13 @@ export class Release extends GitHubClient {
             avatar_url: res.data.author.avatar_url,
             type: capitalize((res.data.author).type.toLowerCase())
           },
-          assets: res.data.assets.map(asset => ({
+          assets: res.data.assets.map((asset: Record<string, any>) => ({
             url: asset.url,
             browser_download_url: asset.browser_download_url
           })),
           created_at: res.data.created_at
         }
+        res.data = ReleaseData
       }
       return res
     } catch (error) {

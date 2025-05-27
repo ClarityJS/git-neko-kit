@@ -43,7 +43,7 @@ export class Org extends GitHubClient {
       this.setRequestConfig({
         token: this.userToken
       })
-      const res = await this.get(`/orgs/${options.org}`) as ApiResponseType<OrgInfoResponseType>
+      const res = await this.get(`/orgs/${options.org}`)
       if (res.statusCode === 404) {
         throw new Error(NotOrgMsg)
       }

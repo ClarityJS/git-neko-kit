@@ -13,6 +13,8 @@ import {
   ApiResponseType,
   CommitInfoParamType,
   CommitInfoResponseType,
+  CommitListParamType,
+  CommitListResponseType,
   DiffEntry,
   ParentCommit
 } from '@/types'
@@ -152,6 +154,143 @@ export class Commit extends GitHubClient {
       return res
     } catch (error) {
       throw new Error(`获取提交信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取提交列表
+   * 权限:
+   * — Contents: read-only
+   * @param options - 提交列表参数对象
+   * - url 仓库URL地址
+   * - owner 仓库拥有者
+   * - sha 提交的SHA值，如果不提供，则默认获取仓库的默认分支的最新提交信息
+   * - path 可选，提交路径
+   * - author 可选，提交作者
+   * - since 可选，提交时间范围开始
+   * - until 可选，提交时间范围结束
+   * - per_page 可选，每页提交数量，默认为30
+   * - page 可选，页码，默认为1
+   * @returns 提交列表
+   * @example
+   * ```ts
+   * const commitList = await commit.get_commit_list({ owner: 'owner', repo:'repo' })
+   * console.log(commitList)
+   * ```
+   */
+  public async get_commit_list (
+    options: CommitListParamType
+  ): Promise<ApiResponseType<CommitListResponseType>> {
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      let owner, repo, url, sha
+      if ('url' in options) {
+        url = options.url
+        const info = parse_git_url(url)
+        owner = info?.owner
+        repo = info?.repo
+      } else if ('owner' in options && 'repo' in options) {
+        owner = options.owner
+        repo = options.repo
+      } else {
+        throw new Error(MissingRepoIdentifierMsg)
+      }
+      if (!options.sha) {
+        const repoInfo = await this.get_repo()
+        const default_branch = await repoInfo.get_repo_default_branch({ owner, repo })
+        sha = default_branch
+      } else {
+        sha = options.sha
+      }
+      const { ...queryOptions } = options
+      const params: Record<string, string> = {}
+      if (queryOptions.sha) params.sha = queryOptions.sha
+      if (queryOptions.path) params.path = queryOptions.path
+      if (queryOptions.author) params.author = queryOptions.author
+      if (queryOptions.since) params.since = queryOptions.since
+      if (queryOptions.until) params.until = queryOptions.until
+      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.page) params.page = queryOptions.page.toString()
+      const apiUrl = `/repos/${owner}/${repo}/commits`
+      const res = await this.get(apiUrl, params)
+      switch (res.statusCode) {
+        case 401:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotCommitOrRepoMsg)
+      }
+      const isFormat = options?.format ?? this.format
+      if (res.data) {
+        const CommitData = await Promise.all(res.data.map(async (commit: Record<string, any>): Promise<CommitInfoResponseType> => {
+          const [title, ...bodyParts] = commit.commit.message.split('\n')
+          return {
+            html_url: commit.html_url,
+            sha: commit.sha,
+            comments_url: commit.comments_url,
+            commit: {
+              url: commit.commit.url,
+              author: {
+                id: commit.author.id,
+                login: commit.author.login,
+                name: commit.commit.author.name,
+                avatar_url: commit.author.avatar_url,
+                email: commit.commit.author.email,
+                html_url: commit.author.html_url,
+                type: capitalize(String(commit.author.type).toLowerCase()),
+                date: isFormat
+                  ? await formatDate(commit.commit.author.date)
+                  : commit.commit.author.date
+              },
+              committer: {
+                id: commit.committer.id,
+                login: commit.committer.login,
+                name: commit.commit.committer.name,
+                avatar_url: commit.committer.avatar_url,
+                email: commit.commit.committer.email,
+                html_url: commit.committer.html_url,
+                type: capitalize(String(commit.committer.type).toLowerCase()),
+                date: isFormat
+                  ? await formatDate(commit.commit.committer.date)
+                  : commit.commit.committer.date
+              },
+              message: commit.commit.message,
+              ...(isFormat && {
+                title,
+                body: bodyParts.length > 0 ? bodyParts.join('\n') : null
+              }),
+              tree: {
+                url: commit.commit.tree.url,
+                sha: commit.commit.tree.sha
+              }
+            },
+            parents: commit.parents.map((parent: ParentCommit) => ({
+              sha: parent.sha,
+              url: parent.url
+            })),
+            stats: {
+              additions: commit.stats.additions,
+              deletions: commit.stats.deletions,
+              total: commit.stats.total
+            },
+            files: commit.files.map((file: DiffEntry) => ({
+              sha: file.sha,
+              filename: file.filename,
+              status: file.status,
+              additions: file.additions,
+              deletions: file.deletions,
+              changes: file.changes,
+              blob_url: file.blob_url,
+              raw_url: file.raw_url
+            }))
+          }
+        }))
+        res.data = CommitData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`获取提交列表失败: ${(error as Error).message}`)
     }
   }
 }

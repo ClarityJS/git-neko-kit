@@ -204,10 +204,10 @@ export interface OrgRepoListParmType extends RepoListBaseParamType {
   format?: formatParamType['format']
 }
 /**
- * 组织仓库列表类型
+ * 组织仓库列表响应类型
  * 该类型包含了多个仓库的信息，每个仓库都有自己的详细信息。
  */
-export type OrgRepoListType = RepoInfoResponseType[]
+export type OrgRepoListResponseType = RepoInfoResponseType[]
 
 /** 创建组织仓库请求参数 */
 export interface OrgRepoCreateParamType extends RepoOwnerParamType {
@@ -293,7 +293,7 @@ export interface LanguageInfo {
 /** 仓库语言列表参数类型 */
 export type RepoLanguagesListParamType = RepoBaseParamType
 /** 仓库语言列表类型 */
-export interface RepoLanguagesListType {
+export interface RepoLanguagesListResponseType {
   /** 仓库的语言统计信息列表 */
   languages: LanguageInfo[];
 }

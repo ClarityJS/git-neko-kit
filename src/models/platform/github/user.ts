@@ -64,14 +64,14 @@ export class User extends GitHubClient {
       this.setRequestConfig({
         token
       })
-      const res = await this.get(`/users/${options.username}`) as ApiResponseType<UserInfoResponseType>
+      const res = await this.get(`/users/${options.username}`)
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       } else if (res.statusCode === 404) {
         throw new Error(NotOrgOrUserMsg)
       }
       if (res.data) {
-        res.data = {
+        const UserData: UserInfoResponseType = {
           id: res.data.id,
           login: res.data.login,
           name: res.data.name || null,
@@ -85,6 +85,7 @@ export class User extends GitHubClient {
           followers: res.data.followers,
           following: res.data.following
         }
+        res.data = UserData
       }
       return res
     } catch (error) {
@@ -118,14 +119,14 @@ export class User extends GitHubClient {
       this.setRequestConfig({
         token: this.userToken
       })
-      const res = await this.get(`/user/${options.user_id}`) as ApiResponseType<UserInfoResponseType>
+      const res = await this.get(`/user/${options.user_id}`)
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       } else if (res.statusCode === 404) {
         throw new Error(NotUserMsg)
       }
       if (res.data) {
-        res.data = {
+        const UserData: UserInfoResponseType = {
           id: res.data.id,
           login: res.data.login,
           name: res.data.name || null,
@@ -139,6 +140,7 @@ export class User extends GitHubClient {
           followers: res.data.followers,
           following: res.data.following
         }
+        res.data = UserData
       }
       return res
     } catch (error) {
@@ -167,7 +169,7 @@ export class User extends GitHubClient {
       this.setRequestConfig({
         token
       })
-      const res = await this.get('/user') as ApiResponseType<UserInfoResponseType>
+      const res = await this.get('/user')
       switch (res.statusCode) {
         case 401:
           throw new Error(NotPerrmissionMsg)
@@ -175,7 +177,7 @@ export class User extends GitHubClient {
           throw new Error(NotUserMsg)
       }
       if (res.data) {
-        res.data = {
+        const UserData: UserInfoResponseType = {
           id: res.data.id,
           login: res.data.login,
           name: res.data.name || null,
@@ -189,6 +191,7 @@ export class User extends GitHubClient {
           followers: res.data.followers,
           following: res.data.following
         }
+        res.data = UserData
       }
       return res
     } catch (error) {

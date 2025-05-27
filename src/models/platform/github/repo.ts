@@ -20,17 +20,18 @@ import type {
   CollaboratorListParamType,
   CollaboratorListResponseType,
   CollaboratorParamType,
+  LanguageInfo,
   OrgRepoCreateParamType,
   OrgRepoCreateResponseType,
   OrgRepoListParmType,
-  OrgRepoListType,
+  OrgRepoListResponseType,
   RemoveCollaboratorParamType,
   RemoveCollaboratorResponseType,
   RepoDefaultBranchResponseType,
   RepoInfoParamType,
   RepoInfoResponseType,
   RepoLanguagesListParamType,
-  RepoLanguagesListType,
+  RepoLanguagesListResponseType,
   RepoMainLanguageResponseType,
   RepoVisibilityResponseType,
   UserByTokenRepoListParamType,
@@ -75,7 +76,7 @@ export class Repo extends GitHubClient {
    */
   public async get_org_repos_list (
     options: OrgRepoListParmType
-  ): Promise<ApiResponseType<OrgRepoListType>> {
+  ): Promise<ApiResponseType<OrgRepoListResponseType>> {
     if (!options.org) {
       throw new Error(NotParamMsg)
     }
@@ -91,7 +92,7 @@ export class Repo extends GitHubClient {
       if (queryOptions?.per_page) params.per_page = queryOptions.per_page.toString()
       if (queryOptions?.page) params.page = queryOptions.page.toString()
       const url = `/orgs/${org}/repos`
-      const res = await this.get(url, params) as ApiResponseType<OrgRepoListType>
+      const res = await this.get(url, params)
       switch (res.statusCode) {
         case 404:
           throw new Error(NotOrgMsg)
@@ -100,8 +101,8 @@ export class Repo extends GitHubClient {
       }
       const isFormat = options.format ?? this.format
       if (res.data) {
-        const RepoData: RepoInfoResponseType[] = await Promise.all(
-          res.data.map(async (repo: RepoInfoResponseType):Promise<RepoInfoResponseType> => ({
+        const RepoData: OrgRepoListResponseType = await Promise.all(
+          res.data.map(async (repo: Record<string, any>):Promise<RepoInfoResponseType> => ({
             id: repo.id,
             name: repo.name,
             full_name: repo.full_name,
@@ -189,14 +190,14 @@ export class Repo extends GitHubClient {
       if (queryOptions?.page) params.page = queryOptions.page.toString()
 
       const url = '/uses/repos'
-      const res = await this.get(url, params) as ApiResponseType<UserRepoListType>
+      const res = await this.get(url, params)
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
       const isFormat = options?.format ?? this.format
       if (res.data) {
         const RepoData: RepoInfoResponseType[] = await Promise.all(
-          res.data.map(async (repo: RepoInfoResponseType): Promise<RepoInfoResponseType> => ({
+          res.data.map(async (repo: Record<string, any>): Promise<RepoInfoResponseType> => ({
             id: repo.id,
             name: repo.name,
             full_name: repo.full_name,
@@ -276,7 +277,7 @@ export class Repo extends GitHubClient {
 
       const isFormat = options?.format ?? this.format
       const url = `/users/${username}/repos`
-      const res = await this.get(url, params) as ApiResponseType<UserRepoListType>
+      const res = await this.get(url, params)
 
       switch (res.statusCode) {
         case 404:
@@ -287,7 +288,7 @@ export class Repo extends GitHubClient {
 
       if (res.data) {
         const RepoData = await Promise.all(
-          res.data.map(async (repo: RepoInfoResponseType): Promise<RepoInfoResponseType> => ({
+          res.data.map(async (repo: Record<string, any>): Promise<RepoInfoResponseType> => ({
             id: repo.id,
             name: repo.name,
             full_name: repo.full_name,
@@ -359,7 +360,7 @@ export class Repo extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo } = options
-      const res = await this.get(`/repos/${owner}/${repo}`) as ApiResponseType<RepoInfoResponseType>
+      const res = await this.get(`/repos/${owner}/${repo}`)
       switch (res.statusCode) {
         case 401:
           throw new Error(NotPerrmissionMsg)
@@ -415,14 +416,14 @@ export class Repo extends GitHubClient {
 
   public async get_repo_languages_list (
     options: RepoLanguagesListParamType
-  ): Promise<ApiResponseType<RepoLanguagesListType>> {
+  ): Promise<ApiResponseType<RepoLanguagesListResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
       })
       const { owner, repo } = options
-      const res = await this.get(`/repos/${owner}/${repo}/languages`) as ApiResponseType<RepoLanguagesListType>
+      const res = await this.get(`/repos/${owner}/${repo}/languages`)
       switch (res.statusCode) {
         case 401:
           throw new Error(NotPerrmissionMsg)
@@ -430,20 +431,19 @@ export class Repo extends GitHubClient {
           throw new Error(NotRepoMsg)
       }
       if (res.data) {
-        const totalBytes = Object.values(res.data).reduce<number>((sum, bytes) => sum + (bytes as number), 0)
-        res.data = {
-          languages: await Promise.all(
-            Object.entries(res.data).map(([language, bytes]) => {
-              const languageLower = String(language).toLowerCase()
-              return {
-                language,
-                color: get_langage_color(languageLower),
-                percent: Number(((bytes as number / totalBytes) * 100).toFixed(2)),
-                bytes: bytes as number
-              }
-            })
-          )
+        const entries = Object.entries(res.data)
+        const totalBytes = entries.reduce((sum, [, bytes]) => sum + (bytes as number), 0)
+
+        const languages: LanguageInfo[] = entries.map(([language, bytes]): LanguageInfo => ({
+          language,
+          color: get_langage_color(language.toLowerCase()),
+          percent: Number(((bytes as number / totalBytes) * 100).toFixed(2)),
+          bytes: bytes as number
+        }))
+        const LanguagesData: RepoLanguagesListResponseType = {
+          languages
         }
+        res.data = LanguagesData
       }
       return res
     } catch (error) {
@@ -490,7 +490,7 @@ export class Repo extends GitHubClient {
       const body = {
         ...repoOptions
       }
-      const res = await this.post(`/orgs/${owner}/repos`, body) as ApiResponseType<OrgRepoCreateResponseType>
+      const res = await this.post(`/orgs/${owner}/repos`, body)
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
@@ -576,10 +576,10 @@ export class Repo extends GitHubClient {
       if (queryOptions.permission) params.permission = queryOptions.permission.toString()
       if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
       if (queryOptions.page) params.page = queryOptions.page.toString()
-      const res = await this.get(`/repos/${owner}/${repo}/collaborators`, params) as ApiResponseType<CollaboratorListResponseType>
+      const res = await this.get(`/repos/${owner}/${repo}/collaborators`, params)
       if (res.data) {
-        res.data = await Promise.all(
-          res.data.map((repo: CollaboratorInfoResponseType) => ({
+        const RepoData = await Promise.all(
+          res.data.map((repo: Record<string, any>): CollaboratorInfoResponseType => ({
             id: repo.id,
             login: repo.login,
             avatar_url: repo.avatar_url,
@@ -589,6 +589,7 @@ export class Repo extends GitHubClient {
             role_name: repo.role_name
           }))
         )
+        res.data = RepoData
       }
       return res
     } catch (error) {
@@ -689,7 +690,7 @@ export class Repo extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo, username } = options
-      const res = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`) as ApiResponseType<RemoveCollaboratorResponseType>
+      const res = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`)
       if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
       if (res.status && res.statusCode === 204) {
         res.data = {

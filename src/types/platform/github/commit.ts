@@ -1,7 +1,6 @@
 import {
   formatParamType,
-  RepoBaseParamType,
-  RepoUrlParamType,
+  RepoParamType,
   ShaParamType
 } from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
@@ -12,18 +11,6 @@ export interface CommitInfoCommonParamType {
   /** 是否格式化消息和日期 */
   format?: formatParamType['format'];
 }
-
-/**
- * 提交信息基础参数类型
- * 用于获取提交信息的基础参数类型，包含仓库的拥有者、仓库名称、提交SHA等信息。
- * */
-export type CommitInfoBaseParamType = RepoBaseParamType & CommitInfoCommonParamType
-
-/**
- * 提交信息URL参数类型
- * 用于获取提交信息的URL参数类型，包含仓库的URL和提交SHA等信息。
- * */
-export type CommitInfoUrlParamType = RepoUrlParamType & CommitInfoCommonParamType
 
 /** Git提交用户信息 */
 export interface GitUser extends Omit<UserInfoResponseType, 'company' | 'bio' | 'blog' | 'followers' | 'following'> {
@@ -119,7 +106,7 @@ export interface ParentCommit {
 }
 
 /** 提交参数类型 */
-export type CommitInfoParamType = CommitInfoBaseParamType | CommitInfoUrlParamType
+export type CommitInfoParamType = RepoParamType & CommitInfoCommonParamType
 /** 提交信息响应类型 */
 export interface CommitInfoResponseType {
   /** HTML URL */
@@ -137,3 +124,25 @@ export interface CommitInfoResponseType {
   /** 变更文件列表 */
   files: DiffEntry[];
 }
+
+/** 提交列表参数类型  */
+export type CommitListParamType = RepoParamType & {
+  /** SHA 或分支名称，用于指定从哪里开始列出提交 */
+  sha?: ShaParamType['sha'];
+  /** 仅返回包含此文件路径的提交 */
+  path?: string;
+  /** GitHub 用户名或电子邮件地址，用于按提交作者筛选 */
+  author?: string;
+  /** ISO 8601 格式的时间戳 (YYYY-MM-DDTHH:MM:SSZ)，仅显示此时间之后更新的结果 */
+  since?: string;
+  /** ISO 8601 格式的时间戳 (YYYY-MM-DDTHH:MM:SSZ)，仅返回此时间之前的提交 */
+  until?: string;
+  /** 每页的结果数（最多 100），默认: 30 */
+  per_page?: number;
+  /** 要获取的结果页码，默认: 1 */
+  page?: number;
+  /** 是否格式化消息和日期 */
+  format?: formatParamType['format'];
+}
+/** 提交列表响应类型 */
+export type CommitListResponseType = CommitInfoResponseType[]

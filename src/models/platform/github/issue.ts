@@ -208,7 +208,7 @@ export class Issue extends GitHubClient {
    * console.log(res) // { data: IssueListResponseType[] }
    * ```
    */
-  public async get_repo_issue_list (
+  public async get_issues_list (
     options: RepoIssueListParamType
   ): Promise<ApiResponseType<IssueListResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
@@ -240,7 +240,7 @@ export class Issue extends GitHubClient {
       }
       if (res.data) {
         const IssueData: IssueListResponseType = res.data.map(
-          (issue: IssueInfoResponseType) => ({
+          (issue: Record<string, any>): IssueInfoResponseType => ({
             id: issue.id,
             html_url: issue.html_url,
             number: issue.number,
@@ -249,17 +249,15 @@ export class Issue extends GitHubClient {
             state_reason: issue.state_reason,
             title: issue.title,
             body: issue.body,
-            user: issue.user
-              ? {
-                  id: issue.user.id,
-                  login: issue.user.login,
-                  name: issue.user.name,
-                  email: issue.user.email,
-                  html_url: issue.user.html_url,
-                  avatar_url: issue.user.avatar_url,
-                  type: capitalize(issue.user.type.toLowerCase())
-                }
-              : null,
+            user: {
+              id: issue.user.id,
+              login: issue.user.login,
+              name: issue.user.name,
+              email: issue.user.email,
+              html_url: issue.user.html_url,
+              avatar_url: issue.user.avatar_url,
+              type: capitalize(issue.user.type.toLowerCase())
+            },
             labels: issue.labels
               ? issue.labels.map((label: IssueLabelType) => ({
                 id: label.id,
@@ -957,7 +955,7 @@ export class Issue extends GitHubClient {
    * console.log(res) // { data: IssueCommentListResponseType[] }
    * ```
    */
-  public async get_repo_comments_list (
+  public async get_comments_list (
     options: RepoCommentListParamType
   ): Promise<ApiResponseType<RepoCommentListResponseType>> {
     if (!options.owner || !options.repo) {
@@ -971,9 +969,7 @@ export class Issue extends GitHubClient {
 
       const params: Record<string, string> = {}
       if (queryOptions.sort) params.sort = queryOptions.sort
-      if (queryOptions.sort && queryOptions.direction) {
-        params.direction = queryOptions.direction
-      }
+      if (queryOptions.direction && queryOptions.direction) params.direction = queryOptions.direction
       if (queryOptions.since) params.since = queryOptions.since
       if (queryOptions.per_page) {
         params.per_page = queryOptions.per_page.toString()
@@ -991,7 +987,7 @@ export class Issue extends GitHubClient {
       }
       if (res.data) {
         const IssueData: RepoCommentListResponseType = res.data.map(
-          (comment: IssueCommentInfoResponseType) => ({
+          (comment: Record<string, any>): IssueCommentInfoResponseType => ({
             id: comment.id,
             html_url: comment.html_url,
             body: comment.body,
@@ -1071,7 +1067,7 @@ export class Issue extends GitHubClient {
       }
       if (res.data) {
         const IssueData: IssueCommentListResponseType = res.data.map(
-          (comment: IssueCommentInfoResponseType) => ({
+          (comment: Record<string, any>): IssueCommentInfoResponseType => ({
             id: comment.id,
             html_url: comment.html_url,
             body: comment.body,
@@ -1417,7 +1413,7 @@ export class Issue extends GitHubClient {
       }
       if (res.data) {
         const IssueData: SubIssueListResponseType = res.data.map(
-          (issue: IssueInfoResponseType) => ({
+          (issue: Record<string, any>): IssueInfoResponseType => ({
             id: issue.id,
             html_url: issue.html_url,
             number: issue.number,
