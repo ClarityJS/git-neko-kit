@@ -134,7 +134,7 @@ jobs:
   syncn:
     runs-on: ubuntu-latest
     needs:
-      [publish-to-github, publish-to-github]
+      [publish-to-github, publish-to-npm]
     steps:
       - name: 同步镜像源
         run: |
