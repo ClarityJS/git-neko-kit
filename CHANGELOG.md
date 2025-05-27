@@ -1,5 +1,17 @@
 # 变更日志
 
+## [0.7.5](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.4...v0.7.5) (2025-05-27)
+
+
+### ♻️ 代码重构
+
+* **github:** 优化 WebHook 签名验证逻辑 ([156ff2e](https://github.com/CandriaJS/git-neko-kit/commit/156ff2e294efb7d8183f5e84d54db0b60ed51a59))
+
+
+### 🎡 持续集成
+
+* **release:** 修正同步镜像源的依赖项 ([166a906](https://github.com/CandriaJS/git-neko-kit/commit/166a90660a490d4961a373b9bfb0b9e34c8f0d8c))
+
 ## [0.7.4](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.3...v0.7.4) (2025-05-27)
 
 
