@@ -183,22 +183,29 @@ async function listSplit<T> (items: T[], n: number): Promise<T[][]> {
  * @returns 解析后的贡献数据，包括总贡献数和按周分组的贡献数据
  */
 export async function getContributionData (html: string): Promise<ContributionResult> {
-  const dateRegex = /data-date="(.*?)" id="contribution-day-component/g
-  const countRegex = /<tool-tip .*?class="sr-only position-absolute">(.*?) contribution/g
-  const dates = Array.from(html.matchAll(dateRegex), m => m[1])
-  const counts = Array.from(html.matchAll(countRegex), m =>
-    String(m[1]).toLowerCase() === 'no' ? 0 : parseInt(m[1])
-  )
-  if (!dates.length || !counts.length) {
-    return { total: 0, contributions: [] }
-  }
-  const sortedData = dates
-    .map((date, index) => ({ date, count: counts[index] }))
-    .sort((a, b) => a.date.localeCompare(b.date))
+  try {
+    if (!html) {
+      return { total: 0, contributions: [] }
+    }
+    const dateRegex = /data-date="(.*?)" id="contribution-day-component/g
+    const countRegex = /<tool-tip .*?class="sr-only position-absolute">(.*?) contribution/g
+    const dates = Array.from(html.matchAll(dateRegex), m => m[1])
+    const counts = Array.from(html.matchAll(countRegex), m =>
+      String(m[1]).toLowerCase() === 'no' ? 0 : parseInt(m[1])
+    )
+    if (!dates.length || !counts.length) {
+      return { total: 0, contributions: [] }
+    }
+    const sortedData = dates
+      .map((date, index) => ({ date, count: counts[index] }))
+      .sort((a, b) => a.date.localeCompare(b.date))
 
-  const contributions = await listSplit(sortedData, 7)
-  return {
-    total: counts.reduce((sum, count) => sum + count, 0),
-    contributions
+    const contributions = await listSplit(sortedData, 7)
+    return {
+      total: counts.reduce((sum, count) => sum + count, 0),
+      contributions
+    }
+  } catch (error) {
+    throw new Error(`解析贡献数据失败: ${error}`)
   }
 }

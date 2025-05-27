@@ -250,7 +250,7 @@ export class User extends GitHubClient {
       }, {
         'X-Requested-With': 'XMLHttpRequest'
       })
-
+      if (!res.success) throw new Error('获取用户贡献数据失败')
       if (res.statusCode === 404) {
         throw new Error(NotUserParamMsg)
       }
