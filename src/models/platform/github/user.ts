@@ -57,7 +57,7 @@ export class User extends GitHubClient {
     if (!options.username) {
       throw new Error(NotOrgOrUserParamMsg)
     }
-    if (!token?.startsWith('ghu_')) {
+    if (token && !token?.startsWith('ghu_')) {
       throw new Error(isNotAccessTokeMsg)
     }
     try {
@@ -112,7 +112,7 @@ export class User extends GitHubClient {
     if (!options.user_id) {
       throw new Error(NotUserIdParamMsg)
     }
-    if (!token?.startsWith('ghu_')) {
+    if (token && !token?.startsWith('ghu_')) {
       throw new Error(isNotAccessTokeMsg)
     }
     try {
