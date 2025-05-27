@@ -1,5 +1,17 @@
 # 变更日志
 
+## [0.7.4](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.3...v0.7.4) (2025-05-27)
+
+
+### 🐛 错误修复
+
+* **github:** 优化 commit 信息获取及格式化 ([f998620](https://github.com/CandriaJS/git-neko-kit/commit/f998620ae78fd7107f380b3522361a2aeebe4163))
+
+
+### ⚡️ 性能优化
+
+* **github:** 添加获取提交列表功能 ([fd4bd30](https://github.com/CandriaJS/git-neko-kit/commit/fd4bd30f862123590e79abc70cc9049631dce88c))
+
 ## [0.7.3](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.2...v0.7.3) (2025-05-26)
 
 
