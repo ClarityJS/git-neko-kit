@@ -1,6 +1,6 @@
 {
   "name": "@candriajs/git-neko-kit",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "description": "Github, Gitee, GitCode API封装库",
   "keywords": [
     "git",

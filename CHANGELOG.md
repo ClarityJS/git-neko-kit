@@ -1,5 +1,23 @@
 # 变更日志
 
+## [0.7.7](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.6...v0.7.7) (2025-05-27)
+
+
+### 🐛 错误修复
+
+* **models:** 优化 GitHub 用户 token 验证逻辑 ([66d4607](https://github.com/CandriaJS/git-neko-kit/commit/66d46074fba0484d2be62d5ff901fd770c5b4505))
+* **user:** 修复获取用户贡献数据异常处理 ([3f66038](https://github.com/CandriaJS/git-neko-kit/commit/3f6603858704a44ef2a6df2cf3de62f878ec6a46))
+
+
+### ⚡️ 性能优化
+
+* **GitHub:** 增加用户公开仓库数量字段 ([c4eb33e](https://github.com/CandriaJS/git-neko-kit/commit/c4eb33e7fd928741b60630168b9e665f89172923))
+
+
+### ♻️ 代码重构
+
+* **platform/github:** 移除用户信息中的 company 字段 ([950acd8](https://github.com/CandriaJS/git-neko-kit/commit/950acd83860c9904aba101c9d206688697d42188))
+
 ## [0.7.6](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.5...v0.7.6) (2025-05-27)
 
 
