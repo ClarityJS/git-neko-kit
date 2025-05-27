@@ -3,7 +3,7 @@ import {
 } from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
 
-export type ReleaseUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following'>
+export type ReleaseUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following' | 'public_repos'>
 /** 反应信息类型 */
 export interface ReactionInfoType {
   /** 反应 API URL */
@@ -45,9 +45,9 @@ export type ReleaseInfoParamType = RepoBaseParamType & {
 export interface ReleaseInfoResponseType {
   /**
    * 发布版本的 ID
-   * 该字段在gitcode平台同target_commitish一致
+   * 该字段在gitcode平台为null
    */
-  id: number | string;
+  id: number | null;
   /** 标签名称 */
   tag_name: string;
   /** 目标分支或提交 */

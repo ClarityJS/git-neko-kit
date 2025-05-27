@@ -13,7 +13,7 @@ export interface CommitInfoCommonParamType {
 }
 
 /** Git提交用户信息 */
-export interface GitUser extends Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following'> {
+export interface GitUser extends Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following' | 'public_repos'> {
   /** 日期字符串 */
   date: string;
 }

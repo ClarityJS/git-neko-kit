@@ -45,6 +45,8 @@ export interface UserInfoResponseType {
   bio: string | null;
   /** 博客URL */
   blog: string | null;
+  /** 公开仓库数量 */
+  public_repos: number;
   /** 粉丝数 */
   followers: number;
   /** 关注数 */

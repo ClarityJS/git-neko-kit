@@ -1,7 +1,7 @@
 import { AccessTokenType } from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
 
-export type AppUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following'>
+export type AppUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following' | 'public_repos'>
 
 /**
  * 定义 Base 应用所需的权限

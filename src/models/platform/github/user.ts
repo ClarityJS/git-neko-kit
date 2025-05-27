@@ -81,6 +81,7 @@ export class User extends GitHubClient {
           email: res.data.email || null,
           bio: res.data.bio || null,
           blog: res.data.blog || null,
+          public_repos: res.data.public_repos,
           followers: res.data.followers,
           following: res.data.following
         }
@@ -135,6 +136,7 @@ export class User extends GitHubClient {
           email: res.data.email || null,
           bio: res.data.bio || null,
           blog: res.data.blog || null,
+          public_repos: res.data.public_repos,
           followers: res.data.followers,
           following: res.data.following
         }
@@ -185,6 +187,7 @@ export class User extends GitHubClient {
           email: res.data.email || null,
           bio: res.data.bio || null,
           blog: res.data.blog || null,
+          public_repos: res.data.public_repos,
           followers: res.data.followers,
           following: res.data.following
         }
