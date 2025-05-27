@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.7.6](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.5...v0.7.6) (2025-05-27)
+
+
+### 🐛 错误修复
+
+* 通过访问令牌获取用户信息时出现异常错误 ([caff0a7](https://github.com/CandriaJS/git-neko-kit/commit/caff0a79c01841003d11795d00d80abfbcae68c8))
+
 ## [0.7.5](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.4...v0.7.5) (2025-05-27)
 
 
