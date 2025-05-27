@@ -61,7 +61,7 @@ export class Auth extends GitHubClient {
         {
           url: this.BaseUrl
         })
-      const res = await this.post('login/oauth/access_token', {
+      const res = await this.post('/login/oauth/access_token', {
         client_id: this.Client_ID,
         client_secret: this.Client_Secret,
         code: options.code
@@ -151,7 +151,7 @@ export class Auth extends GitHubClient {
         {
           url: this.BaseUrl
         })
-      const res = await this.post('login/oauth/access_token', {
+      const res = await this.post('/login/oauth/access_token', {
         client_id: this.Client_ID,
         client_secret: this.Client_Secret,
         grant_type: 'refresh_token',

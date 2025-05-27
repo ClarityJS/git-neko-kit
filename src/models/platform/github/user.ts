@@ -162,7 +162,7 @@ export class User extends GitHubClient {
   public async get_user_info_by_auth (options?: UserInfoByAuthParamType):
   Promise<ApiResponseType<UserInfoResponseType>> {
     const token = options?.access_token ?? this.userToken
-    if (!options || !token) {
+    if (!token) {
       throw new Error(NotAccessTokenMsg)
     }
     try {
