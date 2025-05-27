@@ -41,8 +41,6 @@ export interface UserInfoResponseType {
   html_url: string;
   /** 账号头像URL */
   avatar_url: string;
-  /** 公司 */
-  company: string | null;
   /** 个人简介 */
   bio: string | null;
   /** 博客URL */

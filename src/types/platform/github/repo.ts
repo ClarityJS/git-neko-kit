@@ -7,7 +7,7 @@ import {
 import { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 仓库所有者参数类型 */
-export type RepoUser = Omit<UserInfoResponseType, 'followers' | 'following' | 'blog' | 'bio' | 'company'>
+export type RepoUser = Omit<UserInfoResponseType, 'followers' | 'following' | 'blog' | 'bio'>
 
 /** 仓库列表参数类型 */
 export interface RepoListBaseParamType {

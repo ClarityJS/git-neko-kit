@@ -3,7 +3,7 @@ import {
 } from '@/types/platform/base'
 import { UserInfoResponseType } from '@/types/platform/github/user'
 
-export type ReleaseUser = Omit<UserInfoResponseType, 'company' | 'bio' | 'blog' | 'followers' | 'following'>
+export type ReleaseUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following'>
 /** 反应信息类型 */
 export interface ReactionInfoType {
   /** 反应 API URL */
