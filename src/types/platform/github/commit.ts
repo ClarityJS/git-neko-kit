@@ -66,7 +66,7 @@ export interface Commit {
    * 仅在开启格式化消息时返回
    * @example "-  add new feature"
    */
-  body?: string;
+  body?: string | null;
   /** 提交树信息 */
   tree: {
     /** 树对象的SHA */

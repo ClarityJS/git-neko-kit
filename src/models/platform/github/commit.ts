@@ -94,25 +94,25 @@ export class Commit extends GitHubClient {
           commit: {
             url: res.data.commit.url,
             author: {
-              id: res.data.commit.author.id,
-              login: res.data.commit.author.login,
+              id: res.data.author.id,
+              login: res.data.author.login,
               name: res.data.commit.author.name,
-              avatar_url: res.data.commit.author.avatar_url,
+              avatar_url: res.data.author.avatar_url,
               email: res.data.commit.author.email,
-              html_url: res.data.commit.author.html_url,
-              type: capitalize(String(res.data.commit.author.type).toLowerCase()),
+              html_url: res.data.author.html_url,
+              type: capitalize(String(res.data.author.type).toLowerCase()),
               date: isFormat
                 ? await formatDate(res.data.commit.author.date)
                 : res.data.commit.author.date
             },
             committer: {
-              id: res.data.commit.committer.id,
-              login: res.data.commit.committer.login,
+              id: res.data.committer.id,
+              login: res.data.committer.login,
               name: res.data.commit.committer.name,
-              avatar_url: res.data.commit.committer.avatar_url,
+              avatar_url: res.data.committer.avatar_url,
               email: res.data.commit.committer.email,
-              html_url: res.data.commit.committer.html_url,
-              type: capitalize(String(res.data.commit.committer.type).toLowerCase()),
+              html_url: res.data.committer.html_url,
+              type: capitalize(String(res.data.committer.type).toLowerCase()),
               date: isFormat
                 ? await formatDate(res.data.commit.committer.date)
                 : res.data.commit.committer.date
@@ -120,7 +120,7 @@ export class Commit extends GitHubClient {
             message: res.data.commit.message,
             ...(isFormat && {
               title,
-              body: bodyParts.join('\n')
+              body: bodyParts < 0 ? bodyParts.join('\n') : null
             }),
             tree: {
               url: res.data.commit.tree.url,
