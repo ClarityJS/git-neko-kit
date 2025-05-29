@@ -1,3 +1,4 @@
+import type { AxiosResponseHeaders, RawAxiosResponseHeaders } from 'axios'
 /** 是否响应成功类型 */
 export type ResponseSuccessType = boolean
 
@@ -8,7 +9,7 @@ export type ResponseStatusCodeType = number
 export type ResponseMsgType = string
 
 /** 响应头类型 */
-export type ResponseHeadersType = Record<string, string | string[] | number | boolean | null>
+export type ResponseHeadersType = RawAxiosResponseHeaders | AxiosResponseHeaders
 
 /** 响应类型 */
 export interface ResponseType<D = any> {

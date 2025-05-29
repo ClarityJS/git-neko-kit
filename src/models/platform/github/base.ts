@@ -32,13 +32,13 @@ const type = 'github'
  * 此类作为GitHub API功能的入口点，封装了以下核心能力：
  * - JWT令牌生成与管理
  * - 请求代理配置
- * - 基础HTTP请求方法(GET/POST)
+ * - 基础HTTP请求方法(GET/POST/PATCH/DELETE/PUT)
  * - 应用认证管理
  * - 模块化服务(App/Auth/Commit/Repo/User/WebHook)
  *
  * @example
  * ```ts
- * const base = new Base({
+ * const base = new GitHubClient({
  *   APP_ID: 12345,
  *   Private_Key: '-----BEGIN PRIVATE KEY-----...',
  *   Client_ID: 'Iv1.1234567890abcdef',
@@ -90,7 +90,7 @@ export class GitHubClient {
    * @returns App实例
    * @example
    * ```ts
-   * const app = await base.get_app()
+   * const app = await GitHubClient.get_app()
    * ```
    */
   public async get_app (): Promise<App> {
@@ -103,7 +103,7 @@ export class GitHubClient {
    * @returns Auth实例
    * @example
    * ```ts
-   * const auth = await base.get_auth()
+   * const auth = await GitHubClient.get_auth()
    * ```
    */
 
@@ -118,7 +118,7 @@ export class GitHubClient {
    * @returns Commit实例
    * @example
    * ```ts
-   * const commit = await base.get_commit()
+   * const commit = await GitHubClient.get_commit()
    * ```
    */
   public async get_commit (): Promise<Commit> {
@@ -132,7 +132,7 @@ export class GitHubClient {
    * @returns Issue实例
    * @example
    * ```ts
-   * const issue = await base.get_issue()
+   * const issue = await GitHubClient.get_issue()
    * ```
    */
   public async get_issue (): Promise<Issue> {
@@ -145,7 +145,7 @@ export class GitHubClient {
    * @returns Repo实例
    * @example
    * ```ts
-   * const repo = await base.get_repo()
+   * const repo = await GitHubClient.get_repo()
    * ```
    */
 
@@ -160,7 +160,7 @@ export class GitHubClient {
    * @returns User实例
    * @example
    * ```ts
-   * const user = await base.get_user()
+   * const user = await GitHubClient.get_user()
    * ```
    */
   public async get_user (): Promise<User> {
@@ -174,7 +174,7 @@ export class GitHubClient {
    * @returns Org实例
    * @example
    * ```ts
-   * const org = await base.get_org()
+   * const org = await GitHubClient.get_org()
    * ```
    */
   public async get_org (): Promise<Org> {
@@ -188,7 +188,7 @@ export class GitHubClient {
    * @returns WebHook实例
    * @example
    * ```ts
-   * const webhook = await base.get_webhook()
+   * const webhook = await GitHubClient.get_webhook()
    * ```
    */
   public async get_webhook (): Promise<WebHook> {
@@ -302,7 +302,7 @@ export class GitHubClient {
       'X-GitHub-Api-Version': '2022-11-28',
       Accept: 'application/vnd.github+json'
     }
-    return new Request(url!, tokenType, token ?? null, proxyConfig as ProxyParamsType, customHeaders)
+    return new Request(url ?? this.ApiUrl, tokenType, token, proxyConfig, customHeaders)
   }
 
   /**

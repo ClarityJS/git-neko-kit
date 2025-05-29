@@ -5,7 +5,7 @@ export type RequestTokenType = 'Bearer' | 'Basic'
 export interface RequestConfigType {
   /** 请求地址 */
   url?: string,
-  /** 请求令牌 */
+  /** 访问令牌令牌 */
   token?: string | null,
   /** 令牌类型，默认为 Bearer，即使用 Bearer 令牌 */
   tokenType?: RequestTokenType

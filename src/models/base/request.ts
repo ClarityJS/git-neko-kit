@@ -13,8 +13,8 @@ export class Request {
   private readonly baseUrl: string
   private readonly tokenType: RequestTokenType
   private readonly authorization?: string | null
-  private readonly proxy?: ProxyParamsType
-  private readonly defaultHeaders?: Record<string, string>
+  private readonly proxy?: ProxyParamsType | null
+  private readonly defaultHeaders?: Record<string, string> | null
 
   /**
    * 创建Request实例
@@ -28,8 +28,8 @@ export class Request {
     baseUrl: string,
     tokenType: RequestTokenType = 'Bearer',
     authorization?: string | null,
-    proxy?: ProxyParamsType,
-    defaultHeaders?: Record<string, string>
+    proxy?: ProxyParamsType | null,
+    defaultHeaders?: Record<string, string> | null
   ) {
     this.baseUrl = baseUrl.replace(/\/$/, '')
     this.authorization = authorization

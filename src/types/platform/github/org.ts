@@ -1,8 +1,7 @@
+import type { OrgNameParamType } from '@/types/platform/base'
+
 /** 组织信息参数类型 */
-export interface OrgInfoParamType {
-  /** 组织名称 */
-  org: string
-}
+export type OrgInfoParamType = OrgNameParamType
 /** 组织信息响应类型 */
 export interface OrgInfoResponseType {
   /** 组织ID */
