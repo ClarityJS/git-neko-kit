@@ -1,5 +1,6 @@
 import {
   formatParamType,
+  OrgNameParamType,
   RepoBaseParamType,
   RepoOwnerParamType,
   UserNameParamType
@@ -37,116 +38,6 @@ export type RepoInfoParamType = RepoBaseParamType & {
   /** 是否格式化日期 */
   format?: formatParamType['format']
 }
-
-/** 许可证信息 */
-export interface License {
-  /** * 许可证的键，例如 'mit' */
-  key: string;
-  /** * 许可证的名称，例如 'MIT License' */
-  name: string;
-  /** * 许可证的 SPDX ID，例如 'MIT' */
-  spdx_id: string;
-  /** * 许可证的 URL 地址 */
-  url: string | null;
-  /** * 许可证的 HTML URL */
-  html_url?: string;
-  /** * 许可证的节点 ID */
-  node_id: string;
-}
-
-/** 仓库行为准则 */
-export interface CodeOfConduct {
-  /** * 行为准则的键 */
-  key: string;
-  /** * 行为准则的名称 */
-  name: string;
-  /** * 行为准则的 URL */
-  url: string;
-  /** * 行为准则的主体 */
-  body?: string;
-  /** * 行为准则的 HTML URL */
-  html_url: string | null;
-}
-
-/** 仓库高级安全状态 */
-export interface SecurityAnalysisAdvancedSecurity {
-  /** * 高级安全状态 */
-  status: string;
-}
-
-/** Dependabot 安全更新状态 */
-export interface SecurityAnalysisDependabotSecurityUpdates {
-  /** * Dependabot 安全更新状态 */
-  status: string;
-}
-
-/** 秘钥扫描状态 */
-export interface SecurityAnalysisSecretScanning {
-  /** * 秘钥扫描状态 */
-  status: string;
-}
-
-/** 秘钥扫描推送保护状态 */
-export interface SecurityAnalysisSecretScanningPushProtection {
-  /** * 秘钥扫描推送保护状态 */
-  status: string;
-}
-
-/** 仓库安全和分析设置 */
-export interface SecurityAndAnalysis {
-  /** * 高级安全设置 */
-  advanced_security?: SecurityAnalysisAdvancedSecurity;
-  /** * Dependabot 安全更新设置 */
-  dependabot_security_updates?: SecurityAnalysisDependabotSecurityUpdates;
-  /** * 秘钥扫描设置 */
-  secret_scanning?: SecurityAnalysisSecretScanning;
-  /** * 秘钥扫描推送保护设置 */
-  secret_scanning_push_protection?: SecurityAnalysisSecretScanningPushProtection;
-}
-
-/** 仓库的权限信息 */
-export interface Permissions {
-  /** * 管理员权限 */
-  admin: boolean;
-  /** * 推送权限 */
-  push: boolean;
-  /** * 拉取权限 */
-  pull: boolean;
-  /** * 维护权限 */
-  maintain?: boolean;
-  /** * 分类权限 */
-  triage?: boolean;
-}
-
-/**
- * 合并提交标题的格式选项
- * - PR_TITLE: 使用 Pull Request 标题作为合并提交标题
- * - MERGE_MESSAGE: 使用默认的合并消息格式作为标题
- */
-export type MergeCommitTitle = 'PR_TITLE' | 'MERGE_MESSAGE'
-
-/**
- * 合并提交消息的格式选项
- * - PR_BODY: 使用 Pull Request 正文作为合并提交消息
- * - PR_TITLE: 使用 Pull Request 标题作为合并提交消息
- * - BLANK: 留空合并提交消息
- */
-export type MergeCommitMessage = 'PR_BODY' | 'PR_TITLE' | 'BLANK'
-
-/**
- * Squash 合并提交标题的格式选项
- * - PR_TITLE: 使用 Pull Request 标题作为 Squash 合并提交标题
- * - COMMIT_OR_PR_TITLE: 使用提交信息或 Pull Request 标题作为标题
- */
-export type SquashMergeCommitTitle = 'PR_TITLE' | 'COMMIT_OR_PR_TITLE'
-
-/**
- * Squash 合并提交消息的格式选项
- * - PR_BODY: 使用 Pull Request 正文作为 Squash 合并提交消息
- * - COMMIT_MESSAGES: 使用所有提交信息作为 Squash 合并提交消息
- * - BLANK: 留空 Squash 合并提交消息
- */
-export type SquashMergeCommitMessage = 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK'
 
 /** * 仓库信息 */
 export interface RepoInfoResponseType {
@@ -210,7 +101,7 @@ export interface OrgRepoListParmType extends RepoListBaseParamType {
 export type OrgRepoListResponseType = RepoInfoResponseType[]
 
 /** 创建组织仓库请求参数 */
-export interface OrgRepoCreateParamType extends RepoOwnerParamType {
+export interface OrgRepoCreateParamType extends OrgNameParamType {
   /** 仓库名称 */
   name: string;
   /** 仓库描述 */
@@ -221,47 +112,20 @@ export interface OrgRepoCreateParamType extends RepoOwnerParamType {
   visibility?: 'public' | 'private';
   /** 是否开启议题issue */
   has_issues?: boolean;
-  /** 是否开启项目project */
-  has_projects?: boolean;
   /** 是否开启wiki */
   has_wiki?: boolean;
-  /** 是否开启下载 */
-  has_downloads?: boolean;
-  /** 是否设置为模板仓库 */
-  is_template?: boolean;
-  /** 仓库团队id, 这仅在组织中创建仓库时有效。 */
-  team_id?: number;
   /** 仓库自动初始化 */
   auto_init?: boolean;
-  /** 仓库的gitignore模板 */
-  gitignore_template?: string;
-  /** 仓库的license模板 */
-  license_template?: string;
-  /** 是否允许合并提交 */
-  allow_squash_merge?: boolean;
-  /** 是否允许变基合并提交 */
-  allow_merge_commit?: boolean;
-  /** 是否允许重新基础合并提交 */
-  allow_rebase_merge?: boolean;
-  /** 是否允许自动合并 */
-  allow_auto_merge?: boolean;
-  /** 是否删除分支后合并 */
-  delete_branch_on_merge?: boolean;
-  /** 合并提交标题格式 */
-  squash_merge_commit_title?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE';
-  /** 合并提交消息格式 */
-  squash_merge_commit_message?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
-  /** 合并提交标题格式 */
-  merge_commit_title?: 'PR_TITLE' | 'MERGE_MESSAGE';
-  /** 合并提交消息格式 */
-  merge_commit_message?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
-  /** 新存储库的自定义属性 */
-  custom_properties?: { [key: string]: string };
   /** 是否格式化日期 */
-  format?: formatParamType['format']
+  format?: formatParamType['format'];
 }
 /** 创建组织仓库响应类型 */
 export type OrgRepoCreateResponseType = RepoInfoResponseType
+
+/** 创建用户仓库参数类型 */
+export type UserRepoCreateParamType = Omit<OrgRepoCreateParamType, 'org'> & RepoOwnerParamType
+/** 创建用户仓库响应类型 */
+export type UserRepoCreateResponseType = RepoInfoResponseType
 
 /** 用户仓库列表参数类型 */
 export interface UserRepoListParamType extends RepoListBaseParamType {

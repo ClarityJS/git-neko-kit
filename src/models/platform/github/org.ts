@@ -39,11 +39,12 @@ export class Org extends GitHubClient {
     if (!options.org) {
       throw new Error(NotOrgParamMsg)
     }
+    const { org } = options
     try {
       this.setRequestConfig({
         token: this.userToken
       })
-      const res = await this.get(`/orgs/${options.org}`)
+      const res = await this.get(`/orgs/${org}`)
       if (res.statusCode === 404) {
         throw new Error(NotOrgMsg)
       }

@@ -4,6 +4,7 @@ import {
   isNotPerrmissionMsg,
   MissingRepoOwnerOrNameMsg,
   NotOrgMsg,
+  NotOrgOrRepoParamMsg,
   NotOrgOrUserMsg,
   NotParamMsg,
   NotPerrmissionMsg,
@@ -35,6 +36,8 @@ import type {
   RepoMainLanguageResponseType,
   RepoVisibilityResponseType,
   UserByTokenRepoListParamType,
+  UserRepoCreateParamType,
+  UserRepoCreateResponseType,
   UserRepoListParamType,
   UserRepoListType
 } from '@/types'
@@ -456,41 +459,30 @@ export class Repo extends GitHubClient {
    * 权限：
    * - Administration: Read and write
    * @param options 创建组织仓库参数
-   * - owner: 组织名称
+   * - org: 组织名称
    * - name: 仓库名称
    * - description: 仓库描述
    * - homepage: 仓库主页URL
    * - visibility: 仓库可见性，可选值：'public' | 'private', 默认值：'public'
    * - has_issues: 是否启用issues功能, 默认值：true
-   * - has_projects: 是否启用projects功能, 默认值：true
    * - has_wiki: 是否启用wiki功能, 默认值：true
-   * - has_downloads: 是否启用下载功能 默认值：true
-   * - is_template: 是否设置为模板仓库 默认值：false
-   * - team_id: 关联团队ID（组织仓库专用）
    * - auto_init: 是否自动初始化仓库 默认值：false
-   * - gitignore_template: gitignore模板名称（需配合auto_init使用）
-   * - license_template: license模板名称（需配合auto_init使用）
-   * - allow_squash_merge: 是否允许squash merge, 默认值：true
-   * - allow_merge_commit: 是否允许普通合并, 默认值：true
-   * - allow_rebase_merge: 是否允许rebase合并 默认值：true
-   * - allow_auto_merge: 是否允许自动合并 默认值：false
-   * - delete_branch_on_merge: 合并后是否自动删除分支 默认值：false
-   * - squash_merge_commit_title: squash合并提交标题格式 默认值：'PR_TITLE'
-   * - squash_merge_commit_message: squash合并提交信息格式 默认值：'PR_BODY'
-   * - merge_commit_title: 合并提交标题格式 默认值：'PR_TITLE'
-   * - merge_commit_message: 合并提交信息格式 默认值：'PR_BODY'
-   * - custom_properties: 自定义键值对属性
    * @returns 返回创建成功的仓库信息
    */
   public async create_org_repo (
     options: OrgRepoCreateParamType
   ): Promise<ApiResponseType<OrgRepoCreateResponseType>> {
     try {
-      const { owner, ...repoOptions } = options
-      const body = {
-        ...repoOptions
-      }
-      const res = await this.post(`/orgs/${owner}/repos`, body)
+      const { org, ...repoOptions } = options
+      if (!org || !options.name) throw new Error(NotOrgOrRepoParamMsg)
+      const body: Record<string, string | boolean> = {}
+      body.name = repoOptions.name
+      if (repoOptions.description) body.description = repoOptions.description.toString()
+      if (repoOptions.homepage) body.homepage = repoOptions.homepage.toString()
+      if (repoOptions.visibility) body.private = repoOptions.visibility.toString()
+      if (repoOptions.has_wiki) body.has_wiki = repoOptions.has_wiki
+      if (repoOptions.auto_init) body.auto_init = repoOptions.auto_init
+      const res = await this.post(`/orgs/${org}/repos`, body)
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
@@ -539,6 +531,107 @@ export class Repo extends GitHubClient {
     } catch (error) {
       throw new Error(`创建组织仓库失败: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 创建用户仓库
+   * 权限：
+   * - Administration: Read and write
+   * @param options 创建组织仓库参数
+   * - owner: 仓库拥有者，用户名称
+   * - name: 仓库名称
+   * - description: 仓库描述
+   * - homepage: 仓库主页URL
+   * - visibility: 仓库可见性，可选值：'public' | 'private', 默认值：'public'
+   * - has_issues: 是否启用issues功能, 默认值：true
+   * - has_wiki: 是否启用wiki功能, 默认值：true
+   * - auto_init: 是否自动初始化仓库 默认值：false
+   * @returns 返回创建成功的仓库信息
+   */
+  public async create_user_repo (
+    options: UserRepoCreateParamType
+  ): Promise<ApiResponseType<UserRepoCreateResponseType>> {
+    try {
+      const { owner, ...repoOptions } = options
+      if (!owner || !options.name) throw new Error(MissingRepoOwnerOrNameMsg)
+      const body: Record<string, string | boolean> = {}
+      body.name = repoOptions.name
+      if (repoOptions.description) body.description = repoOptions.description.toString()
+      if (repoOptions.homepage) body.homepage = repoOptions.homepage.toString()
+      if (repoOptions.visibility === 'private') body.private = true
+      if (repoOptions.has_wiki) body.has_wiki = repoOptions.has_wiki
+      if (repoOptions.auto_init) body.auto_init = repoOptions.auto_init
+      const res = await this.post('/user/repos', body)
+      if (res.statusCode === 401) {
+        throw new Error(NotPerrmissionMsg)
+      }
+      const isFormat = options?.format ?? this.format
+      if (res.data) {
+        const RepoData: OrgRepoCreateResponseType = {
+          id: res.data.id,
+          name: res.data.name,
+          full_name: res.data.full_name,
+          owner: {
+            id: res.data.owner.id,
+            login: res.data.owner.login,
+            name: res.data.owner.name,
+            avatar_url: res.data.owner.avatar_url,
+            type: res.data.owner.type,
+            html_url: res.data.owner.html_url,
+            email: res.data.owner.email
+          },
+          public: !res.data.private,
+          private: res.data.private,
+          visibility: res.data.private ? 'private' : 'public',
+          fork: res.data.fork,
+          archived: res.data.archived,
+          disabled: res.data.disabled,
+          html_url: res.data.html_url,
+          description: res.data.description,
+          stargazers_count: res.data.stargazers_count,
+          watchers_count: res.data.watchers_count,
+          language: res.data.language,
+          forks_count: res.data.forks_count,
+          open_issues_count: res.data.open_issues_count,
+          default_branch: res.data.default_branch,
+          created_at: isFormat
+            ? await formatDate(res.data.created_at)
+            : res.data.created_at,
+          updated_at: isFormat
+            ? await formatDate(res.data.updated_at)
+            : res.data.updated_at,
+          pushed_at: isFormat
+            ? await formatDate(res.data.pushed_at)
+            : res.data.pushed_at
+        }
+        res.data = RepoData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`创建用户仓库失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 创建用户仓库
+   * @deprecated 请使用create_user_repo方法
+   * 权限：
+   * - Administration: Read and write
+   * @param options 创建组织仓库参数
+   * - owner: 仓库拥有者，用户名称
+   * - name: 仓库名称
+   * - description: 仓库描述
+   * - homepage: 仓库主页URL
+   * - visibility: 仓库可见性，可选值：'public' | 'private', 默认值：'public'
+   * - has_issues: 是否启用issues功能, 默认值：true
+   * - has_wiki: 是否启用wiki功能, 默认值：true
+   * - auto_init: 是否自动初始化仓库 默认值：false
+   * @returns 返回创建成功的仓库信息
+   */
+  public async create_repo (
+    options: UserRepoCreateParamType
+  ): Promise<ApiResponseType<RepoInfoResponseType>> {
+    return this.create_user_repo(options)
   }
 
   /**
