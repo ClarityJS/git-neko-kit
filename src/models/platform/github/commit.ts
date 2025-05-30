@@ -185,7 +185,7 @@ export class Commit extends GitHubClient {
       this.setRequestConfig({
         token: this.userToken
       })
-      let owner, repo, url, sha
+      let owner, repo, url
       if ('url' in options) {
         url = options.url
         const info = parse_git_url(url)
@@ -197,14 +197,14 @@ export class Commit extends GitHubClient {
       } else {
         throw new Error(MissingRepoIdentifierMsg)
       }
+      const { ...queryOptions } = options
       if (!options.sha) {
         const repoInfo = await this.get_repo()
         const default_branch = await repoInfo.get_repo_default_branch({ owner, repo })
-        sha = default_branch
+        if (default_branch) queryOptions.sha = default_branch
       } else {
-        sha = options.sha
+        queryOptions.sha = options.sha
       }
-      const { ...queryOptions } = options
       const params: Record<string, string> = {}
       if (queryOptions.sha) params.sha = queryOptions.sha
       if (queryOptions.path) params.path = queryOptions.path
