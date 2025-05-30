@@ -1,5 +1,19 @@
 # 变更日志
 
+## [0.7.8](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.7...v0.7.8) (2025-05-30)
+
+
+### ⚡️ 性能优化
+
+* **repo:** 添加创建用户仓库功能 ([7eb8ab0](https://github.com/CandriaJS/git-neko-kit/commit/7eb8ab0858df0e3ef398bbc769fbc7759bdc0c38))
+
+
+### ♻️ 代码重构
+
+* **github:** 优化 Commit 类中的代码结构 ([11caec2](https://github.com/CandriaJS/git-neko-kit/commit/11caec2e57979ff36e8f057e6d836c88926230f0))
+* **models:** 优化请求类和 GitHub 客户端的配置处理 ([7315b31](https://github.com/CandriaJS/git-neko-kit/commit/7315b315d30f77e11f487dafb7baf5c8e5b5b055))
+* **models:** 重命名 API 基础 URL 函数 ([4fa4850](https://github.com/CandriaJS/git-neko-kit/commit/4fa4850c9af352cd3383041495b462b06191cb92))
+
 ## [0.7.7](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.6...v0.7.7) (2025-05-27)
 
 
