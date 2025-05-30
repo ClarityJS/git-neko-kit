@@ -7,7 +7,7 @@ import {
   NotProxyAddressMsg,
   RateLimitMsg
 } from '@/common'
-import { ApiBaseUrl, BaseUrl } from '@/models/base/common'
+import { get_api_base_url, get_base_url } from '@/models/base/common'
 import { Request } from '@/models/base/request'
 import type { App } from '@/models/platform/github/app'
 import type { Auth } from '@/models/platform/github/auth'
@@ -74,8 +74,8 @@ export class GitHubClient {
     this.Client_Secret = options.Client_Secret
     this.WebHook_Secret = options.WebHook_Secret
     this.jwtToken = this.generate_jwt()
-    this.BaseUrl = BaseUrl(type)
-    this.ApiUrl = ApiBaseUrl(type)
+    this.BaseUrl = get_base_url(type)
+    this.ApiUrl = get_api_base_url(type)
     this.userToken = null
     this.currentRequestConfig = {
       url: this.ApiUrl,
@@ -230,8 +230,8 @@ export class GitHubClient {
       switch (proxy?.type) {
         case 'common':
         case 'reverse':
-          this.BaseUrl = BaseUrl(type, proxy.address, proxy.type)
-          this.ApiUrl = ApiBaseUrl(type, proxy.address, proxy.type)
+          this.BaseUrl = get_base_url(type, proxy.address, proxy.type)
+          this.ApiUrl = get_api_base_url(type, proxy.address, proxy.type)
           break
       }
 

@@ -9,7 +9,7 @@ import { ApiType, ProxyType, ProxyUrlType } from '@/types'
  * @param proxyType - 代理类型，默认common，可选reverse, common
  * @returns 返回URL
  */
-export function ApiBaseUrl (
+export function get_api_base_url (
   type: ApiType = 'github',
   proxyUrl?: ProxyUrlType,
   proxyType: ProxyType = 'common'
@@ -38,7 +38,7 @@ export function ApiBaseUrl (
  * @param proxyUrl - 代理URL，可选，默认不使用
  * @returns 返回URL
  */
-export function BaseUrl (
+export function get_base_url (
   type: ApiType = 'github',
   proxyUrl?: ProxyUrlType,
   proxyType: ProxyType = 'common'

@@ -223,7 +223,7 @@ export class Commit extends GitHubClient {
       }
       const isFormat = options?.format ?? this.format
       if (res.data) {
-        const CommitData = await Promise.all(res.data.map(async (commit: Record<string, any>): Promise<CommitInfoResponseType> => {
+        const CommitData: CommitListResponseType = await Promise.all(res.data.map(async (commit: Record<string, any>): Promise<CommitInfoResponseType> => {
           const [title, ...bodyParts] = commit.commit.message.split('\n')
           return {
             html_url: commit.html_url,
