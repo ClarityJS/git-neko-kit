@@ -23,6 +23,8 @@ export const NotUrlParamMsg = '喵呜~ 仓库URL不能为空'
 export const NotUserIdParamMsg = '喵呜~ 用户ID不能为空'
 export const NotUserParamMsg = '喵呜~ 用户名不能为空'
 export const NotTagParamMsg = '喵呜~ 标签不能为空'
+export const NotLocalRepoPathMsg = '喵呜~ 本地仓库路径不能为空'
+export const NotRemoteRepoUrlMsg = '喵呜~ 远程仓库URL不能为空'
 
 /** 授权消息 */
 export const isNotAccessTokeMsg = '喵呜~ 这个令牌似乎不是有效的'

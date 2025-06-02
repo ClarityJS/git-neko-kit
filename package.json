@@ -59,6 +59,7 @@
     "jsonwebtoken": "^9.0.2",
     "language-colors": "^2.1.55",
     "lodash-es": "^4.17.21",
+    "simple-git": "^3.27.0",
     "socks-proxy-agent": "^8.0.5",
     "uuid": "^11.1.0"
   },

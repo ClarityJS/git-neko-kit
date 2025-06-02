@@ -2,7 +2,7 @@
 import { capitalize } from 'lodash-es'
 
 import {
-  getContributionData,
+  get_contribution_data,
   isNotAccessTokeMsg,
   isOrgMsg,
   NotAccessTokenMsg,
@@ -255,7 +255,7 @@ export class User extends GitHubClient {
         throw new Error(NotUserParamMsg)
       }
 
-      const ContributionData = await getContributionData(res.data)
+      const ContributionData = await get_contribution_data(res.data)
       return {
         ...res,
         data: ContributionData

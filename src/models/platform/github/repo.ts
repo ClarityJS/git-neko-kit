@@ -1,6 +1,7 @@
 import {
   formatDate,
   get_langage_color,
+  get_remote_repo_default_branch,
   isNotPerrmissionMsg,
   MissingRepoOwnerOrNameMsg,
   NotOrgMsg,
@@ -21,6 +22,10 @@ import type {
   CollaboratorListParamType,
   CollaboratorListResponseType,
   CollaboratorParamType,
+  GetRepoDefaultBranchParamType,
+  GetRepoDefaultBranchResponseType,
+  GetRepoVisibilityParamType,
+  GetRepoVisibilityResponseType,
   LanguageInfo,
   OrgRepoCreateParamType,
   OrgRepoCreateResponseType,
@@ -839,8 +844,8 @@ export class Repo extends GitHubClient {
    * ```
    */
   public async get_repo_visibility (
-    options: RepoInfoParamType
-  ): Promise<RepoVisibilityResponseType['visibility']> {
+    options: GetRepoVisibilityParamType
+  ): Promise<GetRepoVisibilityResponseType> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       const { owner, repo } = options
@@ -861,17 +866,25 @@ export class Repo extends GitHubClient {
    * url参数和owner、repo参数传入其中的一种
    * @example
    * ```ts
-   * const defaultBranch = await repo.get_repo_default_branch({url: 'https://github.com/CandriaJS/meme-plugin')}
+   * const defaultBranch = await repo.get_repo_default_branch({owner: CandriaJS, repo: meme-plugin)}
    * console.log(defaultBranch) // 输出 main
    * ```ts
    */
   public async get_repo_default_branch (
-    options: RepoInfoParamType
-  ): Promise<RepoDefaultBranchResponseType['default_branch'] | null> {
+    options: GetRepoDefaultBranchParamType
+  ): Promise<GetRepoDefaultBranchResponseType | null> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       const { owner, repo } = options
-      return (await this.get_repo_info({ owner, repo })).data.default_branch
+      let default_branch
+      try {
+        const github_url = this.BaseUrl + '/' + owner + '/' + repo
+        default_branch = await get_remote_repo_default_branch(github_url)
+      } catch (error) {
+        default_branch = (await this.get_repo_info({ owner, repo })).data.default_branch
+      }
+
+      return default_branch
     } catch (error) {
       throw new Error(`获取仓库默认分支失败: ${(error as Error).message}`)
     }

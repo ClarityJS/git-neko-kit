@@ -276,3 +276,13 @@ export interface RemoveCollaboratorResponseType {
   /** 状态信息 */
   info: string;
 }
+
+/** 获取仓库可见性参数类型 */
+export type GetRepoVisibilityParamType = RepoBaseParamType
+/** 获取仓库可见性响应类型 */
+export type GetRepoVisibilityResponseType = RepoInfoResponseType['visibility']
+
+/** 获取仓库默认分支参数类型 */
+export type GetRepoDefaultBranchParamType = RepoBaseParamType
+/** 获取仓库默认分支响应类型 */
+export type GetRepoDefaultBranchResponseType = RepoInfoResponseType['default_branch']
