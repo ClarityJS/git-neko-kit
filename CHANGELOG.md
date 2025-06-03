@@ -1,5 +1,31 @@
 # 变更日志
 
+## [0.8.0](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.7...v0.8.0) (2025-06-03)
+
+
+### ✨ 新功能
+
+* **models:** 添加 GitHub pull_request 管理类 ([ebb71bd](https://github.com/CandriaJS/git-neko-kit/commit/ebb71bd366c57b123bd0127b7eaf6b9102692125))
+
+
+### ⚡️ 性能优化
+
+* **github:** 优化获取仓库默认分支功能并添加远程仓库支持 ([78f2443](https://github.com/CandriaJS/git-neko-kit/commit/78f2443bb1adac8a5de262eca38d882cd9f5ff2b))
+* **repo:** 添加创建用户仓库功能 ([7eb8ab0](https://github.com/CandriaJS/git-neko-kit/commit/7eb8ab0858df0e3ef398bbc769fbc7759bdc0c38))
+
+
+### ♻️ 代码重构
+
+* **github:** 优化 Commit 类中的代码结构 ([11caec2](https://github.com/CandriaJS/git-neko-kit/commit/11caec2e57979ff36e8f057e6d836c88926230f0))
+* **models:** 优化请求类和 GitHub 客户端的配置处理 ([7315b31](https://github.com/CandriaJS/git-neko-kit/commit/7315b315d30f77e11f487dafb7baf5c8e5b5b055))
+* **models:** 重命名 API 基础 URL 函数 ([4fa4850](https://github.com/CandriaJS/git-neko-kit/commit/4fa4850c9af352cd3383041495b462b06191cb92))
+* **types:** 重构客户端类型定义 ([a8bce2a](https://github.com/CandriaJS/git-neko-kit/commit/a8bce2a3ffa1eb25bc2bd285cbab60a71a0b190b))
+
+
+### 📦️ 构建系统
+
+* 添加 dayjs、lodash 和 simple-git 的类型导出 ([2da49d6](https://github.com/CandriaJS/git-neko-kit/commit/2da49d6cf4cd96913a3dd406023ef416aecbc8a2))
+
 ## [0.7.7](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.6...v0.7.7) (2025-05-27)
 
 
