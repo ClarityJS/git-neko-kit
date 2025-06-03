@@ -90,6 +90,4 @@ export interface AppClientType {
   Private_Key: string
   /** WebHook Secret */
   WebHook_Secret: string
-  /** 是否格式化 */
-  format?: formatParamType['format']
 }

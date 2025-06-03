@@ -19,7 +19,7 @@ import type { User } from '@/models/platform/github/user'
 import type { WebHook } from '@/models/platform/github/webhook'
 import type {
   ApiResponseType,
-  AppClientType,
+  GitHubClientType,
   ProxyParamsType,
   RequestConfigType
 } from '@/types'
@@ -68,7 +68,7 @@ export class GitHubClient {
   private currentRequestConfig: RequestConfigType
   private proxy?: ProxyParamsType | null
 
-  constructor (options: AppClientType) {
+  constructor (options: GitHubClientType) {
     this.Private_Key = options.Private_Key
     this.Client_ID = options.Client_ID
     this.Client_Secret = options.Client_Secret
