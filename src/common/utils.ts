@@ -62,7 +62,6 @@ export function readJSON (file: string = '', root: string = ''): any {
 async function initDate (locale: string = 'zh-cn') {
   const normalizedLocale = String(locale).toLowerCase()
   await import(`dayjs/locale/${normalizedLocale}.js`)
-  dayjs.locale(normalizedLocale)
 }
 
 /**
@@ -82,7 +81,7 @@ export async function formatDate (
   format: string = 'YYYY-MM-DD HH:mm:ss'
 ): Promise<string> {
   await initDate(locale)
-  const date = dayjs(dateString)
+  const date = dayjs(dateString).locale(locale)
   return date.format(format)
 }
 

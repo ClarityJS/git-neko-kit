@@ -26,6 +26,21 @@
       "types": "./dist/exports/axios.d.ts",
       "import": "./dist/exports/axios.mjs",
       "require": "./dist/exports/axios.cjs"
+    },
+     "./simple-git": {
+      "types": "./dist/exports/simple-git.d.ts",
+      "import": "./dist/exports/simple-git.mjs",
+      "require": "./dist/exports/simple-git.cjs"
+    },
+     "./dayjs": {
+      "types": "./dist/exports/dayjs.d.ts",
+      "import": "./dist/exports/dayjs.mjs",
+      "require": "./dist/exports/dayjs.cjs"
+    },
+     "./lodash": {
+      "types": "./dist/exports/lodash.d.ts",
+      "import": "./dist/exports/lodash.mjs",
+      "require": "./dist/exports/lodash.cjs"
     }
   },
   "main": "./dist/index.mjs",
