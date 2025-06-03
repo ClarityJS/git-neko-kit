@@ -72,6 +72,14 @@ export interface IssueIdParamType {
   issue_id: number | string;
 }
 
+/**
+ * 拉取请求参数
+ */
+export interface PullRequestIdParamType {
+  /** 拉取请求id */
+  pull_number: number;
+}
+
 /** App 基础入口类型 */
 export interface AppClientType {
   /** App Client ID */

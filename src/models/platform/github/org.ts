@@ -7,7 +7,7 @@ import type {
 } from '@/types'
 
 /**
- * Base 组织操作类
+ * Github 组织操作类
  *
  * 提供对GitHub组织的CRUD操作，包括：
  * - 获取组织信息

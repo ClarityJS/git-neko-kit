@@ -30,8 +30,6 @@ import type {
  * - 检查访问令牌状态
  * - 刷新访问令牌
  *
- * @class Auth
- * @extends Base GitHub基础操作类
  */
 export class Auth extends GitHubClient {
   constructor (base: GitHubClient) {
