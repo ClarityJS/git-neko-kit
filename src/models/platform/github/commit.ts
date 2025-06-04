@@ -85,8 +85,8 @@ export class Commit extends GitHubClient {
           throw new Error(NotCommitMsg)
       }
 
-      const isFormat = options.format ?? this.format
       if (res.data) {
+        const isFormat = options.format ?? this.format
         const message = res.data?.commit?.message ?? ''
         const [title, ...bodyParts] = message.split('\n')
         const CommitData: CommitInfoResponseType = {

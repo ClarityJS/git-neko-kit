@@ -1,8 +1,8 @@
-import { capitalize } from 'lodash-es'
+import { capitalize, merge } from 'lodash-es'
 
 import { MissingRepoOwnerOrNameMsg } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
-import { ApiResponseType, IssueLabelType, PrUser, PullRequestInfoParamType, PullRequestInfoResponseType } from '@/types'
+import { ApiResponseType, IssueLabelType, PrUser, PullRequestInfoParamType, PullRequestInfoResponseType, PullRequestListParamType, PullRequestListResponseType } from '@/types'
 
 /**
  * GitHub pull_request类
@@ -34,9 +34,9 @@ export class Pull_request extends GitHubClient {
    * @returns 包含pull_request信息的响应对象
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
-   * const res = await issue.get_issue_info({ owner: 'owner', repo:'repo', issue_number:1 })
-   * console.log(res) // { data: IssueInfoResponseType }
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.get_pull_request_info({ owner: 'owner', repo:'repo', pr_number:1 })
+   * console.log(res) // { data: PullRequestInfoResponseType }
    * ```
    */
   public async get_pull_request_info (
@@ -167,6 +167,166 @@ export class Pull_request extends GitHubClient {
       return res
     } catch (error) {
       throw new Error(`获取拉取请求信息失败： ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取pull_request列表
+   * 权限:
+   * - Pull requests: Read-Only
+   * @param options 请求参数列表
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - pr_number Pr编号
+   * - state 状态
+   * - base 基准分支
+   * - sort 排序
+   * - direction 排序方向
+   * - per_page 每页数量
+   * - page 页码
+   * @returns 包含pull_request信息的响应对象
+   * @example
+   * ```ts
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.get_get_pull_request_list({ owner: 'owner', repo:'repo' })
+   * console.log(res) // { data: PullRequestListResponseType }
+   * ```
+   */
+  public async get_get_pull_request_list (
+    options: PullRequestListParamType
+  ): Promise<ApiResponseType<PullRequestListResponseType>> {
+    if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, ...queryOptions } = options
+      const params: Record<string, string> = {}
+      if (queryOptions.state) params.state = queryOptions.state
+      if (queryOptions.base) params.base = queryOptions.base
+      if (queryOptions.sort) params.sort = queryOptions.sort
+      if (queryOptions.direction && !queryOptions.sort) params.direction = queryOptions.direction
+      if (queryOptions.per_page) params.per_page = queryOptions.per_page.toString()
+      if (queryOptions.page) params.page = queryOptions.page.toString()
+      const res = await this.get(`/repos/${owner}/${repo}/pulls`, params)
+      if (res.data) {
+        const PrData: PullRequestListResponseType = res.data.map((pr: Record<string, any>): PullRequestInfoResponseType => ({
+          id: pr.id,
+          html_url: pr.html_url,
+          number: pr.number,
+          state: pr.state,
+          locked: pr.locked,
+          title: pr.title,
+          body: pr.body,
+          draft: pr.draft,
+          created_at: pr.created_at,
+          updated_at: pr.updated_at,
+          closed_at: pr.closed_at,
+          merged_at: pr.merged_at,
+          user: {
+            id: pr.user.id,
+            name: pr.user.name,
+            login: pr.user.login,
+            html_url: pr.user.html_url,
+            email: pr.user.email,
+            avatar_url: pr.user.avatar_url,
+            type: capitalize(pr.user.type.toLowerCase())
+          },
+          base: {
+            label: pr.base.label,
+            ref: pr.base.ref,
+            sha: pr.base.sha,
+            user: {
+              id: pr.base.user.id,
+              name: pr.base.user.name,
+              login: pr.base.user.login,
+              html_url: pr.base.user.html_url,
+              email: pr.base.user.email,
+              avatar_url: pr.base.user.avatar_url,
+              type: capitalize(pr.base.user.type.toLowerCase())
+            },
+            repo: {
+              id: pr.base.repo.id,
+              owner: pr.base.repo.owner,
+              name: pr.base.repo.name,
+              full_name: pr.base.repo.full_name
+            }
+          },
+          head: {
+            label: pr.head.label,
+            ref: pr.head.ref,
+            sha: pr.head.sha,
+            user: {
+              id: pr.head.user.id,
+              name: pr.head.user.name,
+              login: pr.head.user.login,
+              html_url: pr.head.user.html_url,
+              email: pr.head.user.email,
+              avatar_url: pr.head.user.avatar_url,
+              type: capitalize(pr.head.user.type.toLowerCase())
+            },
+            repo: {
+              id: pr.head.repo.id,
+              owner: pr.head.repo.owner,
+              name: pr.head.repo.name,
+              full_name: pr.head.repo.full_name
+            }
+          },
+          assignee: pr.assignee
+            ? {
+                id: pr.assignee.id,
+                name: pr.assignee.name,
+                login: pr.assignee.login,
+                html_url: pr.assignee.html_url,
+                email: pr.assignee.email,
+                avatar_url: pr.assignee.avatar_url,
+                type: capitalize(pr.assignee.type.toLowerCase())
+              }
+            : null,
+          assignees: pr.assignees && pr.assignees.length > 0
+            ? pr.assignees.map((assignee: Record<string, any>) => ({
+              id: assignee.id,
+              name: assignee.name,
+              login: assignee.login,
+              html_url: assignee.html_url,
+              email: assignee.email,
+              avatar_url: assignee.avatar_url
+            }))
+            : null,
+          milestone: pr.milestone
+            ? {
+                id: pr.milestone.id,
+                url: pr.milestone.url,
+                number: pr.milestone.number,
+                state: pr.milestone.state,
+                title: pr.milestone.title,
+                description: pr.milestone.description,
+                open_issues: pr.milestone.open_issues,
+                closed_issues: pr.milestone.closed_issues,
+                created_at: pr.milestone.created_at,
+                updated_at: pr.milestone.updated_at,
+                closed_at: pr.milestone.closed_at,
+                due_on: pr.milestone.due_on
+              }
+            : null,
+          labels: pr.labels && pr.labels.length > 0
+            ? pr.labels.map((label: Record<string, any>) => ({
+              id: label.id,
+              name: label.name,
+              color: label.color
+            }))
+            : null,
+          commits: pr.commits,
+          additions: pr.additions,
+          deletions: pr.deletions,
+          changed_files: pr.changed_files
+        })
+        )
+        res.data = PrData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`获取拉取请求列表失败： ${(error as Error).message}`)
     }
   }
 }

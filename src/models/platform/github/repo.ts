@@ -106,8 +106,8 @@ export class Repo extends GitHubClient {
         case 401:
           throw new Error(NotPerrmissionMsg)
       }
-      const isFormat = options.format ?? this.format
       if (res.data) {
+        const isFormat = options.format ?? this.format
         const RepoData: OrgRepoListResponseType = await Promise.all(
           res.data.map(async (repo: Record<string, any>):Promise<RepoInfoResponseType> => ({
             id: repo.id,

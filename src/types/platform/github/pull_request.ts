@@ -68,3 +68,51 @@ export interface PullRequestInfoResponseType {
   /** 更改的文件数 */
   changed_files: number
 }
+
+/** 拉取请求列表参数类型 */
+export interface PullRequestListParamType extends RepoBaseParamType {
+  /**
+   * 拉取请求状态
+   * @default "open"
+   * - open: 打开的拉取请求
+   * - closed: 已关闭的拉取请求
+   * - all: 所有拉取请求
+   */
+  state?: 'open' | 'closed' | 'all'
+
+  /**
+   * 基础分支名称
+   * 用于筛选指定目标分支的拉取请求
+   * @example "main"
+   */
+  base?: string
+
+  /**
+   * 排序依据
+   * @default "created"
+   * - created: 按创建时间排序
+   * - updated: 按更新时间排序
+   */
+  sort?: 'created' | 'updated'
+  /**
+   * 排序方向
+   * @default "desc"
+   * - asc: 升序
+   * - desc: 降序
+   */
+  direction?: 'asc' | 'desc'
+  /**
+   * 每页结果数量
+   * @default "30"
+   * @remarks 取值范围：1-100
+   */
+  per_page?: string
+  /**
+   * 页码
+   * @default "1"
+   * @remarks 必须大于等于1
+   */
+  page?: string
+}
+/** 拉取请求列表响应类型 */
+export type PullRequestListResponseType = Array<PullRequestInfoResponseType>
