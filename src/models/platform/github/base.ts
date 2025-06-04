@@ -14,6 +14,7 @@ import type { Auth } from '@/models/platform/github/auth'
 import type { Commit } from '@/models/platform/github/commit'
 import type { Issue } from '@/models/platform/github/issue'
 import type { Org } from '@/models/platform/github/org'
+import type { Pull_request } from '@/models/platform/github/pull_request'
 import type { Repo } from '@/models/platform/github/repo'
 import type { User } from '@/models/platform/github/user'
 import type { WebHook } from '@/models/platform/github/webhook'
@@ -56,6 +57,7 @@ export class GitHubClient {
   declare webhook: WebHook
   declare issue: Issue
   declare org: Org
+  declare pull_request: Pull_request
   public BaseUrl: string
   public ApiUrl: string
   public jwtToken: string
@@ -195,6 +197,20 @@ export class GitHubClient {
     const { WebHook } = await import('@/models/platform/github/webhook')
     this.webhook = new WebHook(this)
     return this.webhook
+  }
+
+  /**
+   * 获取Pull_request实例
+   * @returns Pull_request实例
+   * @example
+   * ```ts
+   * const pull_request = await GitHubClient.get_pull_request()
+   * ```
+   */
+  public async get_pull_request (): Promise<Pull_request> {
+    const { Pull_request } = await import('@/models/platform/github/pull_request')
+    this.pull_request = new Pull_request(this)
+    return this.pull_request
   }
 
   /**

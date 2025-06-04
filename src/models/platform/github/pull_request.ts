@@ -1,8 +1,16 @@
-import { capitalize, merge } from 'lodash-es'
+import { capitalize } from 'lodash-es'
 
 import { MissingRepoOwnerOrNameMsg } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
-import { ApiResponseType, IssueLabelType, PrUser, PullRequestInfoParamType, PullRequestInfoResponseType, PullRequestListParamType, PullRequestListResponseType } from '@/types'
+import {
+  ApiResponseType,
+  IssueLabelType,
+  PrUser,
+  PullRequestInfoParamType,
+  PullRequestInfoResponseType,
+  PullRequestListParamType,
+  PullRequestListResponseType
+} from '@/types'
 
 /**
  * GitHub pull_request类
