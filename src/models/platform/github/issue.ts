@@ -102,6 +102,7 @@ export class Issue extends GitHubClient {
     options: IssueInfoParamType
   ): Promise<ApiResponseType<IssueInfoResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.issue_number) throw new Error(NotIssueNumberMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -955,7 +956,7 @@ export class Issue extends GitHubClient {
    * console.log(res) // { data: IssueCommentListResponseType[] }
    * ```
    */
-  public async get_comments_list (
+  public async get_repo_comments_list (
     options: RepoCommentListParamType
   ): Promise<ApiResponseType<RepoCommentListResponseType>> {
     if (!options.owner || !options.repo) {

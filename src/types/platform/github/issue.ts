@@ -22,8 +22,8 @@ export interface MilestoneType {
   url: string;
   /** 里程碑编号 */
   number: number;
-  /** 里程碑状态: open/closed/active */
-  state: string;
+  /** 里程碑状态: open/closed */
+  state: 'open' | 'closed';
   /** 里程碑标题 */
   title: string;
   /** 里程碑描述 */
