@@ -24,6 +24,8 @@ import type {
   CollaboratorParamType,
   GetRepoDefaultBranchParamType,
   GetRepoDefaultBranchResponseType,
+  GetRepoMainLanguageParamType,
+  GetRepoMainLanguageResponseType,
   GetRepoVisibilityParamType,
   GetRepoVisibilityResponseType,
   LanguageInfo,
@@ -33,13 +35,10 @@ import type {
   OrgRepoListResponseType,
   RemoveCollaboratorParamType,
   RemoveCollaboratorResponseType,
-  RepoDefaultBranchResponseType,
   RepoInfoParamType,
   RepoInfoResponseType,
   RepoLanguagesListParamType,
   RepoLanguagesListResponseType,
-  RepoMainLanguageResponseType,
-  RepoVisibilityResponseType,
   UserByTokenRepoListParamType,
   UserRepoCreateParamType,
   UserRepoCreateResponseType,
@@ -906,8 +905,8 @@ export class Repo extends GitHubClient {
    * ```ts
    */
   public async get_repo_main_language (
-    options: RepoInfoParamType
-  ): Promise<RepoMainLanguageResponseType['language']> {
+    options: GetRepoMainLanguageParamType
+  ): Promise<GetRepoMainLanguageResponseType> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       const { owner, repo } = options
