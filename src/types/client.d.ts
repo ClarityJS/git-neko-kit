@@ -1,4 +1,4 @@
-import { AppClientType, formatParamType } from '@/types/platform/base'
+import type { AppClientType, formatParamType } from '@/types/platform/base'
 
 /** GitHub客户端类型 */
 export interface GitHubClientType extends AppClientType {

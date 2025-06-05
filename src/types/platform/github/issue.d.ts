@@ -1,5 +1,5 @@
-import { formatParamType, IssueIdParamType, RepoBaseParamType } from '@/types/platform/base'
-import { UserInfoResponseType } from '@/types/platform/github/user'
+import type { formatParamType, IssueIdParamType, RepoBaseParamType } from '@/types/platform/base'
+import type { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 议题用户信息响应类型 */
 export type IssueUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following' | 'public_repos'>

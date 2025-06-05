@@ -1,7 +1,7 @@
-import { PullRequestNumberParamType, RepoBaseParamType } from '@/types/platform/base'
-import { IssueLabelType, MilestoneType } from '@/types/platform/github/issue'
-import { RepoInfoResponseType } from '@/types/platform/github/repo'
-import { UserInfoResponseType } from '@/types/platform/github/user'
+import type { PullRequestNumberParamType, RepoBaseParamType } from '@/types/platform/base'
+import type { IssueLabelType, MilestoneType } from '@/types/platform/github/issue'
+import type { RepoInfoResponseType } from '@/types/platform/github/repo'
+import type { UserInfoResponseType } from '@/types/platform/github/user'
 
 export type PrUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following' | 'public_repos'>
 export type PrRepo = Pick<RepoInfoResponseType, 'id' | 'owner' | 'name' | 'full_name'>

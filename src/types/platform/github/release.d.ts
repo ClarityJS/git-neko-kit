@@ -1,7 +1,5 @@
-import {
-  RepoBaseParamType
-} from '@/types/platform/base'
-import { UserInfoResponseType } from '@/types/platform/github/user'
+import type { RepoBaseParamType } from '@/types/platform/base'
+import type { UserInfoResponseType } from '@/types/platform/github/user'
 
 export type ReleaseUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following' | 'public_repos'>
 /** 反应信息类型 */
