@@ -116,3 +116,45 @@ export interface PullRequestListParamType extends RepoBaseParamType {
 }
 /** 拉取请求列表响应类型 */
 export type PullRequestListResponseType = Array<PullRequestInfoResponseType>
+
+/** 使用issue填充拉取提交标题与内容 */
+type WithIssue = {
+  /** 拉取请求标题 */
+  title?: never;
+  /** 拉取请求描述 */
+  body?: never;
+  /**
+   * 关联的议题
+   * Pull Request的标题和内容可以根据指定的Issue Id自动填充
+   */
+  issue: string | number;
+}
+/** 不使用issue填充拉取提交标题与内容 */
+type WithoutIssue = {
+  /** 拉取请求标题 */
+  title: string
+  /** 拉取请求描述 */
+  body?: string
+  /**
+   * 关联的议题
+   * Pull Request的标题和内容可以根据指定的Issue Id自动填充
+   */
+  issue?: never;
+}
+
+/** 创建拉取提交参数类型 */
+export type CreatePullRequestParamType = RepoBaseParamType & (WithIssue | WithoutIssue) & {
+  /** 拉取请求源分支 */
+  head: string
+  /**
+   * 拉取请求源仓库
+   * 。如果两个存储库都由同一组织拥有，则跨存储库拉取请求需要此字段
+   * */
+  head_repo?: string
+  /** 拉取请求目标分支 */
+  base: string
+  /** 是否为草稿 */
+  draft?: boolean
+}
+/** 创建拉取请求响应类型 */
+export type CreatePullRequestResponseType = PullRequestInfoResponseType

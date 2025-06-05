@@ -1,9 +1,19 @@
 import { capitalize } from 'lodash-es'
 
-import { MissingRepoOwnerOrNameMsg } from '@/common'
+import {
+  MissingBaseMsg,
+  MissingHeadMsg,
+  MissingissueMsg,
+  MissingissueOrTitleMsg,
+  MissingRepoOwnerOrNameMsg,
+  MissingTitleMsg,
+  NotPerrmissionMsg
+} from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
 import {
   ApiResponseType,
+  CreatePullRequestParamType,
+  CreatePullRequestResponseType,
   IssueLabelType,
   PrUser,
   PullRequestInfoParamType,
@@ -335,6 +345,177 @@ export class Pull_request extends GitHubClient {
       return res
     } catch (error) {
       throw new Error(`获取拉取请求列表失败： ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 创建一个拉取请求
+   * 权限:
+   * - Pull requests: Read-And-Write
+   * @param options 请求参数列表
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - title 标题
+   * - body 内容
+   * - issue 关联的议题
+   * title和body与issue参数传入其中一种，当传入issue参数时，title和body参数将自动填充
+   * - head 拉取请求源分支
+   * - head_repo 拉取请求源仓库, 如果两个存储库都由同一组织拥有，则跨存储库拉取请求需要此字段
+   * - base 拉取请求目标分支
+   * - draft 是否为草稿
+   * @returns 包含pull_request信息的响应对象
+   * @example
+   * ```ts
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.create_pull_requestt({ owner: 'owner', repo:'repo', issue: 1, head: 'head', base: 'base' })
+   * console.log(res) // { data: CreatePullRequestResponseType }
+   */
+  public async create_pull_request (
+    options: CreatePullRequestParamType
+  ): Promise<ApiResponseType<CreatePullRequestResponseType>> {
+    if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.head) throw new Error(MissingHeadMsg)
+    if (!options.base) throw new Error(MissingBaseMsg)
+    if (!('issue' in options) && !('title' in options)) {
+      throw new Error(MissingissueOrTitleMsg)
+    }
+    try {
+      const body: Record<string, string | number | boolean> = {}
+      if ('issue' in options) {
+        if (!options.issue) throw new Error(MissingissueMsg)
+        body.issue = options.issue
+      } else if ('title' in options) {
+        if (!options.title) throw new Error(MissingTitleMsg)
+        body.title = options.title
+        if (options.body) body.body = options.body
+      }
+      if (options.head) body.head = options.head
+      if (options.head_repo) body.head_repo = options.head_repo
+      if (options.base) body.base = options.base
+      if (options.draft) body.draft = options.draft
+      const { owner, repo } = options
+      const res = await this.post(`/repos/${owner}/${repo}/pulls`,
+        body
+      )
+      if (res.statusCode === 403) throw new Error(NotPerrmissionMsg)
+      if (res.data) {
+        const PrData: PullRequestInfoResponseType = {
+          id: res.data.id,
+          html_url: res.data.html_url,
+          number: res.data.number,
+          state: res.data.state,
+          locked: res.data.locked,
+          title: res.data.title,
+          body: res.data.body,
+          draft: res.data.draft,
+          created_at: res.data.created_at,
+          merged_at: res.data.merged_at,
+          updated_at: res.data.updated_at,
+          closed_at: res.data.closed_at,
+          user: {
+            id: res.data.user.id,
+            name: res.data.user.name,
+            login: res.data.user.login,
+            html_url: res.data.user.html_url,
+            email: res.data.user.email,
+            avatar_url: res.data.user.avatar_url,
+            type: capitalize(res.data.type.toLowerCase())
+          },
+          base: {
+            label: res.data.base.label,
+            ref: res.data.base.ref,
+            sha: res.data.base.sha,
+            user: {
+              id: res.data.base.user.id,
+              name: res.data.base.user.name,
+              login: res.data.base.user.login,
+              html_url: res.data.base.user.html_url,
+              email: res.data.base.user.email,
+              avatar_url: res.data.base.user.avatar_url,
+              type: capitalize(res.data.base.type.toLowerCase())
+            },
+            repo: {
+              id: res.data.base.repo.id,
+              owner: res.data.base.repo.owner,
+              name: res.data.base.repo.name,
+              full_name: res.data.base.repo.full_name
+            }
+          },
+          head: {
+            label: res.data.head.label,
+            ref: res.data.head.ref,
+            sha: res.data.head.sha,
+            user: {
+              id: res.data.head.user.id,
+              name: res.data.head.user.name,
+              login: res.data.head.user.login,
+              html_url: res.data.head.user.html_url,
+              email: res.data.head.user.email,
+              avatar_url: res.data.head.user.avatar_url,
+              type: capitalize(res.data.head.type.toLowerCase())
+            },
+            repo: {
+              id: res.data.head.repo.id,
+              owner: res.data.head.repo.owner,
+              name: res.data.head.repo.name,
+              full_name: res.data.head.repo.full_name
+            }
+          },
+          assignee: res.data.assignee
+            ? {
+                id: res.data.assignee.id,
+                name: res.data.assignee.name,
+                login: res.data.assignee.login,
+                html_url: res.data.assignee.html_url,
+                email: res.data.assignee.email,
+                avatar_url: res.data.assignee.avatar_url,
+                type: capitalize(res.data.assignee.type.toLowerCase())
+              }
+            : null,
+          assignees: res.data.assignees && res.data.assignees.length > 0
+            ? res.data.assignees.map((assignee: PrUser) => ({
+              id: assignee.id,
+              name: assignee.name,
+              login: assignee.login,
+              html_url: assignee.html_url,
+              email: assignee.email,
+              avatar_url: assignee.avatar_url,
+              type: capitalize(assignee.type.toLowerCase())
+            }))
+            : null,
+          milestone: res.data.milestone
+            ? {
+                id: res.data.milestone.id,
+                url: res.data.milestone.url,
+                number: res.data.milestone.number,
+                state: res.data.milestone.state,
+                title: res.data.milestone.title,
+                description: res.data.milestone.description,
+                open_issues: res.data.milestone.open_issues,
+                closed_issues: res.data.milestone.closed_issues,
+                created_at: res.data.milestone.created_at,
+                updated_at: res.data.milestone.updated_at,
+                due_on: res.data.milestone.due_on,
+                closed_at: res.data.milestone.closed_at
+              }
+            : null,
+          labels: res.data.labels && res.data.labels.length > 0
+            ? res.data.labels.map((label: IssueLabelType) => ({
+              id: label.id,
+              name: label.name,
+              color: label.color
+            }))
+            : null,
+          commits: res.data.commits,
+          additions: res.data.additions,
+          deletions: res.data.deletions,
+          changed_files: res.data.changed_files
+        }
+        res.data = PrData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`创建拉取请求失败: ${(error as Error).message}`)
     }
   }
 }
