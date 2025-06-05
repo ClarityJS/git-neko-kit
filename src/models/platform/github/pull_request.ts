@@ -7,7 +7,8 @@ import {
   MissingissueOrTitleMsg,
   MissingRepoOwnerOrNameMsg,
   MissingTitleMsg,
-  NotPerrmissionMsg
+  NotPerrmissionMsg,
+  NotPrNumberMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
 import {
@@ -19,7 +20,9 @@ import {
   PullRequestInfoParamType,
   PullRequestInfoResponseType,
   PullRequestListParamType,
-  PullRequestListResponseType
+  PullRequestListResponseType,
+  UpdatePullRequestParamType,
+  UpdatePullRequestResponseType
 } from '@/types'
 
 /**
@@ -61,12 +64,12 @@ export class Pull_request extends GitHubClient {
     options: PullRequestInfoParamType
   ): Promise<ApiResponseType<PullRequestInfoResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.pull_number) throw new Error('缺少pull_number参数')
+    if (!options.pr_number) throw new Error(NotPrNumberMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
       })
-      const res = await this.get(`/repos/${options.owner}/${options.repo}/pulls/${options.pull_number}`)
+      const res = await this.get(`/repos/${options.owner}/${options.repo}/pulls/${options.pr_number}`)
       if (res.data) {
         const PrData: PullRequestInfoResponseType = {
           id: res.data.id,
@@ -142,7 +145,7 @@ export class Pull_request extends GitHubClient {
               }
             : null,
           assignees: res.data.assignees && res.data.assignees.length > 0
-            ? res.data.assignees.map((assignee: PrUser) => ({
+            ? res.data.assignees.map((assignee: Record<string, any>): PrUser => ({
               id: assignee.id,
               name: assignee.name,
               login: assignee.login,
@@ -399,7 +402,7 @@ export class Pull_request extends GitHubClient {
       )
       if (res.statusCode === 403) throw new Error(NotPerrmissionMsg)
       if (res.data) {
-        const PrData: PullRequestInfoResponseType = {
+        const PrData: CreatePullRequestResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
           number: res.data.number,
@@ -473,7 +476,7 @@ export class Pull_request extends GitHubClient {
               }
             : null,
           assignees: res.data.assignees && res.data.assignees.length > 0
-            ? res.data.assignees.map((assignee: PrUser) => ({
+            ? res.data.assignees.map((assignee: Record<string, any>): PrUser => ({
               id: assignee.id,
               name: assignee.name,
               login: assignee.login,
@@ -516,6 +519,157 @@ export class Pull_request extends GitHubClient {
       return res
     } catch (error) {
       throw new Error(`创建拉取请求失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 更新一个拉取请求
+   * 权限:
+   * - Pull requests: Read-And-Write
+   * @param options 请求参数列表
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - title 标题
+   * - body 内容
+   * - state 状态
+   * @returns 包含pull_request信息的响应对象
+   * @example
+   * ```ts
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.create_pull_requestt({ owner: 'owner', repo:'repo', pr_number:1, state:'open' })
+   * console.log(res) // { data: CreatePullRequestResponseType }
+   */
+  public async update_pull_request (
+    options: UpdatePullRequestParamType
+  ): Promise<ApiResponseType<UpdatePullRequestResponseType>> {
+    if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.pr_number) throw new Error(NotPrNumberMsg)
+    try {
+      const body: Record<string, string> = {}
+      if (options.title) body.title = options.title
+      if (options.body) body.body = options.body
+      if (options.state) body.state = options.state
+      const { owner, repo, pr_number } = options
+      const res = await this.patch(`/repos/${owner}/${repo}/pulls/${pr_number}`, null, body)
+      if (res.statusCode === 403) throw new Error(NotPerrmissionMsg)
+      if (res.data) {
+        const PrData: UpdatePullRequestResponseType = {
+          id: res.data.id,
+          html_url: res.data.html_url,
+          number: res.data.number,
+          state: res.data.state,
+          locked: res.data.locked,
+          title: res.data.title,
+          body: res.data.body,
+          draft: res.data.draft,
+          created_at: res.data.created_at,
+          merged_at: res.data.merged_at,
+          updated_at: res.data.updated_at,
+          closed_at: res.data.closed_at,
+          user: {
+            id: res.data.user.id,
+            name: res.data.user.name,
+            login: res.data.user.login,
+            html_url: res.data.user.html_url,
+            email: res.data.user.email,
+            avatar_url: res.data.user.avatar_url,
+            type: capitalize(res.data.type.toLowerCase())
+          },
+          base: {
+            label: res.data.base.label,
+            ref: res.data.base.ref,
+            sha: res.data.base.sha,
+            user: {
+              id: res.data.base.user.id,
+              name: res.data.base.user.name,
+              login: res.data.base.user.login,
+              html_url: res.data.base.user.html_url,
+              email: res.data.base.user.email,
+              avatar_url: res.data.base.user.avatar_url,
+              type: capitalize(res.data.base.type.toLowerCase())
+            },
+            repo: {
+              id: res.data.base.repo.id,
+              owner: res.data.base.repo.owner,
+              name: res.data.base.repo.name,
+              full_name: res.data.base.repo.full_name
+            }
+          },
+          head: {
+            label: res.data.head.label,
+            ref: res.data.head.ref,
+            sha: res.data.head.sha,
+            user: {
+              id: res.data.head.user.id,
+              name: res.data.head.user.name,
+              login: res.data.head.user.login,
+              html_url: res.data.head.user.html_url,
+              email: res.data.head.user.email,
+              avatar_url: res.data.head.user.avatar_url,
+              type: capitalize(res.data.head.type.toLowerCase())
+            },
+            repo: {
+              id: res.data.head.repo.id,
+              owner: res.data.head.repo.owner,
+              name: res.data.head.repo.name,
+              full_name: res.data.head.repo.full_name
+            }
+          },
+          assignee: res.data.assignee
+            ? {
+                id: res.data.assignee.id,
+                name: res.data.assignee.name,
+                login: res.data.assignee.login,
+                html_url: res.data.assignee.html_url,
+                email: res.data.assignee.email,
+                avatar_url: res.data.assignee.avatar_url,
+                type: capitalize(res.data.assignee.type.toLowerCase())
+              }
+            : null,
+          assignees: res.data.assignees && res.data.assignees.length > 0
+            ? res.data.assignees.map((assignee: Record<string, any>): PrUser => ({
+              id: assignee.id,
+              name: assignee.name,
+              login: assignee.login,
+              html_url: assignee.html_url,
+              email: assignee.email,
+              avatar_url: assignee.avatar_url,
+              type: capitalize(assignee.type.toLowerCase())
+            }))
+            : null,
+          milestone: res.data.milestone
+            ? {
+                id: res.data.milestone.id,
+                url: res.data.milestone.url,
+                number: res.data.milestone.number,
+                state: res.data.milestone.state,
+                title: res.data.milestone.title,
+                description: res.data.milestone.description,
+                open_issues: res.data.milestone.open_issues,
+                closed_issues: res.data.milestone.closed_issues,
+                created_at: res.data.milestone.created_at,
+                updated_at: res.data.milestone.updated_at,
+                due_on: res.data.milestone.due_on,
+                closed_at: res.data.milestone.closed_at
+              }
+            : null,
+          labels: res.data.labels && res.data.labels.length > 0
+            ? res.data.labels.map((label: IssueLabelType) => ({
+              id: label.id,
+              name: label.name,
+              color: label.color
+            }))
+            : null,
+          commits: res.data.commits,
+          additions: res.data.additions,
+          deletions: res.data.deletions,
+          changed_files: res.data.changed_files
+        }
+        res.data = PrData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`更新拉取请求失败: ${(error as Error).message}`)
     }
   }
 }

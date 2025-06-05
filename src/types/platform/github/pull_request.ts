@@ -1,4 +1,4 @@
-import { PullRequestIdParamType, RepoBaseParamType } from '@/types/platform/base'
+import { PullRequestNumberParamType, RepoBaseParamType } from '@/types/platform/base'
 import { IssueLabelType, MilestoneType } from '@/types/platform/github/issue'
 import { RepoInfoResponseType } from '@/types/platform/github/repo'
 import { UserInfoResponseType } from '@/types/platform/github/user'
@@ -7,7 +7,7 @@ export type PrUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | '
 export type PrRepo = Pick<RepoInfoResponseType, 'id' | 'owner' | 'name' | 'full_name'>
 
 /** 拉取请求信息参数类型 */
-export type PullRequestInfoParamType = PullRequestIdParamType & RepoBaseParamType
+export type PullRequestInfoParamType = PullRequestNumberParamType & RepoBaseParamType
 /** 拉取请求信息响应类型 */
 export interface PullRequestInfoResponseType {
   /** 拉取请求的id */
@@ -158,3 +158,15 @@ export type CreatePullRequestParamType = RepoBaseParamType & (WithIssue | Withou
 }
 /** 创建拉取请求响应类型 */
 export type CreatePullRequestResponseType = PullRequestInfoResponseType
+
+/** 更新拉取请求参数类型 */
+export interface UpdatePullRequestParamType extends RepoBaseParamType, PullRequestNumberParamType {
+  /** 拉取请求标题 */
+  title?: string
+  /** 拉取请求内容 */
+  body?: string
+  /** 拉取请求状态 */
+  state?: 'open' | 'closed'
+}
+/** 更新拉取请求响应类型 */
+export type UpdatePullRequestResponseType = PullRequestInfoResponseType
