@@ -170,3 +170,54 @@ export interface UpdatePullRequestParamType extends RepoBaseParamType, PullReque
 }
 /** 更新拉取请求响应类型 */
 export type UpdatePullRequestResponseType = PullRequestInfoResponseType
+
+/**
+ * 合并拉取请求方式类型
+ * merge: 合并提交
+ * squash: 压缩提交
+ * rebase: 变基提交
+*/
+export type MergeMethodType = 'merge' | 'squash' | 'rebase'
+
+/** 合并拉取请求参数类型 */
+export interface MergePullRequestParamType extends RepoBaseParamType, PullRequestNumberParamType {
+  /** 拉取请求合并提交信息 */
+  commit_title?: string
+  /** 拉取请求合并提交信息 */
+  commit_message?: string
+  /**
+   * 拉取请求合并SHA值
+   * 拉取请求头部必须匹配的 SHA 才能允许合并
+   * */
+  sha?: string
+  /**
+   * 拉取请求合并方式
+   * @default merge
+   * merge: 合并提交
+   * squash: 压缩提交
+   * rebase: 变基提交
+   * */
+  merge_method?: MergeMethodType
+}
+/**
+ * 合并拉取请求响应类型
+ * 对应 GitHub API 返回的 Pull Request Merge Result 结构
+ */
+export interface MergePullRequestResponseType {
+  /**
+   * 合并后的提交 SHA 值
+   * 表示合并操作生成的提交哈希
+   */
+  sha: string
+  /**
+   * 是否成功合并
+   * - true: 成功合并
+   * - false: 合并失败或冲突
+   */
+  merged: boolean
+  /**
+   * 合并结果描述信息
+   * 包含成功或失败的具体原因
+   */
+  message: string
+}

@@ -14,6 +14,7 @@ export const NotRepoParamMsg = '喵呜~ 仓库名不能为空'
 export const NotOrgOrRepoParamMsg = '喵呜~ 组织名或仓库名不能为空'
 export const NotOrgOrUserParamMsg = '喵呜~ 组织名或用户名不能为空'
 export const NotOrgParamMsg = '喵呜~ 组织名不能为空'
+export const NotRepoOrPrNumber = '喵呜~ 仓库或拉取请求编号不能为空'
 export const MissingRepoOwnerOrNameMsg = '喵呜~ 仓库拥有者或仓库名称不能为空'
 export const MissingRepoIdentifierMsg = '喵呜~ 请提供仓库信息(仓库拥有者/仓库名或完整URL)'
 export const MissingHeadMsg = '喵呜~ 请提供源分支'
@@ -41,6 +42,7 @@ export const isNotSuccessAccessTokenMsg = '喵呜~ 访问令牌已过期'
 export const NotPerrmissionMsg = '喵呜~ 访问被拒绝啦，可能是令牌过期了或权限不足'
 export const NotRefreshTokenSuccessMsg = '喵呜~ 访问令牌刷新失败'
 export const NotAccessTokenSuccessMsg = '喵呜~ 获取访问令牌失败'
+export const isNotPrMergeMethodMsg = '喵呜~ 拉取请求合并方式不允许'
 
 /** 资源不存在消息 */
 export const isOrgMsg = '喵呜~ 组织账号暂不支持'
@@ -64,6 +66,7 @@ export const AppRepoMovedMsg = '喵呜~ 这个仓库已被移动'
 export const NotRepoOrPerrmissionMsg = '喵呜~ 这个仓库不存在或访问被拒绝啦，可能是令牌过期了或权限不足'
 export const NotTagMsg = '喵呜~ 这个标签不存在哦'
 export const NotUserMsg = '喵呜~ 这个用户不存在哦'
+export const ConflictPrShaMsg = '喵呜~ 这个SHA值与头部分支的SHA值不匹配'
 
 /** WebHook错误信息 */
 export const isNotWebHookSignatureMsg = '喵呜~ WebHook 签名格式不正确'

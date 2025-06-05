@@ -1,6 +1,8 @@
 import { capitalize } from 'lodash-es'
 
 import {
+  ConflictPrShaMsg,
+  isNotPrMergeMethodMsg,
   MissingBaseMsg,
   MissingHeadMsg,
   MissingissueMsg,
@@ -8,7 +10,8 @@ import {
   MissingRepoOwnerOrNameMsg,
   MissingTitleMsg,
   NotPerrmissionMsg,
-  NotPrNumberMsg
+  NotPrNumberMsg,
+  NotRepoOrPrNumber
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
 import {
@@ -16,6 +19,9 @@ import {
   CreatePullRequestParamType,
   CreatePullRequestResponseType,
   IssueLabelType,
+  MergeMethodType,
+  MergePullRequestParamType,
+  MergePullRequestResponseType,
   PrUser,
   PullRequestInfoParamType,
   PullRequestInfoResponseType,
@@ -670,6 +676,68 @@ export class Pull_request extends GitHubClient {
       return res
     } catch (error) {
       throw new Error(`更新拉取请求失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 合并拉取请求
+   * 权限:
+   * - Pull requests: Read-And-Write
+   * @param options 请求参数列表
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - pr_number 拉取请求编号
+   * - commit_title 合并提交标题
+   * - commit_message 合并提交信息
+   * - sha 拉取请求头部必须匹配的 SHA 才能允许合并
+   * - merge_method 拉取请求合并方式, 默认为 merge
+   * @returns 包含pull_request信息的响应对象
+   * @example
+   * ```ts
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.merge_pull_request({ owner: 'owner', repo:'repo', pr_number:1 })
+   * console.log(res) // { data: CreatePullRequestResponseType }
+   */
+
+  public async merge_pull_request (
+    options: MergePullRequestParamType
+  ): Promise<ApiResponseType<MergePullRequestResponseType>> {
+    if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.pr_number) throw new Error(NotPrNumberMsg)
+    try {
+      const body: Record<string, string> = {}
+      if (options.commit_title) body.commit_title = options.commit_title
+      if (options.commit_message) body.commit_message = options.commit_message
+      if (options.sha) body.sha = options.sha
+      if (options.merge_method) {
+        const validMethods = ['merge', 'squash', 'rebase'] as const
+        body.merge_method = validMethods.includes(options.merge_method)
+          ? options.merge_method
+          : validMethods[0]
+      }
+      const { owner, repo, pr_number } = options
+      const res = await this.put(`/repos/${owner}/${repo}/pulls/${pr_number}/merge`, body)
+      switch (res.statusCode) {
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotRepoOrPrNumber)
+        case 405:
+          throw new Error(isNotPrMergeMethodMsg)
+        case 409:
+          throw new Error(ConflictPrShaMsg)
+      }
+      if (res.statusCode === 200 && res.data) {
+        const PrData: MergePullRequestResponseType = {
+          sha: res.data.sha,
+          merged: res.data.merged,
+          message: res.data.message
+        }
+        res.data = PrData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`合并拉取请求失败: ${(error as Error).message}`)
     }
   }
 }
