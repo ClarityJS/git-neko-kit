@@ -221,3 +221,35 @@ export interface MergePullRequestResponseType {
    */
   message: string
 }
+
+/** 文件列表类型 */
+export interface PullRequestFilesListType {
+  /** 文件的SHA值 */
+  sha: string
+  /** 文件路径 */
+  filename: string
+  /** 文件状态 */
+  status: 'added' | 'removed' | 'modified' | 'renamed' | 'changed' | 'unchanged'
+  /** 文件添加行数 */
+  additions: number
+  /** 文件删除行数 */
+  deletions: number
+  /** 文件修改行数 */
+  changes: number
+  /** 文件的blob SHA值 */
+  blob_url: string
+  /** 文件的raw URL */
+  raw_url: string
+  /** 文件的patch内容, 也就是diff差异内容 */
+  patch: string
+}
+
+/** 获取拉取请求文件列表参数类型 */
+export interface GetPullRequestFilesListParamType extends RepoBaseParamType, PullRequestNumberParamType {
+  /** 每页结果数量 */
+  per_page?: string
+  /** 页码 */
+  page?: string
+}
+/** 获取拉取请求文件列表响应类型 */
+export type GetPullRequestFilesListResponseType = Array<PullRequestFilesListResponseType>

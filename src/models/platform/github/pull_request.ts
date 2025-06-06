@@ -18,11 +18,13 @@ import {
   ApiResponseType,
   CreatePullRequestParamType,
   CreatePullRequestResponseType,
+  GetPullRequestFilesListParamType,
+  GetPullRequestFilesListResponseType,
   IssueLabelType,
-  MergeMethodType,
   MergePullRequestParamType,
   MergePullRequestResponseType,
   PrUser,
+  PullRequestFilesListType,
   PullRequestInfoParamType,
   PullRequestInfoResponseType,
   PullRequestListParamType,
@@ -697,6 +699,7 @@ export class Pull_request extends GitHubClient {
    * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.merge_pull_request({ owner: 'owner', repo:'repo', pr_number:1 })
    * console.log(res) // { data: CreatePullRequestResponseType }
+   * ```
    */
 
   public async merge_pull_request (
@@ -738,6 +741,57 @@ export class Pull_request extends GitHubClient {
       return res
     } catch (error) {
       throw new Error(`合并拉取请求失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取拉取请求文件列表
+   * 权限:
+   * - Pull requests: Read-And-Write
+   * @param options 请求参数列表
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - pr_number 拉取请求编号\
+   * - per_page 每页结果数量
+   * - page 页码
+   * @returns 包含拉取请求文件列表的响应对象
+   * @example
+   * ```ts
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.get_pull_request_files_list({ owner: 'owner', repo:'repo', pr_number:1 })
+   * console.log(res) // { data: GetPullRequestFilesListResponseType }
+   * ```
+   */
+  public async get_pull_request_files_list (
+    options: GetPullRequestFilesListParamType
+  ): Promise<ApiResponseType<GetPullRequestFilesListResponseType>> {
+    if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.pr_number) throw new Error(NotPrNumberMsg)
+    try {
+      const params: Record<string, string> = {}
+      if (options.per_page) params.per_page = options.per_page
+      if (options.page) params.page = options.page
+      const { owner, repo, pr_number } = options
+      const res = await this.get(`/repos/${owner}/${repo}/pulls/${pr_number}/files`,
+        params
+      )
+      if (res.data) {
+        const PrData: GetPullRequestFilesListResponseType = res.data.map((file: Record<string, any>): PullRequestFilesListType => ({
+          sha: file.sha,
+          filename: file.filename,
+          status: file.status,
+          additions: file.additions,
+          deletions: file.deletions,
+          changes: file.changes,
+          blob_url: file.blob_url,
+          raw_url: file.raw_url,
+          patch: file.patch
+        }))
+        res.data = PrData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`获取拉取请求文件列表失败: ${(error as Error).message}`)
     }
   }
 }
