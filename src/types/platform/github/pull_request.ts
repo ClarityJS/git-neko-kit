@@ -281,3 +281,17 @@ export interface GetPullRequestCommentsListParamType extends RepoBaseParamType, 
 }
 /** 获取拉取请求评论列表响应类型 */
 export type GetPullRequestCommentsListResponseType = Array<GetPullRequestCommentInfoResponseType>
+
+/** 创建拉取请求评论参数类型 */
+export interface CreatePullRequestCommentParamType extends RepoBaseParamType, PullRequestNumberParamType {
+  /** 评论内容 */
+  body: string
+}
+
+/** 创建拉取请求评论响应类型 */
+export interface CreatePullRequestCommentResponseType {
+  /** 评论id */
+  id: CommentIdParamType['comment_id']
+  /** 评论内容 */
+  body: string
+}

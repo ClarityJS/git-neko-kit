@@ -9,6 +9,7 @@ import {
   MissingissueOrTitleMsg,
   MissingRepoOwnerOrNameMsg,
   MissingTitleMsg,
+  NotCommentBodyMsg,
   NotCommentNumberMsg,
   NotPerrmissionMsg,
   NotPrNumberMsg,
@@ -18,6 +19,8 @@ import {
 import { GitHubClient } from '@/models/platform/github/base'
 import {
   ApiResponseType,
+  CreatePullRequestCommentParamType,
+  CreatePullRequestCommentResponseType,
   CreatePullRequestParamType,
   CreatePullRequestResponseType,
   GetPullRequestCommentInfoParamType,
@@ -837,7 +840,7 @@ export class Pull_request extends GitHubClient {
    * ```ts
    * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.get_pull_request_comments_list({ owner: 'owner', repo:'repo', pr_number:1 })
-   * console.log(res) // { data: GetPullRequestCommentInfoResponseType }
+   * console.log(res) // { data: GetPullRequestCommentsListResponseType }
    * ```
    */
   public async get_pull_request_comments_list (
@@ -879,6 +882,51 @@ export class Pull_request extends GitHubClient {
       return res
     } catch (error) {
       throw new Error(`获取拉取请求评论列表失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 创建拉取请求评论
+   * 权限:
+   * - Pull requests: Read-And-Write
+   * @param options 请求参数列表
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - pr_number 拉取请求编号
+   * - body 评论内容
+   * @returns 包含创建拉取请求评论响应信息
+   * @example
+   * ```ts
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.create_pull_request_comment({ owner: 'owner', repo:'repo', pr_number:1， body: 'loli' })
+   * console.log(res) // { data: CreatePullRequestCommentResponseType }
+   * ```
+   */
+  public async create_pull_request_comment (
+    options: CreatePullRequestCommentParamType
+  ): Promise<ApiResponseType<CreatePullRequestCommentResponseType>> {
+    if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.pr_number) throw new Error(NotPrNumberMsg)
+    if (!options.body) throw new Error(NotCommentBodyMsg)
+    try {
+      const { owner, repo, pr_number, body } = options
+      const res = await this.post(`/repos/${owner}/${repo}/pulls/${pr_number}/comments`, { body })
+      switch (res.statusCode) {
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotRepoOrPrNumber)
+      }
+      if (res.data) {
+        const PrData: CreatePullRequestCommentResponseType = {
+          id: res.data.id,
+          body: res.data.body
+        }
+        res.data = PrData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`创建拉取请求评论失败: ${(error as Error).message}`)
     }
   }
 }
