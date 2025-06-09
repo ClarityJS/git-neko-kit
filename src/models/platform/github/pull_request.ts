@@ -15,7 +15,7 @@ import {
   NotRepoOrPrNumber
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
-import {
+import type {
   ApiResponseType,
   CreatePullRequestCommentParamType,
   CreatePullRequestCommentResponseType,
