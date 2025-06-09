@@ -8,6 +8,7 @@ export const NotIssueCommentNumberMsg = '喵呜~ 这个议题评论编号不能�
 export const NotIssueNumberMsg = '喵呜~ 这个议题编号不能为空哦'
 export const NotPrNumberMsg = '喵呜~ 这个PR编号不能为空哦'
 export const NotIssueTitleMsg = '喵呜~ 议题标题不能为空'
+export const NotCommentNumberMsg = '喵呜~ 评论编号不能为空哦'
 export const NotReleaseIdMsg = '喵呜~ 发行版本编号不能为空哦'
 export const NotOwnerParamMsg = '喵呜~ 仓库拥有者不能为空'
 export const NotRepoParamMsg = '喵呜~ 仓库名不能为空'

@@ -1,9 +1,9 @@
-import type { PullRequestNumberParamType, RepoBaseParamType } from '@/types/platform/base'
+import type { CommentIdParamType, PullRequestNumberParamType, RepoBaseParamType } from '@/types/platform/base'
 import type { IssueLabelType, MilestoneType } from '@/types/platform/github/issue'
 import type { RepoInfoResponseType } from '@/types/platform/github/repo'
 import type { UserInfoResponseType } from '@/types/platform/github/user'
 
-export type PrUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following' | 'public_repos'>
+export type PrUser = Pick<UserInfoResponseType, 'id' | 'login' | 'name' | 'avatar_url' | 'html_url'>
 export type PrRepo = Pick<RepoInfoResponseType, 'id' | 'owner' | 'name' | 'full_name'>
 
 /** 拉取请求信息参数类型 */
@@ -252,4 +252,43 @@ export interface GetPullRequestFilesListParamType extends RepoBaseParamType, Pul
   page?: string
 }
 /** 获取拉取请求文件列表响应类型 */
-export type GetPullRequestFilesListResponseType = Array<PullRequestFilesListResponseType>
+export type GetPullRequestFilesListResponseType = Array<PullRequestFilesListType>
+
+/** 获取拉取请求评论信息参数类型 */
+export type GetPullRequestCommentInfoParamType = RepoBaseParamType & PullRequestNumberParamType
+
+/** 获取拉取请求评论信息响应类型 */
+export interface GetPullRequestCommentInfoResponseType {
+  /** 评论ID */
+  id: CommentIdParamType['comment_id']
+  /** 评论内容 */
+  body: string
+  /** 评论用户 */
+  user: PrUser
+  /** 评论创建时间 */
+  created_at: string
+  /** 评论更新时间 */
+  updated_at: string
+}
+
+/** 获取拉取请求评论列表参数类型 */
+export interface GetPullRequestCommentsListParamType extends RepoBaseParamType, CommentIdParamType {
+  direction: 'asc' | 'desc'
+  /** 每页结果数量 */
+  per_page?: string
+  /** 页码 */
+  page?: string
+}
+/** 获取拉取请求评论列表响应类型 */
+export interface GetPullRequestCommentsListResponseType {
+  /** 评论ID */
+  id: number | string
+  /** 评论内容 */
+  body: string
+  /** 评论用户 */
+  user: PrUser
+  /** 评论创建时间 */
+  created_at: string
+  /** 评论更新时间 */
+  updated_at: string
+}

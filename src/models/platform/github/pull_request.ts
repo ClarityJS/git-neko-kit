@@ -9,6 +9,7 @@ import {
   MissingissueOrTitleMsg,
   MissingRepoOwnerOrNameMsg,
   MissingTitleMsg,
+  NotCommentNumberMsg,
   NotPerrmissionMsg,
   NotPrNumberMsg,
   NotRepoOrPrNumber
@@ -18,6 +19,8 @@ import {
   ApiResponseType,
   CreatePullRequestParamType,
   CreatePullRequestResponseType,
+  GetPullRequestCommentInfoResponseType,
+  GetPullRequestCommentsListParamType,
   GetPullRequestFilesListParamType,
   GetPullRequestFilesListResponseType,
   IssueLabelType,
@@ -97,9 +100,7 @@ export class Pull_request extends GitHubClient {
             name: res.data.user.name,
             login: res.data.user.login,
             html_url: res.data.user.html_url,
-            email: res.data.user.email,
-            avatar_url: res.data.user.avatar_url,
-            type: capitalize(res.data.type.toLowerCase())
+            avatar_url: res.data.user.avatar_url
           },
           base: {
             label: res.data.base.label,
@@ -110,9 +111,7 @@ export class Pull_request extends GitHubClient {
               name: res.data.base.user.name,
               login: res.data.base.user.login,
               html_url: res.data.base.user.html_url,
-              email: res.data.base.user.email,
-              avatar_url: res.data.base.user.avatar_url,
-              type: capitalize(res.data.base.type.toLowerCase())
+              avatar_url: res.data.base.user.avatar_url
             },
             repo: {
               id: res.data.base.repo.id,
@@ -130,9 +129,7 @@ export class Pull_request extends GitHubClient {
               name: res.data.head.user.name,
               login: res.data.head.user.login,
               html_url: res.data.head.user.html_url,
-              email: res.data.head.user.email,
-              avatar_url: res.data.head.user.avatar_url,
-              type: capitalize(res.data.head.type.toLowerCase())
+              avatar_url: res.data.head.user.avatar_url
             },
             repo: {
               id: res.data.head.repo.id,
@@ -147,9 +144,7 @@ export class Pull_request extends GitHubClient {
                 name: res.data.assignee.name,
                 login: res.data.assignee.login,
                 html_url: res.data.assignee.html_url,
-                email: res.data.assignee.email,
-                avatar_url: res.data.assignee.avatar_url,
-                type: capitalize(res.data.assignee.type.toLowerCase())
+                avatar_url: res.data.assignee.avatar_url
               }
             : null,
           assignees: res.data.assignees && res.data.assignees.length > 0
@@ -158,9 +153,7 @@ export class Pull_request extends GitHubClient {
               name: assignee.name,
               login: assignee.login,
               html_url: assignee.html_url,
-              email: assignee.email,
-              avatar_url: assignee.avatar_url,
-              type: capitalize(assignee.type.toLowerCase())
+              avatar_url: assignee.avatar_url
             }))
             : null,
           milestone: res.data.milestone
@@ -257,9 +250,7 @@ export class Pull_request extends GitHubClient {
             name: pr.user.name,
             login: pr.user.login,
             html_url: pr.user.html_url,
-            email: pr.user.email,
-            avatar_url: pr.user.avatar_url,
-            type: capitalize(pr.user.type.toLowerCase())
+            avatar_url: pr.user.avatar_url
           },
           base: {
             label: pr.base.label,
@@ -270,9 +261,7 @@ export class Pull_request extends GitHubClient {
               name: pr.base.user.name,
               login: pr.base.user.login,
               html_url: pr.base.user.html_url,
-              email: pr.base.user.email,
-              avatar_url: pr.base.user.avatar_url,
-              type: capitalize(pr.base.user.type.toLowerCase())
+              avatar_url: pr.base.user.avatar_url
             },
             repo: {
               id: pr.base.repo.id,
@@ -290,9 +279,7 @@ export class Pull_request extends GitHubClient {
               name: pr.head.user.name,
               login: pr.head.user.login,
               html_url: pr.head.user.html_url,
-              email: pr.head.user.email,
-              avatar_url: pr.head.user.avatar_url,
-              type: capitalize(pr.head.user.type.toLowerCase())
+              avatar_url: pr.head.user.avatar_url
             },
             repo: {
               id: pr.head.repo.id,
@@ -307,9 +294,7 @@ export class Pull_request extends GitHubClient {
                 name: pr.assignee.name,
                 login: pr.assignee.login,
                 html_url: pr.assignee.html_url,
-                email: pr.assignee.email,
-                avatar_url: pr.assignee.avatar_url,
-                type: capitalize(pr.assignee.type.toLowerCase())
+                avatar_url: pr.assignee.avatar_url
               }
             : null,
           assignees: pr.assignees && pr.assignees.length > 0
@@ -428,9 +413,7 @@ export class Pull_request extends GitHubClient {
             name: res.data.user.name,
             login: res.data.user.login,
             html_url: res.data.user.html_url,
-            email: res.data.user.email,
-            avatar_url: res.data.user.avatar_url,
-            type: capitalize(res.data.type.toLowerCase())
+            avatar_url: res.data.user.avatar_url
           },
           base: {
             label: res.data.base.label,
@@ -441,9 +424,7 @@ export class Pull_request extends GitHubClient {
               name: res.data.base.user.name,
               login: res.data.base.user.login,
               html_url: res.data.base.user.html_url,
-              email: res.data.base.user.email,
-              avatar_url: res.data.base.user.avatar_url,
-              type: capitalize(res.data.base.type.toLowerCase())
+              avatar_url: res.data.base.user.avatar_url
             },
             repo: {
               id: res.data.base.repo.id,
@@ -461,9 +442,7 @@ export class Pull_request extends GitHubClient {
               name: res.data.head.user.name,
               login: res.data.head.user.login,
               html_url: res.data.head.user.html_url,
-              email: res.data.head.user.email,
-              avatar_url: res.data.head.user.avatar_url,
-              type: capitalize(res.data.head.type.toLowerCase())
+              avatar_url: res.data.head.user.avatar_url
             },
             repo: {
               id: res.data.head.repo.id,
@@ -478,9 +457,7 @@ export class Pull_request extends GitHubClient {
                 name: res.data.assignee.name,
                 login: res.data.assignee.login,
                 html_url: res.data.assignee.html_url,
-                email: res.data.assignee.email,
-                avatar_url: res.data.assignee.avatar_url,
-                type: capitalize(res.data.assignee.type.toLowerCase())
+                avatar_url: res.data.assignee.avatar_url
               }
             : null,
           assignees: res.data.assignees && res.data.assignees.length > 0
@@ -489,9 +466,7 @@ export class Pull_request extends GitHubClient {
               name: assignee.name,
               login: assignee.login,
               html_url: assignee.html_url,
-              email: assignee.email,
-              avatar_url: assignee.avatar_url,
-              type: capitalize(assignee.type.toLowerCase())
+              avatar_url: assignee.avatar_url
             }))
             : null,
           milestone: res.data.milestone
@@ -579,9 +554,7 @@ export class Pull_request extends GitHubClient {
             name: res.data.user.name,
             login: res.data.user.login,
             html_url: res.data.user.html_url,
-            email: res.data.user.email,
-            avatar_url: res.data.user.avatar_url,
-            type: capitalize(res.data.type.toLowerCase())
+            avatar_url: res.data.user.avatar_url
           },
           base: {
             label: res.data.base.label,
@@ -592,9 +565,7 @@ export class Pull_request extends GitHubClient {
               name: res.data.base.user.name,
               login: res.data.base.user.login,
               html_url: res.data.base.user.html_url,
-              email: res.data.base.user.email,
-              avatar_url: res.data.base.user.avatar_url,
-              type: capitalize(res.data.base.type.toLowerCase())
+              avatar_url: res.data.base.user.avatar_url
             },
             repo: {
               id: res.data.base.repo.id,
@@ -612,9 +583,7 @@ export class Pull_request extends GitHubClient {
               name: res.data.head.user.name,
               login: res.data.head.user.login,
               html_url: res.data.head.user.html_url,
-              email: res.data.head.user.email,
-              avatar_url: res.data.head.user.avatar_url,
-              type: capitalize(res.data.head.type.toLowerCase())
+              avatar_url: res.data.head.user.avatar_url
             },
             repo: {
               id: res.data.head.repo.id,
@@ -629,9 +598,7 @@ export class Pull_request extends GitHubClient {
                 name: res.data.assignee.name,
                 login: res.data.assignee.login,
                 html_url: res.data.assignee.html_url,
-                email: res.data.assignee.email,
-                avatar_url: res.data.assignee.avatar_url,
-                type: capitalize(res.data.assignee.type.toLowerCase())
+                avatar_url: res.data.assignee.avatar_url
               }
             : null,
           assignees: res.data.assignees && res.data.assignees.length > 0
@@ -640,9 +607,7 @@ export class Pull_request extends GitHubClient {
               name: assignee.name,
               login: assignee.login,
               html_url: assignee.html_url,
-              email: assignee.email,
-              avatar_url: assignee.avatar_url,
-              type: capitalize(assignee.type.toLowerCase())
+              avatar_url: assignee.avatar_url
             }))
             : null,
           milestone: res.data.milestone
@@ -751,7 +716,7 @@ export class Pull_request extends GitHubClient {
    * @param options 请求参数列表
    * - owner 仓库拥有者
    * - repo 仓库名称
-   * - pr_number 拉取请求编号\
+   * - pr_number 拉取请求编号
    * - per_page 每页结果数量
    * - page 页码
    * @returns 包含拉取请求文件列表的响应对象
@@ -792,6 +757,56 @@ export class Pull_request extends GitHubClient {
       return res
     } catch (error) {
       throw new Error(`获取拉取请求文件列表失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取拉取请求评论信息
+   * 权限:
+   * - Pull requests: Read-And-Write
+   * @param options 请求参数列表
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - comment_id 评论ID
+   * @returns 包含拉取请求指定的评论id的信息
+   * @example
+   * ```ts
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.get_pull_request_comment_info({ owner: 'owner', repo:'repo', comment_id:1 })
+   * console.log(res) // { data: GetPullRequestCommentInfoResponseType }
+   * ```
+   */
+  public async get_pull_request_comment_info (
+    options: GetPullRequestCommentsListParamType
+  ): Promise<ApiResponseType<GetPullRequestCommentInfoResponseType>> {
+    if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.comment_id) throw new Error(NotCommentNumberMsg)
+    try {
+      const params: Record<string, string> = {}
+      if (options.direction) params.direction = options.direction
+      if (options.per_page) params.per_page = options.per_page
+      if (options.page) params.page = options.page
+      const { owner, repo, comment_id } = options
+      const res = await this.get(`/repos/${owner}/${repo}/pulls/comments/${comment_id}`, params)
+      if (res.data) {
+        const PrData: GetPullRequestCommentInfoResponseType = {
+          id: res.data.id,
+          body: res.data.body,
+          user: {
+            id: res.data.user.id,
+            login: res.data.user.login,
+            name: res.data.user.name,
+            avatar_url: res.data.user.avatar_url,
+            html_url: res.data.user.html_url
+          },
+          created_at: res.data.created_at,
+          updated_at: res.data.updated_at
+        }
+        res.data = PrData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`获取拉取请求评论评论信息失败: ${(error as Error).message}`)
     }
   }
 }
