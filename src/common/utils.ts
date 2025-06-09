@@ -14,7 +14,7 @@ import { NotLocalRepoPathMsg, NotRemoteRepoUrlMsg } from '@/common/errorMsg'
 import { basePath } from '@/root'
 import { ContributionResult, RepoBaseParamType } from '@/types'
 
-const exec = promisify(execSync) as (cmd: string, options?: ExecSyncOptions) => Promise<Buffer>
+const exec = promisify(execSync) as (cmd: string, options?: ExecSyncOptions) => Promise<string | Buffer>
 
 /**
  * 异步判断文件是否存在
@@ -149,9 +149,8 @@ async function getGitVersion (): Promise<string> {
 export async function get_local_repo_default_branch (local_path: string): Promise<string> {
   if (!local_path) throw new Error(NotLocalRepoPathMsg)
   try {
-    let gitVersion: string
     try {
-      gitVersion = await getGitVersion()
+      await getGitVersion()
     } catch (error) {
       throw new Error('喵呜~, Git 未安装或未正确配置')
     }
