@@ -1,5 +1,5 @@
 declare module 'language-colors' {
-  import { Color } from '@types/color'
+  import type Color from 'color'
 
   interface LanguageColors {
     [language: string]: Color

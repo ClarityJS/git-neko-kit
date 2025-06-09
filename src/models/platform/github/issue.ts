@@ -1,6 +1,7 @@
 import { capitalize } from 'lodash-es'
 
 import {
+  formatDate,
   isNotIssucLockMsg,
   isNotIssueCommentCreateMsg,
   isNotUnLockIssueMsg,
@@ -102,6 +103,7 @@ export class Issue extends GitHubClient {
     options: IssueInfoParamType
   ): Promise<ApiResponseType<IssueInfoResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.issue_number) throw new Error(NotIssueNumberMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -117,6 +119,7 @@ export class Issue extends GitHubClient {
           throw new Error(IssueMovedMsg)
       }
       if (res.data) {
+        const isFormat = options.format ?? this.format
         const IssueData: IssueInfoResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
@@ -169,9 +172,9 @@ export class Issue extends GitHubClient {
                 due_on: res.data.milestone.due_on
               }
             : null,
-          closed_at: res.data.closed_at,
-          created_at: res.data.created_at,
-          updated_at: res.data.updated_at
+          closed_at: isFormat ? await formatDate(res.data.closed_at) : res.data.closed_at,
+          created_at: isFormat ? await formatDate(res.data.created_at) : res.data.created_at,
+          updated_at: isFormat ? await formatDate(res.data.updated_at) : res.data.updated_at
         }
         res.data = IssueData
       }
@@ -955,7 +958,7 @@ export class Issue extends GitHubClient {
    * console.log(res) // { data: IssueCommentListResponseType[] }
    * ```
    */
-  public async get_comments_list (
+  public async get_repo_comments_list (
     options: RepoCommentListParamType
   ): Promise<ApiResponseType<RepoCommentListResponseType>> {
     if (!options.owner || !options.repo) {

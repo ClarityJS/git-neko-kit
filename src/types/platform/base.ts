@@ -73,11 +73,16 @@ export interface IssueIdParamType {
 }
 
 /**
- * 拉取请求参数
+ * 拉取请求ID参数
  */
-export interface PullRequestIdParamType {
+export interface PullRequestNumberParamType {
   /** 拉取请求id */
-  pull_number: number;
+  pr_number: number;
+}
+
+export interface CommentIdParamType {
+  /** 评论id */
+  comment_id: number | string;
 }
 
 /** App 基础入口类型 */

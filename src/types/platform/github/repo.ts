@@ -1,11 +1,11 @@
-import {
+import type {
   formatParamType,
   OrgNameParamType,
   RepoBaseParamType,
   RepoOwnerParamType,
   UserNameParamType
 } from '@/types/platform/base'
-import { UserInfoResponseType } from '@/types/platform/github/user'
+import type { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 仓库所有者参数类型 */
 export type RepoUser = Omit<UserInfoResponseType, 'followers' | 'following' | 'blog' | 'bio' | 'public_repos'>
@@ -162,25 +162,20 @@ export interface RepoLanguagesListResponseType {
   languages: LanguageInfo[];
 }
 
-/** 仓库文件列表参数类型 */
+/** 获取仓库可见性参数类型 */
+export type GetRepoVisibilityParamType = RepoBaseParamType
+/** 获取仓库可见性响应类型 */
+export type GetRepoVisibilityResponseType = RepoInfoResponseType['visibility']
 
-/** 仓库可见性响应类型 */
-export interface RepoVisibilityResponseType {
-  /** * 仓库的可见性 */
-  visibility: RepoInfoResponseType['visibility'];
-}
+/** 获取仓库默认分支参数类型 */
+export type GetRepoDefaultBranchParamType = RepoBaseParamType
+/** 获取仓库默认分支响应类型 */
+export type GetRepoDefaultBranchResponseType = RepoInfoResponseType['default_branch']
 
-/** 仓库默认分支响应类型 */
-export interface RepoDefaultBranchResponseType {
-  /** * 仓库的默认分支名称 */
-  default_branch: RepoInfoResponseType['default_branch'];
-}
-
+/** 获取仓库主要语言参数类型 */
+export type GetRepoMainLanguageParamType = RepoBaseParamType
 /** 仓库主要语言响应类型 */
-export interface RepoMainLanguageResponseType {
-  /** * 仓库的主要语言 */
-  language: RepoInfoResponseType['language'];
-}
+export type GetRepoMainLanguageResponseType = RepoInfoResponseType['language']
 
 /** 协作者参数类型 */
 export type CollaboratorParamType = RepoInfoParamType & UserNameParamType & {
@@ -276,13 +271,3 @@ export interface RemoveCollaboratorResponseType {
   /** 状态信息 */
   info: string;
 }
-
-/** 获取仓库可见性参数类型 */
-export type GetRepoVisibilityParamType = RepoBaseParamType
-/** 获取仓库可见性响应类型 */
-export type GetRepoVisibilityResponseType = RepoInfoResponseType['visibility']
-
-/** 获取仓库默认分支参数类型 */
-export type GetRepoDefaultBranchParamType = RepoBaseParamType
-/** 获取仓库默认分支响应类型 */
-export type GetRepoDefaultBranchResponseType = RepoInfoResponseType['default_branch']

@@ -1,5 +1,5 @@
-import { AccessTokenType } from '@/types/platform/base'
-import { UserInfoResponseType } from '@/types/platform/github/user'
+import type { AccessTokenType } from '@/types/platform/base'
+import type { UserInfoResponseType } from '@/types/platform/github/user'
 
 export type AppUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following' | 'public_repos'>
 

@@ -1,5 +1,5 @@
-import { IssueIdParamType, RepoBaseParamType } from '@/types/platform/base'
-import { UserInfoResponseType } from '@/types/platform/github/user'
+import type { formatParamType, IssueIdParamType, RepoBaseParamType } from '@/types/platform/base'
+import type { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 议题用户信息响应类型 */
 export type IssueUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following' | 'public_repos'>
@@ -22,8 +22,8 @@ export interface MilestoneType {
   url: string;
   /** 里程碑编号 */
   number: number;
-  /** 里程碑状态: open/closed/active */
-  state: string;
+  /** 里程碑状态: open/closed */
+  state: 'open' | 'closed';
   /** 里程碑标题 */
   title: string;
   /** 里程碑描述 */
@@ -46,6 +46,8 @@ export interface MilestoneType {
 export type IssueInfoParamType = RepoBaseParamType & {
   /** 议题ID */
   issue_number: IssueIdParamType['issue_id']
+  /** 是否格式化日期时间等 */
+  format: formatParamType['format']
 }
 /** 议题详情响应类型 */
 export interface IssueInfoResponseType {

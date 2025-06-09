@@ -1,9 +1,9 @@
-import {
+import type {
   formatParamType,
   RepoParamType,
   ShaParamType
 } from '@/types/platform/base'
-import { UserInfoResponseType } from '@/types/platform/github/user'
+import type { UserInfoResponseType } from '@/types/platform/github/user'
 
 export interface CommitInfoCommonParamType {
   /** 提交SHA */
