@@ -295,3 +295,15 @@ export interface CreatePullRequestCommentResponseType {
   /** 评论内容 */
   body: string
 }
+
+/** 更新拉取请求评论参数类型 */
+export interface UpdatePullRequestCommentParamType extends RepoBaseParamType, CommentIdParamType {
+  /** 评论内容 */
+  body: string
+}
+
+/** 更新拉取请求评论响应类型 */
+export interface UpdatePullRequestCommentResponseType {
+  /** 是否评论成功 */
+  success: boolean
+}

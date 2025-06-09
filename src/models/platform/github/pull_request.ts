@@ -1,5 +1,3 @@
-import { capitalize } from 'lodash-es'
-
 import {
   ConflictPrShaMsg,
   isNotPrMergeMethodMsg,
@@ -38,6 +36,8 @@ import {
   PullRequestInfoResponseType,
   PullRequestListParamType,
   PullRequestListResponseType,
+  UpdatePullRequestCommentParamType,
+  UpdatePullRequestCommentResponseType,
   UpdatePullRequestParamType,
   UpdatePullRequestResponseType
 } from '@/types'
@@ -382,6 +382,9 @@ export class Pull_request extends GitHubClient {
       throw new Error(MissingissueOrTitleMsg)
     }
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const body: Record<string, string | number | boolean> = {}
       if ('issue' in options) {
         if (!options.issue) throw new Error(MissingissueMsg)
@@ -534,6 +537,9 @@ export class Pull_request extends GitHubClient {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
     if (!options.pr_number) throw new Error(NotPrNumberMsg)
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const body: Record<string, string> = {}
       if (options.title) body.title = options.title
       if (options.body) body.body = options.body
@@ -679,6 +685,9 @@ export class Pull_request extends GitHubClient {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
     if (!options.pr_number) throw new Error(NotPrNumberMsg)
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const body: Record<string, string> = {}
       if (options.commit_title) body.commit_title = options.commit_title
       if (options.commit_message) body.commit_message = options.commit_message
@@ -739,6 +748,9 @@ export class Pull_request extends GitHubClient {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
     if (!options.pr_number) throw new Error(NotPrNumberMsg)
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const params: Record<string, string> = {}
       if (options.per_page) params.per_page = options.per_page
       if (options.page) params.page = options.page
@@ -794,6 +806,9 @@ export class Pull_request extends GitHubClient {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
     if (!options.comment_id) throw new Error(NotCommentNumberMsg)
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const { owner, repo, comment_id } = options
       const res = await this.get(`/repos/${owner}/${repo}/pulls/comments/${comment_id}`)
       switch (res.statusCode) {
@@ -849,6 +864,9 @@ export class Pull_request extends GitHubClient {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
     if (!options.pr_number) throw new Error(NotPrNumberMsg)
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const params: Record<string, string> = {}
       if (options.direction) params.direction = options.direction
       if (options.per_page) params.per_page = options.per_page
@@ -909,6 +927,9 @@ export class Pull_request extends GitHubClient {
     if (!options.pr_number) throw new Error(NotPrNumberMsg)
     if (!options.body) throw new Error(NotCommentBodyMsg)
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const { owner, repo, pr_number, body } = options
       const res = await this.post(`/repos/${owner}/${repo}/pulls/${pr_number}/comments`, { body })
       switch (res.statusCode) {
@@ -928,5 +949,72 @@ export class Pull_request extends GitHubClient {
     } catch (error) {
       throw new Error(`创建拉取请求评论失败: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 更新拉取请求评论
+   * 权限:
+   * - Pull requests: Read-And-Write
+   * @param options 请求参数列表
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - comment_id 评论ID
+   * - body 评论内容
+   * @returns 包含更新拉取请求评论响应信息
+   * @example
+   * ```ts
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.update_pull_request_comment({ owner: 'owner', repo:'repo', comment_id:1， body: 'loli' })
+   * console.log(res) // { data: CreatePullRequestCommentResponseType }
+   * ```
+   */
+  public async update_pull_request_comment (
+    options: UpdatePullRequestCommentParamType
+  ): Promise<ApiResponseType<UpdatePullRequestCommentResponseType>> {
+    if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.comment_id) throw new Error(NotCommentNumberMsg)
+    if (!options.body) throw new Error(NotCommentBodyMsg)
+    try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
+      const { owner, repo, comment_id, body } = options
+      const res = await this.patch(`/repos/${owner}/${repo}/issues/comments/${comment_id}`, null, { body })
+      switch (res.statusCode) {
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotRepoOrPrNumber)
+      }
+      let comment_status: boolean = false
+      if (res.statusCode === 200) {
+        comment_status = true
+      }
+      res.data = { success: comment_status }
+      return res
+    } catch (error) {
+      throw new Error(`更新拉取请求评论失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 删除拉取请求评论
+   * @deprecated  请使用update_issue_comment方法
+   * 权限:
+   * - Pull requests: Read-And-Write
+   * @param options - 删除拉取请求评论参数对象
+   * @returns 删除结果
+   * @example
+   * ```ts
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.  public async edit_pull_request_comment (
+({ owner: 'owner', repo:'repo', comment_id:1， body: 'loli' })
+   * console.log(res) // { data: CreatePullRequestCommentResponseType }
+   * ```
+   */
+  public async edit_pull_request_comment (
+    options: UpdatePullRequestCommentParamType
+  ):Promise<ApiResponseType<UpdatePullRequestCommentResponseType>> {
+    return await this.update_pull_request_comment(options)
   }
 }
