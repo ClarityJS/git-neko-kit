@@ -21,6 +21,8 @@ import {
   CreatePullRequestCommentResponseType,
   CreatePullRequestParamType,
   CreatePullRequestResponseType,
+  DeletePullRequestCommentParamType,
+  DeletePullRequestCommentResponseType,
   GetPullRequestCommentInfoParamType,
   GetPullRequestCommentInfoResponseType,
   GetPullRequestCommentsListParamType,
@@ -52,7 +54,7 @@ import {
  * @class Auth
  * @extends GitHubClient GitHub基础操作类
  */
-export class Pull_request extends GitHubClient {
+export class Pull_Request extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
@@ -984,7 +986,7 @@ export class Pull_request extends GitHubClient {
         case 403:
           throw new Error(NotPerrmissionMsg)
         case 404:
-          throw new Error(NotRepoOrPrNumber)
+          throw new Error(NotRepoOrCommentNumber)
       }
       let comment_status: boolean = false
       if (res.statusCode === 200) {
@@ -1016,5 +1018,45 @@ export class Pull_request extends GitHubClient {
     options: UpdatePullRequestCommentParamType
   ):Promise<ApiResponseType<UpdatePullRequestCommentResponseType>> {
     return await this.update_pull_request_comment(options)
+  }
+
+  /**
+   * 删除拉取请求评论
+   * 权限:
+   * - Pull requests: Read-And-Write
+   * @param options 请求参数列表
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - comment_id 评论ID
+   * @returns 包含更新拉取请求评论响应信息
+   * @example
+   * ```ts
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.delete_pull_request_comment({ owner: 'owner', repo:'repo', comment_id: 1 })
+   * console.log(res) // { data: DeletePullRequestCommentResponseType }
+   * ```
+   */
+  public async delete_pull_request_comment (
+    options: DeletePullRequestCommentParamType
+  ):Promise<ApiResponseType<DeletePullRequestCommentResponseType>> {
+    if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.comment_id) throw new Error(NotCommentNumberMsg)
+    try {
+      const res = await this.delete(`/repos/${options.owner}/${options.repo}/pulls/comments/${options.comment_id}`)
+      switch (res.statusCode) {
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotRepoOrCommentNumber)
+      }
+      let comment_status: boolean = false
+      if (res.statusCode === 204) {
+        comment_status = true
+      }
+      res.data = { success: comment_status }
+      return res
+    } catch (error) {
+      throw new Error(`删除拉取请求评论失败: ${(error as Error).message}`)
+    }
   }
 }

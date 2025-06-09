@@ -307,3 +307,12 @@ export interface UpdatePullRequestCommentResponseType {
   /** 是否评论成功 */
   success: boolean
 }
+
+/** 删除拉取请求评论参数类型 */
+export type DeletePullRequestCommentParamType = RepoBaseParamType & CommentIdParamType
+
+/** 删除拉取请求评论响应类型 */
+export interface DeletePullRequestCommentResponseType {
+  /** 是否删除成功 */
+  success: boolean
+}
