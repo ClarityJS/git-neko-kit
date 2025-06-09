@@ -1,4 +1,5 @@
 /** 参数验证 */
+export const NotRequestPathMsg = '喵呜~ 请求路径不能为空'
 export const NotAppSlugMsg = '喵呜~ 应用标识符不能为空'
 export const NotAccessCodeMsg = '喵呜~ 授权码不能为空'
 export const NotAccessTokenMsg = '喵呜~ 访问令牌不能为空'

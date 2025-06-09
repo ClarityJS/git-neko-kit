@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import {
   isNotAccessTokeMsg,
   NotProxyAddressMsg,
+  NotRequestPathMsg,
   RateLimitMsg
 } from '@/common'
 import { get_api_base_url, get_base_url } from '@/models/base/common'
@@ -334,6 +335,7 @@ export class GitHubClient {
     customHeaders?: Record<string, string>
   ): Promise<ApiResponseType> {
     try {
+      if (!path) throw new Error(NotRequestPathMsg)
       const request = this.createRequest()
       const req = await request.get(path, parms, customHeaders)
       if ((req.statusCode === 403 || req.statusCode === 429) && req.headers['x-ratelimit-remaining'] === '0') {
@@ -347,7 +349,7 @@ export class GitHubClient {
         data: req.data
       }
     } catch (error) {
-      throw new Error(`GET 请求${path}失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] GET 请求${path}失败: ${(error as Error).message}`)
     }
   }
 
@@ -364,6 +366,7 @@ export class GitHubClient {
     customHeaders?: Record<string, string>
   ): Promise<ApiResponseType> {
     try {
+      if (!path) throw new Error(NotRequestPathMsg)
       const request = this.createRequest()
       const req = await request.post(path, data, customHeaders)
       if ((req.statusCode === 403 || req.statusCode === 429) && req.headers['x-ratelimit-remaining'] === '0') {
@@ -377,7 +380,7 @@ export class GitHubClient {
         data: req.data
       }
     } catch (error) {
-      throw new Error(`POST 请求${path}失败: ${(error as Error).message}`)
+      throw new Error(`[GitHUb] POST 请求${path}失败: ${(error as Error).message}`)
     }
   }
 
@@ -396,6 +399,7 @@ export class GitHubClient {
     customHeaders?: Record<string, string>
   ): Promise<ApiResponseType> {
     try {
+      if (!path) throw new Error(NotRequestPathMsg)
       const request = this.createRequest()
       const req = await request.patch(path, params, data, customHeaders)
       if ((req.statusCode === 403 || req.statusCode === 429) && req.headers['x-ratelimit-remaining'] === '0') {
@@ -409,7 +413,7 @@ export class GitHubClient {
         data: req.data
       }
     } catch (error) {
-      throw new Error(`PATCH 请求${path}失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] PATCH 请求${path}失败: ${(error as Error).message}`)
     }
   }
 
@@ -426,6 +430,7 @@ export class GitHubClient {
     customHeaders?: Record<string, string>
   ): Promise<ApiResponseType> {
     try {
+      if (!path) throw new Error(NotRequestPathMsg)
       const request = this.createRequest()
       const req = await request.put(path, data, customHeaders)
       if ((req.statusCode === 403 || req.statusCode === 429) && req.headers['x-ratelimit-remaining'] === '0') {
@@ -439,7 +444,7 @@ export class GitHubClient {
         data: req.data
       }
     } catch (error) {
-      throw new Error(`PUT 请求${path}失败: ${(error as Error).message}`)
+      throw new Error(`[GitHUb] PUT 请求${path}失败: ${(error as Error).message}`)
     }
   }
 
@@ -458,6 +463,7 @@ export class GitHubClient {
     customHeaders?: Record<string, string>
   ): Promise<ApiResponseType> {
     try {
+      if (!path) throw new Error(NotRequestPathMsg)
       const request = this.createRequest()
       const req = await request.delete(path, params, data, customHeaders)
       if ((req.statusCode === 403 || req.statusCode === 429) && req.headers['x-ratelimit-remaining'] === '0') {
@@ -471,7 +477,7 @@ export class GitHubClient {
         data: req.data
       }
     } catch (error) {
-      throw new Error(`DELETE 请求${path}失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] DELETE 请求${path}失败: ${(error as Error).message}`)
     }
   }
 }
