@@ -12,6 +12,7 @@ import {
   NotCommentNumberMsg,
   NotPerrmissionMsg,
   NotPrNumberMsg,
+  NotRepoOrCommentNumber,
   NotRepoOrPrNumber
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
@@ -19,8 +20,10 @@ import {
   ApiResponseType,
   CreatePullRequestParamType,
   CreatePullRequestResponseType,
+  GetPullRequestCommentInfoParamType,
   GetPullRequestCommentInfoResponseType,
   GetPullRequestCommentsListParamType,
+  GetPullRequestCommentsListResponseType,
   GetPullRequestFilesListParamType,
   GetPullRequestFilesListResponseType,
   IssueLabelType,
@@ -740,6 +743,12 @@ export class Pull_request extends GitHubClient {
       const res = await this.get(`/repos/${owner}/${repo}/pulls/${pr_number}/files`,
         params
       )
+      switch (res.statusCode) {
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotRepoOrPrNumber)
+      }
       if (res.data) {
         const PrData: GetPullRequestFilesListResponseType = res.data.map((file: Record<string, any>): PullRequestFilesListType => ({
           sha: file.sha,
@@ -777,17 +786,19 @@ export class Pull_request extends GitHubClient {
    * ```
    */
   public async get_pull_request_comment_info (
-    options: GetPullRequestCommentsListParamType
+    options: GetPullRequestCommentInfoParamType
   ): Promise<ApiResponseType<GetPullRequestCommentInfoResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
     if (!options.comment_id) throw new Error(NotCommentNumberMsg)
     try {
-      const params: Record<string, string> = {}
-      if (options.direction) params.direction = options.direction
-      if (options.per_page) params.per_page = options.per_page
-      if (options.page) params.page = options.page
       const { owner, repo, comment_id } = options
-      const res = await this.get(`/repos/${owner}/${repo}/pulls/comments/${comment_id}`, params)
+      const res = await this.get(`/repos/${owner}/${repo}/pulls/comments/${comment_id}`)
+      switch (res.statusCode) {
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotRepoOrCommentNumber)
+      }
       if (res.data) {
         const PrData: GetPullRequestCommentInfoResponseType = {
           id: res.data.id,
@@ -807,6 +818,67 @@ export class Pull_request extends GitHubClient {
       return res
     } catch (error) {
       throw new Error(`获取拉取请求评论评论信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取拉取请求评论列表
+   * 权限:
+   * - Pull requests: Read-And-Write
+   * @param options 请求参数列表
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * - pr_number 拉取请求编号
+   * - direction 排序方向
+   * - per_page 每页结果数量
+   * - page 页码
+   * @returns 包含拉取请求评论列表响应信息列表
+   * @example
+   * ```ts
+   * const pull_request = get_pull_request() // 获取pull_request实例
+   * const res = await pull_request.get_pull_request_comments_list({ owner: 'owner', repo:'repo', pr_number:1 })
+   * console.log(res) // { data: GetPullRequestCommentInfoResponseType }
+   * ```
+   */
+  public async get_pull_request_comments_list (
+    options: GetPullRequestCommentsListParamType
+  ): Promise<ApiResponseType<GetPullRequestCommentsListResponseType>> {
+    if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
+    if (!options.pr_number) throw new Error(NotPrNumberMsg)
+    try {
+      const params: Record<string, string> = {}
+      if (options.direction) params.direction = options.direction
+      if (options.per_page) params.per_page = options.per_page
+      if (options.page) params.page = options.page
+      const { owner, repo, pr_number } = options
+      const res = await this.get(`/repos/${owner}/${repo}/pulls/${pr_number}/comments`, params)
+      switch (res.statusCode) {
+        case 403:
+          throw new Error(NotPerrmissionMsg)
+        case 404:
+          throw new Error(NotRepoOrCommentNumber)
+      }
+      if (res.data) {
+        const PrData: GetPullRequestCommentsListResponseType = res.data.map((comment: Record<string, any>): GetPullRequestCommentInfoResponseType => {
+          return {
+            id: comment.id,
+            body: comment.body,
+            user: {
+              id: comment.user.id,
+              login: comment.user.login,
+              name: comment.user.name,
+              html_url: comment.user.html_url,
+              avatar_url: comment.user.avatar_url
+            },
+            created_at: comment.created_at,
+            updated_at: comment.updated_at
+          }
+        })
+        res.data = PrData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`获取拉取请求评论列表失败: ${(error as Error).message}`)
     }
   }
 }

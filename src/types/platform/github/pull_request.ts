@@ -255,7 +255,7 @@ export interface GetPullRequestFilesListParamType extends RepoBaseParamType, Pul
 export type GetPullRequestFilesListResponseType = Array<PullRequestFilesListType>
 
 /** 获取拉取请求评论信息参数类型 */
-export type GetPullRequestCommentInfoParamType = RepoBaseParamType & PullRequestNumberParamType
+export type GetPullRequestCommentInfoParamType = RepoBaseParamType & CommentIdParamType
 
 /** 获取拉取请求评论信息响应类型 */
 export interface GetPullRequestCommentInfoResponseType {
@@ -272,7 +272,7 @@ export interface GetPullRequestCommentInfoResponseType {
 }
 
 /** 获取拉取请求评论列表参数类型 */
-export interface GetPullRequestCommentsListParamType extends RepoBaseParamType, CommentIdParamType {
+export interface GetPullRequestCommentsListParamType extends RepoBaseParamType, PullRequestNumberParamType {
   direction: 'asc' | 'desc'
   /** 每页结果数量 */
   per_page?: string
@@ -280,15 +280,4 @@ export interface GetPullRequestCommentsListParamType extends RepoBaseParamType, 
   page?: string
 }
 /** 获取拉取请求评论列表响应类型 */
-export interface GetPullRequestCommentsListResponseType {
-  /** 评论ID */
-  id: number | string
-  /** 评论内容 */
-  body: string
-  /** 评论用户 */
-  user: PrUser
-  /** 评论创建时间 */
-  created_at: string
-  /** 评论更新时间 */
-  updated_at: string
-}
+export type GetPullRequestCommentsListResponseType = Array<GetPullRequestCommentInfoResponseType>
