@@ -3,7 +3,7 @@ export type ProxyUrlType = string
 /** 代理类型 */
 export type ProxyType = 'reverse' | 'common'
 /** Git类型 */
-export type ApiType = 'github' | 'gitee' | 'gitcode'
+export type GitType = 'github' | 'gitee' | 'gitcode'
 
 /**
  * 通用代理配置

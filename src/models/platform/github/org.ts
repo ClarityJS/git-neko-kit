@@ -5,6 +5,7 @@ import {
   NotRepoOrPerrmissionMsg,
   NotUserNameParamMsg
 } from '@/common'
+import { get_base_url } from '@/models'
 import { GitHubClient } from '@/models/platform/github/base'
 import type {
   AddMemberParamType,
@@ -13,7 +14,6 @@ import type {
   OrgInfoParamType,
   OrgInfoResponseType
 } from '@/types'
-
 /**
  * Github 组织操作类
  *
@@ -136,9 +136,10 @@ export class Org extends GitHubClient {
           id: res.data.inviter.id,
           login: res.data.inviterlogin,
           name: res.data.inviter.name,
-          role: role as 'admin' | 'member',
-          html_url: res.data.html_url
+          html_url: `${get_base_url(this.type)}/${org}`,
+          role: role as 'admin' | 'member'
         }
+        res.data = OrgData
       }
       return res
     } catch (error) {

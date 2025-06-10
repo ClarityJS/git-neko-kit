@@ -11,7 +11,7 @@ import {
   NotPerrmissionMsg,
   NotUserIdParamMsg,
   NotUserMsg,
-  NotUserParamMsg
+  NotUserNameParamMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
 import {
@@ -233,7 +233,7 @@ export class User extends GitHubClient {
   Promise<ApiResponseType<ContributionResult>> {
     try {
       if (!options.username) {
-        throw new Error(NotUserParamMsg)
+        throw new Error(NotUserNameParamMsg)
       }
       const userInfo = await this.get_user_info({ username: options.username })
       if (userInfo.data.type === 'Organization') {
@@ -252,7 +252,7 @@ export class User extends GitHubClient {
       })
       if (!res.success) throw new Error('获取用户贡献数据失败')
       if (res.statusCode === 404) {
-        throw new Error(NotUserParamMsg)
+        throw new Error(NotUserNameParamMsg)
       }
 
       const ContributionData = await get_contribution_data(res.data)

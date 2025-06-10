@@ -28,7 +28,9 @@ export interface AddMemberParamType extends OrgNameParamType, UserNameParamType 
   role?: 'admin' | 'member'
 }
 /** 添加组织成员响应类型 */
-export interface AddMemberResponseType extends Omit<AddCollaboratorResponseType, 'permissions'> {
+export interface AddMemberResponseType extends Omit<AddCollaboratorResponseType, 'permissions' | 'html_url'> {
+  /** 组织地址 */
+  html_url: string;
   /** 角色 */
   role: 'admin' | 'member'
 }

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { ApiType, ProxyType, ProxyUrlType } from '@/types'
+import { GitType, ProxyType, ProxyUrlType } from '@/types'
 
 /**
  * 获取API基础URL方法
@@ -10,11 +10,11 @@ import { ApiType, ProxyType, ProxyUrlType } from '@/types'
  * @returns 返回URL
  */
 export function get_api_base_url (
-  type: ApiType = 'github',
+  type: GitType = 'github',
   proxyUrl?: ProxyUrlType,
   proxyType: ProxyType = 'common'
 ): string {
-  const urlMap: Record<ApiType, string> = {
+  const urlMap: Record<GitType, string> = {
     github: 'api.github.com',
     gitee: 'gitee.com/api/v5',
     gitcode: 'api.gitcode.com/api/v5'
@@ -39,11 +39,11 @@ export function get_api_base_url (
  * @returns 返回URL
  */
 export function get_base_url (
-  type: ApiType = 'github',
+  type: GitType = 'github',
   proxyUrl?: ProxyUrlType,
   proxyType: ProxyType = 'common'
 ): string {
-  const urlMap: Record<ApiType, string> = {
+  const urlMap: Record<GitType, string> = {
     github: 'github.com',
     gitee: 'gitee.com',
     gitcode: 'gitcode.com'

@@ -22,6 +22,7 @@ import type { WebHook } from '@/models/platform/github/webhook'
 import type {
   ApiResponseType,
   GitHubClientType,
+  GitType,
   ProxyParamsType,
   RequestConfigType
 } from '@/types'
@@ -86,6 +87,14 @@ export class GitHubClient {
       tokenType: 'Bearer'
     }
     this.format = options.format ?? false
+  }
+
+  /**
+   * 获取Git平台类型
+   * @returns Git平台类型，如: github,gitee
+   */
+  public get type (): GitType {
+    return type
   }
 
   /**
