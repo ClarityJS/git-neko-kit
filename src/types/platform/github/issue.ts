@@ -1,4 +1,4 @@
-import type { formatParamType, IssueIdParamType, RepoBaseParamType } from '@/types/platform/base'
+import type { IssueNumberParamType, RepoBaseParamType } from '@/types/platform/base'
 import type { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 议题用户信息响应类型 */
@@ -43,16 +43,11 @@ export interface MilestoneType {
 }
 
 /** 议题信息参数类型 */
-export type IssueInfoParamType = RepoBaseParamType & {
-  /** 议题ID */
-  issue_number: IssueIdParamType['issue_id']
-  /** 是否格式化日期时间等 */
-  format: formatParamType['format']
-}
+export type IssueInfoParamType = RepoBaseParamType & IssueNumberParamType
 /** 议题详情响应类型 */
 export interface IssueInfoResponseType {
   /** 议题ID */
-  id: IssueIdParamType['issue_id'];
+  id: IssueNumberParamType['issue_number'];
   /** 议题HTML页面URL */
   html_url: string;
   /** 议题编号 */
@@ -203,7 +198,7 @@ export type CreateIssueResponseType = IssueInfoResponseType
 /** 更新议题参数类型 */
 export interface UpdateIssueParamType extends Omit<CreteIssueParamType, 'title' | 'type'> {
   /** 问题ID */
-  issue_number: IssueIdParamType['issue_id']
+  issue_number: IssueNumberParamType['issue_number']
   /** 问题的名称 */
   title?: string | null
   /** 问题的内容 */
@@ -216,10 +211,7 @@ export interface UpdateIssueParamType extends Omit<CreteIssueParamType, 'title' 
 export type UpdateIssueResponseType = IssueInfoResponseType
 
 /** 打开议题参数类型 */
-export interface OpenIssueParamType extends RepoBaseParamType {
-  /** 议题ID */
-  issue_number: IssueIdParamType['issue_id']
-}
+export type OpenIssueParamType = RepoBaseParamType & IssueNumberParamType
 /** 打开议题响应类型 */
 export type OpenIssueResponseType = IssueInfoResponseType
 
@@ -231,7 +223,7 @@ export type CloseIssueResponseType = IssueInfoResponseType
 /** 锁定议题参数类型 */
 export interface LockIssueParamType extends RepoBaseParamType {
   /** 议题ID */
-  issue_number: IssueIdParamType['issue_id']
+  issue_number: IssueNumberParamType['issue_number']
   /**
    * 锁定原因
    * 可以是以下之一：
@@ -357,7 +349,7 @@ export type IssueCommentListResponseType = IssueCommentInfoResponseType[]
 /** 创建议题评论参数类型 */
 export interface CreteIssueCommentParamType extends RepoBaseParamType {
   /** 议题ID */
-  issue_number: IssueIdParamType['issue_id'];
+  issue_number: IssueNumberParamType['issue_number'];
   /** 评论内容 */
   body: string;
 }
@@ -386,7 +378,7 @@ export interface RemoveIssueCommentResponseType {
 /** 获取子议题列表参数类型 */
 export interface SubIssueListParamType extends RepoBaseParamType {
   /** 议题ID */
-  issue_number: IssueIdParamType['issue_id'];
+  issue_number: IssueNumberParamType['issue_number'];
   /**
    * 每页结果数量
    * @default 30
@@ -404,9 +396,9 @@ export type SubIssueListResponseType = IssueInfoResponseType[]
 /** 添加子议题参数类型 */
 export interface AddSubIssueParamType extends RepoBaseParamType {
   /** 议题ID */
-  issue_number: IssueIdParamType['issue_id'];
+  issue_number: IssueNumberParamType['issue_number'];
   /** * 子议题ID */
-  sub_issue_id: IssueIdParamType['issue_id'];
+  sub_issue_id: IssueNumberParamType['issue_number'];
   /** * 是否替换父议题 */
   replace_parent: boolean;
 }
@@ -416,9 +408,9 @@ export type AddSubIssueResponseType = IssueInfoResponseType
 /** 删除子议题参数类型 */
 export interface RemoveSubIssueParamType extends RepoBaseParamType {
   /** 议题ID */
-  issue_number: IssueIdParamType['issue_id'];
+  issue_number: IssueNumberParamType['issue_number'];
   /** 子议题ID */
-  sub_issue_id: IssueIdParamType['issue_id'];
+  sub_issue_id: IssueNumberParamType['issue_number'];
 }
 /** 删除子议题响应类型 */
 export type RemoveSubIssueResponseType = IssueInfoResponseType
@@ -426,19 +418,19 @@ export type RemoveSubIssueResponseType = IssueInfoResponseType
 /** 重新确定子议题优先级参数类型 */
 export interface ReprioritizeSubIssueParamType extends RepoBaseParamType {
   /** 议题ID */
-  issue_number: IssueIdParamType['issue_id'];
+  issue_number: IssueNumberParamType['issue_number'];
   /** 子议题ID */
-  sub_issue_id: IssueIdParamType['issue_id'];
+  sub_issue_id: IssueNumberParamType['issue_number'];
   /**
    * 要优先排序的子问题的 ID（与 before_id 互斥，只能指定其中一个）
    * 在此 ID 之后放置子问题
    */
-  after_id?: IssueIdParamType['issue_id'];
+  after_id?: IssueNumberParamType['issue_number'];
   /**
    * 要优先排序的子问题的 ID（与 after_id 互斥，只能指定其中一个）
    * 在此 ID 之前放置子问题
    */
-  before_id?: IssueIdParamType['issue_id'];
+  before_id?: IssueNumberParamType['issue_number'];
 }
 /** 重新确定子议题优先级响应类型 */
 export type ReprioritizeSubIssueResponseType = IssueInfoResponseType

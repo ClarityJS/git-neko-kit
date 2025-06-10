@@ -1,5 +1,4 @@
 import type {
-  formatParamType,
   OrgNameParamType,
   RepoBaseParamType,
   RepoOwnerParamType,
@@ -29,15 +28,10 @@ export interface UserByTokenRepoListParamType extends RepoListBaseParamType {
   affiliation?: 'owner' | 'collaborator' | 'organization_member'
   /** 类型，可选all， owner， member， 默认为 all */
   type?: 'all' | 'owner' | 'member'
-  /** 是否格式化日期 */
-  format?: formatParamType['format']
 }
 
 /** 仓库信息请求参数 */
-export type RepoInfoParamType = RepoBaseParamType & {
-  /** 是否格式化日期 */
-  format?: formatParamType['format']
-}
+export type RepoInfoParamType = RepoBaseParamType
 
 /** * 仓库信息 */
 export interface RepoInfoResponseType {
@@ -91,8 +85,6 @@ export interface OrgRepoListParmType extends RepoListBaseParamType {
   org: string
   /** 类型，可选all， public， private， forks， sources， member， 默认为 all */
   type?: 'all' | 'public' | 'private' | 'forks' | 'sources' | 'member'
-  /** 是否格式化日期 */
-  format?: formatParamType['format']
 }
 /**
  * 组织仓库列表响应类型
@@ -116,8 +108,6 @@ export interface OrgRepoCreateParamType extends OrgNameParamType {
   has_wiki?: boolean;
   /** 仓库自动初始化 */
   auto_init?: boolean;
-  /** 是否格式化日期 */
-  format?: formatParamType['format'];
 }
 /** 创建组织仓库响应类型 */
 export type OrgRepoCreateResponseType = RepoInfoResponseType
@@ -133,8 +123,6 @@ export interface UserRepoListParamType extends RepoListBaseParamType {
   username: string
   /** 类型，可选all， owner， member， 默认为 all */
   type?: 'all' | 'owner' | 'member'
-  /** 是否格式化日期 */
-  format?: formatParamType['format']
 }
 /** 用户仓库列表类型 */
 export type UserRepoListType = Array<RepoInfoResponseType & {
@@ -188,8 +176,6 @@ export type CollaboratorParamType = RepoInfoParamType & UserNameParamType & {
    * admin - 拥有仓库的完全控制权，包括更改设置和删除仓库。
    */
   permission?: string;
-  /** 是否格式化日期 */
-  format?: formatParamType['format']
 }
 
 /** 邀请协作者响应类型 */
