@@ -145,4 +145,14 @@ const info = await repo.get_repo_info({ owner: 'username', repo: 'repo_name' }) 
 
 
 
-## 贡献者
+
+## 贡献者 👨‍💻👩‍💻
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
