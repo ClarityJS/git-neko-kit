@@ -4,5 +4,19 @@
   "repoType": "github",
   "files": [
     "README.md"
+  ],
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributorsPerLine": 7,
+  "contributors": [
+    {
+      "login": "shiwuliya",
+      "name": "wuliya",
+      "avatar_url": "https://avatars.githubusercontent.com/u/71247360?v=4",
+      "profile": "http://wuliya.cn",
+      "contributions": [
+        "eventOrganizing"
+      ]
+    }
   ]
 }
