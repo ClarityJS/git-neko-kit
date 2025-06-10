@@ -13,7 +13,7 @@ import {
   NotUserMsg,
   NotUserNameParamMsg
 } from '@/common'
-import { GitHubClient } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/client'
 import {
   ApiResponseType,
   ContributionResult,

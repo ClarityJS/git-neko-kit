@@ -20,7 +20,7 @@ import {
   NotRepoMsg,
   NotSubIssueNumberMsg
 } from '@/common'
-import { GitHubClient } from '@/models/platform/github/base'
+import { GitHubClient } from '@/models/platform/github/client'
 import type {
   AddSubIssueParamType,
   AddSubIssueResponseType,

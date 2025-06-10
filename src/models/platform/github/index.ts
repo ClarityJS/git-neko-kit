@@ -1,6 +1,6 @@
 export * from '@/models/platform/github/app'
 export * from '@/models/platform/github/auth'
-export * from '@/models/platform/github/base'
+export * from '@/models/platform/github/client'
 export * from '@/models/platform/github/commit'
 export * from '@/models/platform/github/issue'
 export * from '@/models/platform/github/org'

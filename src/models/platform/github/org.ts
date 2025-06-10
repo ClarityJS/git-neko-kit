@@ -5,8 +5,8 @@ import {
   NotRepoOrPerrmissionMsg,
   NotUserNameParamMsg
 } from '@/common'
-import { get_base_url } from '@/models'
-import { GitHubClient } from '@/models/platform/github/base'
+import { get_base_url } from '@/models/base/common'
+import { GitHubClient } from '@/models/platform/github/client'
 import type {
   AddMemberParamType,
   AddMemberResponseType,
