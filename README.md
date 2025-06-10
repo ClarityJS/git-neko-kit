@@ -142,3 +142,9 @@ const info = await repo.get_repo_info({ owner: 'username', repo: 'repo_name' }) 
 
 > [!Tip]
 > 其他的使用方法一样
+
+## 贡献者 👨‍💻👩‍💻
+
+<a href="https://github.com/CandriaJS/git-neko-kit/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=CandriaJS/git-neko-kit" />
+</a>

@@ -4,18 +4,27 @@ on:
   push:
     branches:
       - main
+      - '!release-please*'
+  pull_request_target:
+    types: 
+    - opened
+    - reopened
+    - synchronize
 
 permissions:
   contents: read
 
 jobs:
   deploy:
+    if: "!startsWith(github.head_ref, 'release-please')"
     runs-on: ubuntu-22.04
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - name: 检出仓库
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request_target.head.ref || github.ref_name }}
 
       - name: 获取token
         uses: actions/create-github-app-token@v2
@@ -42,6 +51,7 @@ jobs:
           pnpm build:docs
 
       - name: 部署到 Cloudflare Pages
+        id: deploy-cloudflare-pages
         uses: AdrianGonz97/refined-cf-pages-action@v1
         with:
           apiToken: ${{ secrets.CF_TOKEN  }}
@@ -50,5 +60,6 @@ jobs:
           projectName: 'git-neko-kit'
           directory: 'docs/.vuepress/dist'
           deploymentName: cloudflare-pages
-          branch: main
-          wranglerVersion: '3'
+          wranglerVersion: '3.114.9'
+            
+

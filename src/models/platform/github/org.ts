@@ -31,7 +31,7 @@ export class Org extends GitHubClient {
   /**
    * 获取组织信息
    * 权限:
-   * Metadata - Read-only , 如果获取公开组织可无需此权限
+   * - Metadata Read-only , 如果获取公开组织可无需此权限
    * @param options 组织参数
    * - org 组织名称
    * @returns 组织信息
@@ -76,7 +76,7 @@ export class Org extends GitHubClient {
   /**
    * 添加组织成员
    * 权限:
-   * Members - Read-And_Write
+   * - Members  Read-And_Write
    * @param options 组织参数
    * - org 组织名称
    * - username 成员名称
