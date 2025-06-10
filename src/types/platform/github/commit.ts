@@ -1,5 +1,4 @@
 import type {
-  formatParamType,
   RepoParamType,
   ShaParamType
 } from '@/types/platform/base'
@@ -8,8 +7,6 @@ import type { UserInfoResponseType } from '@/types/platform/github/user'
 export interface CommitInfoCommonParamType {
   /** 提交SHA */
   sha?: ShaParamType['sha'];
-  /** 是否格式化消息和日期 */
-  format?: formatParamType['format'];
 }
 
 /** Git提交用户信息 */
@@ -141,8 +138,6 @@ export type CommitListParamType = RepoParamType & {
   per_page?: number;
   /** 要获取的结果页码，默认: 1 */
   page?: number;
-  /** 是否格式化消息和日期 */
-  format?: formatParamType['format'];
 }
 /** 提交列表响应类型 */
 export type CommitListResponseType = CommitInfoResponseType[]

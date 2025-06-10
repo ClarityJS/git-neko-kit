@@ -2,6 +2,7 @@ import { capitalize } from 'lodash-es'
 
 import {
   AppRepoMovedMsg,
+  formatDate,
   MissingRepoOwnerOrNameMsg,
   NotAccessTokenMsg,
   NotAppSlugMsg,
@@ -176,8 +177,8 @@ export class App extends GitHubClient {
           repositories_url: res.data.repositories_url,
           permissions: res.data.permissions,
           events: res.data.events,
-          created_at: res.data.created_at,
-          updated_at: res.data.updated_at
+          created_at: this.format ? await formatDate(res.data.created_at) : res.data.created_at,
+          updated_at: this.format ? await formatDate(res.data.updated_at) : res.data.updated_at
         }
         res.data = AppData
       }
