@@ -200,8 +200,6 @@ export interface AddCollaboratorResponseType {
   login: string;
   /** 被邀请者的别名 */
   name: string | null;
-  /** 被邀请者的头像URL */
-  avatar_url: string;
   /** 仓库的地址 */
   html_url: string;
   /** 被邀请者的权限 */

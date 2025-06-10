@@ -12,7 +12,7 @@ import {
   NotRepoMsg,
   NotRepoOrPerrmissionMsg,
   NotUserMsg,
-  NotUserParamMsg
+  NotUserNameParamMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/base'
 import type {
@@ -268,7 +268,7 @@ export class Repo extends GitHubClient {
     options: UserRepoListParamType
   ): Promise<ApiResponseType<UserRepoListType>> {
     try {
-      if (!options.username) throw new Error(NotUserParamMsg)
+      if (!options.username) throw new Error(NotUserNameParamMsg)
       this.setRequestConfig({
         token: this.userToken
       })
@@ -745,7 +745,6 @@ export class Repo extends GitHubClient {
           id: res.data.inviter.id,
           login: res.data.inviter.login,
           name: res.data.inviter.name,
-          avatar_url: res.data.inviter.avatar_url,
           html_url: res.data.repository.html_url,
           permissions: res.data.permissions
         }
