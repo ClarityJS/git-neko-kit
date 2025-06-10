@@ -67,9 +67,9 @@ export type RepoParamType = RepoBaseParamType | RepoUrlParamType
 /**
  * 议题参数
  */
-export interface IssueIdParamType {
+export interface IssueNumberParamType {
   /** 问题id */
-  issue_id: number | string;
+  issue_number: number | string;
 }
 
 /**

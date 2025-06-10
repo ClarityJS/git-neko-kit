@@ -107,7 +107,6 @@ export class Repo extends GitHubClient {
           throw new Error(NotPerrmissionMsg)
       }
       if (res.data) {
-        const isFormat = options.format ?? this.format
         const RepoData: OrgRepoListResponseType = await Promise.all(
           res.data.map(async (repo: Record<string, any>):Promise<RepoInfoResponseType> => ({
             id: repo.id,
@@ -136,13 +135,13 @@ export class Repo extends GitHubClient {
             forks_count: repo.forks_count,
             open_issues_count: repo.open_issues_count,
             default_branch: repo.default_branch,
-            created_at: isFormat
+            created_at: this.format
               ? await formatDate(repo.created_at)
               : repo.created_at,
-            updated_at: isFormat
+            updated_at: this.format
               ? await formatDate(repo.updated_at)
               : repo.updated_at,
-            pushed_at: isFormat
+            pushed_at: this.format
               ? await formatDate(repo.pushed_at)
               : repo.pushed_at
           }))
@@ -201,7 +200,6 @@ export class Repo extends GitHubClient {
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
-      const isFormat = options?.format ?? this.format
       if (res.data) {
         const RepoData: RepoInfoResponseType[] = await Promise.all(
           res.data.map(async (repo: Record<string, any>): Promise<RepoInfoResponseType> => ({
@@ -231,13 +229,13 @@ export class Repo extends GitHubClient {
             forks_count: repo.forks_count,
             open_issues_count: repo.open_issues_count,
             default_branch: repo.default_branch,
-            created_at: isFormat
+            created_at: this.format
               ? await formatDate(repo.created_at)
               : repo.created_at,
-            updated_at: isFormat
+            updated_at: this.format
               ? await formatDate(repo.updated_at)
               : repo.updated_at,
-            pushed_at: isFormat
+            pushed_at: this.format
               ? await formatDate(repo.pushed_at)
               : repo.pushed_at
           }))
@@ -282,7 +280,6 @@ export class Repo extends GitHubClient {
       }
       if (queryOptions?.page) params.page = queryOptions.page.toString()
 
-      const isFormat = options?.format ?? this.format
       const url = `/users/${username}/repos`
       const res = await this.get(url, params)
 
@@ -322,13 +319,13 @@ export class Repo extends GitHubClient {
             forks_count: repo.forks_count,
             open_issues_count: repo.open_issues_count,
             default_branch: repo.default_branch,
-            created_at: isFormat
+            created_at: this.format
               ? await formatDate(repo.created_at)
               : repo.created_at,
-            updated_at: isFormat
+            updated_at: this.format
               ? await formatDate(repo.updated_at)
               : repo.updated_at,
-            pushed_at: isFormat
+            pushed_at: this.format
               ? await formatDate(repo.pushed_at)
               : repo.pushed_at
 
@@ -348,13 +345,11 @@ export class Repo extends GitHubClient {
    * 权限:
    * - Metadata: Read-only, 如果只获取公开仓库可无需此权限
    * @param options - 仓库信息参数对象，必须包含以下两种组合之一：
-   * - options.url 仓库URL地址
-   * - options.owner 仓库拥有者
-   * - options.repo 仓库名称
-   * url参数和owner、repo参数传入其中的一种
+   * - owner 仓库拥有者
+   * - repo 仓库名称
    * @example
    * ```ts
-   * const repo = await repo.get_repo_info({ url: 'https://github.com/CandriaJS/git-neko-kit' })
+   * const repo = await repo.get_repo_info({ owner: 'owner', repo: 'repo' })
    * console.log(repo)
    * ```
    */
@@ -374,7 +369,6 @@ export class Repo extends GitHubClient {
         case 404:
           throw new Error(NotOrgOrUserMsg)
       }
-      const isFormat = options?.format ?? this.format
       if (res.data) {
         const RepoData: RepoInfoResponseType = {
           id: res.data.id,
@@ -403,13 +397,13 @@ export class Repo extends GitHubClient {
           forks_count: res.data.forks_count,
           open_issues_count: res.data.open_issues_count,
           default_branch: res.data.default_branch,
-          created_at: isFormat
+          created_at: this.format
             ? await formatDate(res.data.created_at)
             : res.data.created_at,
-          updated_at: isFormat
+          updated_at: this.format
             ? await formatDate(res.data.updated_at)
             : res.data.updated_at,
-          pushed_at: isFormat
+          pushed_at: this.format
             ? await formatDate(res.data.pushed_at)
             : res.data.pushed_at
         }
@@ -421,6 +415,19 @@ export class Repo extends GitHubClient {
     }
   }
 
+  /**
+   * 获取仓库语言列表
+   * 权限:
+   * - Metadata: Read-only, 如果只获取公开仓库可无需此权限
+   * @param options - 仓库信息参数对象，必须包含以下两种组合之一：
+   * - owner 仓库拥有者
+   * - repo 仓库名称
+   * @example
+   * ```ts
+   * const repo = await repo.get_repo_languages_list({ owner: 'owner', repo: 'repo' })
+   * console.log(repo)
+   * ```
+   */
   public async get_repo_languages_list (
     options: RepoLanguagesListParamType
   ): Promise<ApiResponseType<RepoLanguagesListResponseType>> {
@@ -490,7 +497,6 @@ export class Repo extends GitHubClient {
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
-      const isFormat = options?.format ?? this.format
       if (res.data) {
         const RepoData: OrgRepoCreateResponseType = {
           id: res.data.id,
@@ -519,13 +525,13 @@ export class Repo extends GitHubClient {
           forks_count: res.data.forks_count,
           open_issues_count: res.data.open_issues_count,
           default_branch: res.data.default_branch,
-          created_at: isFormat
+          created_at: this.format
             ? await formatDate(res.data.created_at)
             : res.data.created_at,
-          updated_at: isFormat
+          updated_at: this.format
             ? await formatDate(res.data.updated_at)
             : res.data.updated_at,
-          pushed_at: isFormat
+          pushed_at: this.format
             ? await formatDate(res.data.pushed_at)
             : res.data.pushed_at
         }
@@ -569,7 +575,6 @@ export class Repo extends GitHubClient {
       if (res.statusCode === 401) {
         throw new Error(NotPerrmissionMsg)
       }
-      const isFormat = options?.format ?? this.format
       if (res.data) {
         const RepoData: OrgRepoCreateResponseType = {
           id: res.data.id,
@@ -598,13 +603,13 @@ export class Repo extends GitHubClient {
           forks_count: res.data.forks_count,
           open_issues_count: res.data.open_issues_count,
           default_branch: res.data.default_branch,
-          created_at: isFormat
+          created_at: this.format
             ? await formatDate(res.data.created_at)
             : res.data.created_at,
-          updated_at: isFormat
+          updated_at: this.format
             ? await formatDate(res.data.updated_at)
             : res.data.updated_at,
-          pushed_at: isFormat
+          pushed_at: this.format
             ? await formatDate(res.data.pushed_at)
             : res.data.pushed_at
         }

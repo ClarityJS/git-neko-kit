@@ -41,7 +41,6 @@ export class Commit extends GitHubClient {
    * - url 仓库URL地址
    * - owner 仓库拥有者
    * - sha 提交的SHA值，如果不提供，则默认获取仓库的默认分支的最新提交信息
-   * - format - 可选，是否格式化提交信息, 默认为false
    * @returns 提交信息
    * @example
    * ```ts
@@ -86,7 +85,6 @@ export class Commit extends GitHubClient {
       }
 
       if (res.data) {
-        const isFormat = options.format ?? this.format
         const message = res.data?.commit?.message ?? ''
         const [title, ...bodyParts] = message.split('\n')
         const CommitData: CommitInfoResponseType = {
@@ -103,7 +101,7 @@ export class Commit extends GitHubClient {
               email: res.data.commit.author.email,
               html_url: res.data.author.html_url,
               type: capitalize(String(res.data.author.type).toLowerCase()),
-              date: isFormat
+              date: this.format
                 ? await formatDate(res.data.commit.author.date)
                 : res.data.commit.author.date
             },
@@ -115,12 +113,12 @@ export class Commit extends GitHubClient {
               email: res.data.commit.committer.email,
               html_url: res.data.committer.html_url,
               type: capitalize(String(res.data.committer.type).toLowerCase()),
-              date: isFormat
+              date: this.format
                 ? await formatDate(res.data.commit.committer.date)
                 : res.data.commit.committer.date
             },
             message: res.data.commit.message,
-            ...(isFormat && {
+            ...(this.format && {
               title,
               body: bodyParts < 0 ? bodyParts.join('\n') : null
             }),
@@ -221,7 +219,6 @@ export class Commit extends GitHubClient {
         case 404:
           throw new Error(NotCommitOrRepoMsg)
       }
-      const isFormat = options?.format ?? this.format
       if (res.data) {
         const CommitData: CommitListResponseType = await Promise.all(res.data.map(async (commit: Record<string, any>): Promise<CommitInfoResponseType> => {
           const [title, ...bodyParts] = commit.commit.message.split('\n')
@@ -239,7 +236,7 @@ export class Commit extends GitHubClient {
                 email: commit.commit.author.email,
                 html_url: commit.author.html_url,
                 type: capitalize(String(commit.author.type).toLowerCase()),
-                date: isFormat
+                date: this.format
                   ? await formatDate(commit.commit.author.date)
                   : commit.commit.author.date
               },
@@ -251,12 +248,12 @@ export class Commit extends GitHubClient {
                 email: commit.commit.committer.email,
                 html_url: commit.committer.html_url,
                 type: capitalize(String(commit.committer.type).toLowerCase()),
-                date: isFormat
+                date: this.format
                   ? await formatDate(commit.commit.committer.date)
                   : commit.commit.committer.date
               },
               message: commit.commit.message,
-              ...(isFormat && {
+              ...(this.format && {
                 title,
                 body: bodyParts.length > 0 ? bodyParts.join('\n') : null
               }),
