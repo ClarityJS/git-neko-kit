@@ -1,12 +1,12 @@
 import { capitalize } from 'lodash-es'
 
 import {
-  AppRepoMovedMsg,
   formatDate,
+  MissingAccessTokenMsg,
+  MissingAppSlugMsg,
   MissingRepoOwnerOrNameMsg,
-  NotAccessTokenMsg,
-  NotAppSlugMsg,
-  NotRepoMsg
+  RepoMovedMsg,
+  RepoNotFoundMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
@@ -36,8 +36,8 @@ export class App extends GitHubClient {
 
   public async get_app_info (options: AppInfoParamType): Promise<ApiResponseType<AppInfoResponseType>> {
     const token = options.access_token ?? this.userToken
-    if (!options.app_slug) throw new Error(NotAppSlugMsg)
-    if (!token) throw new Error(NotAccessTokenMsg)
+    if (!options.app_slug) throw new Error(MissingAppSlugMsg)
+    if (!token) throw new Error(MissingAccessTokenMsg)
     try {
       this.setRequestConfig(
         {
@@ -151,9 +151,9 @@ export class App extends GitHubClient {
       const res = await this.get(`/repos/${owner}/${repo}/installation`)
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
         case 301:
-          throw new Error(AppRepoMovedMsg)
+          throw new Error(RepoMovedMsg)
       }
       if (res.data) {
         const AppData: AppRepoInfoResponseType = {
