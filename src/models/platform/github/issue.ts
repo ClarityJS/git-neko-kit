@@ -1,25 +1,25 @@
 import { capitalize } from 'lodash-es'
 
 import {
+  FailedtoLockIssueMsg,
+  FailedtoRemoveIssueMsg,
+  FailedtoUnlockIssueMsg,
   formatDate,
-  isNotIssucLockMsg,
-  isNotIssueCommentCreateMsg,
-  isNotUnLockIssueMsg,
-  IssucLockSuccessMsg,
-  IssueCommentCreateSuccessMsg,
+  IssueCommentNotFoundMsg,
+  IssueCommentRemoveSuccessMsg,
   IssueMovedMsg,
+  IssueNotFoundMsg,
   IssueUnlockSuccessMsg,
+  MissingIssueCommentBodyMsg,
+  MissingIssueCommentNumberMsg,
+  MissingIssueNumberMsg,
+  MissingIssueTitleMsg,
   MissingRepoOwnerOrNameMsg,
-  NotIssueCommentBodyMsg,
-  NotIssueCommentMsg,
-  NotIssueCommentNumberMsg,
-  NotIssueMsg,
-  NotIssueNumberMsg,
-  NotIssueTitleMsg,
-  NotPerrmissionMsg,
-  NotRepoMsg,
-  NotSubIssueNumberMsg
+  MissingSubIssueNumberMsg,
+  PermissionDeniedMsg,
+  RepoNotFoundMsg
 } from '@/common'
+import { get_base_url } from '@/models/base'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
   AddSubIssueParamType,
@@ -103,7 +103,7 @@ export class Issue extends GitHubClient {
     options: IssueInfoParamType
   ): Promise<ApiResponseType<IssueInfoResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.issue_number) throw new Error(NotIssueNumberMsg)
+    if (!options.issue_number) throw new Error(MissingIssueNumberMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -114,7 +114,7 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 301:
           throw new Error(IssueMovedMsg)
       }
@@ -238,7 +238,7 @@ export class Issue extends GitHubClient {
       const apiPath = `/repos/${owner}/${repo}/issues`
       const res = await this.get(apiPath, params)
       if (res.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
+        throw new Error(PermissionDeniedMsg)
       }
       if (res.data) {
         const IssueData: IssueListResponseType = res.data.map(
@@ -335,7 +335,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.title) {
-      throw new Error(NotIssueTitleMsg)
+      throw new Error(MissingIssueTitleMsg)
     }
     try {
       this.setRequestConfig({
@@ -361,9 +361,9 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       if (res.data) {
         if (res.data) {
@@ -463,7 +463,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -490,11 +490,11 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       if (res.data) {
         if (res.data) {
@@ -588,7 +588,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -604,11 +604,11 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       if (res.data) {
         if (res.data) {
@@ -717,7 +717,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -733,11 +733,11 @@ export class Issue extends GitHubClient {
       ))
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       if (res.data) {
         if (res.data) {
@@ -833,7 +833,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -849,20 +849,20 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       let issueData
       if (res.statusCode === 204) {
         issueData = {
-          info: IssucLockSuccessMsg
+          info: IssueUnlockSuccessMsg
         }
       } else {
         issueData = {
-          info: isNotIssucLockMsg
+          info: FailedtoLockIssueMsg
         }
       }
       res.data = issueData
@@ -900,7 +900,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -912,11 +912,11 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       let issueData
       if (res.statusCode === 204) {
@@ -925,7 +925,7 @@ export class Issue extends GitHubClient {
         }
       } else {
         issueData = {
-          info: isNotUnLockIssueMsg
+          info: FailedtoUnlockIssueMsg
         }
       }
       res.data = issueData
@@ -985,7 +985,7 @@ export class Issue extends GitHubClient {
         params
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       if (res.data) {
         const IssueData: RepoCommentListResponseType = res.data.map(
@@ -1042,7 +1042,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1065,7 +1065,7 @@ export class Issue extends GitHubClient {
         params
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       if (res.data) {
         const IssueData: IssueCommentListResponseType = res.data.map(
@@ -1119,7 +1119,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.comment_id) {
-      throw new Error(NotIssueCommentNumberMsg)
+      throw new Error(MissingIssueCommentNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1130,7 +1130,7 @@ export class Issue extends GitHubClient {
         `/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       if (res.data) {
         const IssueData: IssueCommentInfoResponseType = {
@@ -1183,10 +1183,10 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueCommentMsg)
+      throw new Error(IssueCommentNotFoundMsg)
     }
     if (!options.body) {
-      throw new Error(NotIssueCommentBodyMsg)
+      throw new Error(MissingIssueCommentBodyMsg)
     }
     try {
       this.setRequestConfig({
@@ -1200,12 +1200,12 @@ export class Issue extends GitHubClient {
         }
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       if (res.data) {
         const IssueData: CreteIssueCommentResponseType = {
           id: res.data.id,
-          html_url: res.data.html_url,
+          html_url: `${get_base_url(this.type)}/${owner}/${repo}/issues/${issue_number}#${res.data.id}`,
           body: res.data.body,
           user: {
             id: res.data.user.id,
@@ -1253,7 +1253,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.comment_id) {
-      throw new Error(NotIssueCommentNumberMsg)
+      throw new Error(MissingIssueCommentNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1266,7 +1266,7 @@ export class Issue extends GitHubClient {
         updateData
       )
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       if (res.data) {
         const IssueData: UpdateIssueCommentResponseType = {
@@ -1318,7 +1318,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.comment_id) {
-      throw new Error(NotIssueCommentNumberMsg)
+      throw new Error(MissingIssueCommentNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1329,16 +1329,16 @@ export class Issue extends GitHubClient {
         `/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`
       )
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       let IssueData: RemoveCollaboratorResponseType
       if (res.statusCode === 204) {
         IssueData = {
-          info: IssueCommentCreateSuccessMsg
+          info: IssueCommentRemoveSuccessMsg
         }
       } else {
         IssueData = {
-          info: isNotIssueCommentCreateMsg
+          info: FailedtoRemoveIssueMsg
         }
       }
       res.data = IssueData
@@ -1389,7 +1389,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueCommentMsg)
+      throw new Error(IssueCommentNotFoundMsg)
     }
     try {
       this.setRequestConfig({
@@ -1411,7 +1411,7 @@ export class Issue extends GitHubClient {
         params
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueMsg)
+        throw new Error(IssueNotFoundMsg)
       }
       if (res.data) {
         const IssueData: SubIssueListResponseType = res.data.map(
@@ -1508,10 +1508,10 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueCommentMsg)
+      throw new Error(IssueCommentNotFoundMsg)
     }
     if (!options.sub_issue_id) {
-      throw new Error(NotSubIssueNumberMsg)
+      throw new Error(MissingSubIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1527,7 +1527,7 @@ export class Issue extends GitHubClient {
         }
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueMsg)
+        throw new Error(IssueNotFoundMsg)
       }
       if (res.data) {
         const IssueData: AddSubIssueResponseType = {
@@ -1620,10 +1620,10 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueCommentMsg)
+      throw new Error(IssueCommentNotFoundMsg)
     }
     if (!options.sub_issue_id) {
-      throw new Error(NotSubIssueNumberMsg)
+      throw new Error(MissingSubIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1638,7 +1638,7 @@ export class Issue extends GitHubClient {
         }
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueMsg)
+        throw new Error(IssueNotFoundMsg)
       }
       if (res.data) {
         const IssueData: RemoveSubIssueResponseType = {
@@ -1746,10 +1746,10 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueCommentMsg)
+      throw new Error(IssueCommentNotFoundMsg)
     }
     if (!options.sub_issue_id) {
-      throw new Error(NotSubIssueNumberMsg)
+      throw new Error(MissingSubIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1770,7 +1770,7 @@ export class Issue extends GitHubClient {
         sub_issue_id: String(sub_issue_id)
       }))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueMsg)
+        throw new Error(IssueNotFoundMsg)
       }
       if (res.data) {
         const IssueData: ReprioritizeSubIssueResponseType = {

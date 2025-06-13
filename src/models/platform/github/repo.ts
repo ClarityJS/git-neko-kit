@@ -2,17 +2,15 @@ import {
   formatDate,
   get_langage_color,
   get_remote_repo_default_branch,
-  isNotPerrmissionMsg,
   MissingRepoOwnerOrNameMsg,
-  NotOrgMsg,
-  NotOrgOrRepoParamMsg,
-  NotOrgOrUserMsg,
-  NotParamMsg,
-  NotPerrmissionMsg,
-  NotRepoMsg,
-  NotRepoOrPerrmissionMsg,
-  NotUserMsg,
-  NotUserNameParamMsg
+  MissingUserNameParamMsg,
+  OrgNotFoundMsg,
+  OrgOrRepoNotFoundMsg,
+  OrgOrUserNotFoundMsg,
+  PermissionDeniedMsg,
+  RepoNotFoundMsg,
+  RepoOrPermissionDeniedMsg,
+  UserNotFoundMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
@@ -85,7 +83,7 @@ export class Repo extends GitHubClient {
     options: OrgRepoListParmType
   ): Promise<ApiResponseType<OrgRepoListResponseType>> {
     if (!options.org) {
-      throw new Error(NotParamMsg)
+      throw new Error(OrgNotFoundMsg)
     }
     try {
       this.setRequestConfig({
@@ -102,9 +100,9 @@ export class Repo extends GitHubClient {
       const res = await this.get(url, params)
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotOrgMsg)
+          throw new Error(OrgNotFoundMsg)
         case 401:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(RepoOrPermissionDeniedMsg)
       }
       if (res.data) {
         const RepoData: OrgRepoListResponseType = await Promise.all(
@@ -198,7 +196,7 @@ export class Repo extends GitHubClient {
       const url = '/uses/repos'
       const res = await this.get(url, params)
       if (res.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
+        throw new Error(RepoOrPermissionDeniedMsg)
       }
       if (res.data) {
         const RepoData: RepoInfoResponseType[] = await Promise.all(
@@ -266,7 +264,7 @@ export class Repo extends GitHubClient {
     options: UserRepoListParamType
   ): Promise<ApiResponseType<UserRepoListType>> {
     try {
-      if (!options.username) throw new Error(NotUserNameParamMsg)
+      if (!options.username) throw new Error(MissingUserNameParamMsg)
       this.setRequestConfig({
         token: this.userToken
       })
@@ -285,9 +283,9 @@ export class Repo extends GitHubClient {
 
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotUserMsg)
+          throw new Error(UserNotFoundMsg)
         case 401:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(RepoOrPermissionDeniedMsg)
       }
 
       if (res.data) {
@@ -365,9 +363,9 @@ export class Repo extends GitHubClient {
       const res = await this.get(`/repos/${owner}/${repo}`)
       switch (res.statusCode) {
         case 401:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(RepoOrPermissionDeniedMsg)
         case 404:
-          throw new Error(NotOrgOrUserMsg)
+          throw new Error(OrgOrUserNotFoundMsg)
       }
       if (res.data) {
         const RepoData: RepoInfoResponseType = {
@@ -440,9 +438,9 @@ export class Repo extends GitHubClient {
       const res = await this.get(`/repos/${owner}/${repo}/languages`)
       switch (res.statusCode) {
         case 401:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(RepoOrPermissionDeniedMsg)
         case 404:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       if (res.data) {
         const entries = Object.entries(res.data)
@@ -485,7 +483,7 @@ export class Repo extends GitHubClient {
   ): Promise<ApiResponseType<OrgRepoCreateResponseType>> {
     try {
       const { org, ...repoOptions } = options
-      if (!org || !options.name) throw new Error(NotOrgOrRepoParamMsg)
+      if (!org || !options.name) throw new Error(OrgOrRepoNotFoundMsg)
       const body: Record<string, string | boolean> = {}
       body.name = repoOptions.name
       if (repoOptions.description) body.description = repoOptions.description.toString()
@@ -495,7 +493,7 @@ export class Repo extends GitHubClient {
       if (repoOptions.auto_init) body.auto_init = repoOptions.auto_init
       const res = await this.post(`/orgs/${org}/repos`, body)
       if (res.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
+        throw new Error(RepoOrPermissionDeniedMsg)
       }
       if (res.data) {
         const RepoData: OrgRepoCreateResponseType = {
@@ -573,7 +571,7 @@ export class Repo extends GitHubClient {
       if (repoOptions.auto_init) body.auto_init = repoOptions.auto_init
       const res = await this.post('/user/repos', body)
       if (res.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
+        throw new Error(RepoOrPermissionDeniedMsg)
       }
       if (res.data) {
         const RepoData: OrgRepoCreateResponseType = {
@@ -737,11 +735,11 @@ export class Repo extends GitHubClient {
           permission: options.permission ?? 'pull'
         }
       )
-      if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
+      if (res.statusCode === 404) throw new Error(RepoOrPermissionDeniedMsg)
       if (res.statusCode === 422) {
         const msg = (res.data as unknown as { message: string }).message
         if (msg) {
-          if (msg.includes('is not a valid permission')) throw new Error(isNotPerrmissionMsg)
+          if (msg.includes('is not a valid permission')) throw new Error(PermissionDeniedMsg)
         }
       }
 
@@ -792,7 +790,7 @@ export class Repo extends GitHubClient {
       })
       const { owner, repo, username } = options
       const res = await this.delete(`/repos/${owner}/${repo}/collaborators/${username}`)
-      if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
+      if (res.statusCode === 404) throw new Error(RepoOrPermissionDeniedMsg)
       if (res.status && res.statusCode === 204) {
         res.data = {
           info: `移除协作者${username}成功`

@@ -1,12 +1,12 @@
 import { capitalize } from 'lodash-es'
 
 import {
+  CommitNotFoundMsg,
+  CommitOrRepoNotFoundMsg,
   formatDate,
   MissingRepoIdentifierMsg,
-  NotCommitMsg,
-  NotCommitOrRepoMsg,
-  NotPerrmissionMsg,
-  parse_git_url
+  parse_git_url,
+  RepoOrPermissionDeniedMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/client'
 import {
@@ -77,11 +77,11 @@ export class Commit extends GitHubClient {
       const res = await this.get(`/repos/${owner}/${repo}/commits/${sha}`)
       switch (res.statusCode) {
         case 401:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(RepoOrPermissionDeniedMsg)
         case 404:
-          throw new Error(NotCommitOrRepoMsg)
+          throw new Error(CommitOrRepoNotFoundMsg)
         case 422:
-          throw new Error(NotCommitMsg)
+          throw new Error(CommitNotFoundMsg)
       }
 
       if (res.data) {
@@ -215,9 +215,9 @@ export class Commit extends GitHubClient {
       const res = await this.get(apiUrl, params)
       switch (res.statusCode) {
         case 401:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(RepoOrPermissionDeniedMsg)
         case 404:
-          throw new Error(NotCommitOrRepoMsg)
+          throw new Error(CommitOrRepoNotFoundMsg)
       }
       if (res.data) {
         const CommitData: CommitListResponseType = await Promise.all(res.data.map(async (commit: Record<string, any>): Promise<CommitInfoResponseType> => {

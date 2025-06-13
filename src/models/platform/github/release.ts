@@ -2,11 +2,11 @@ import { capitalize } from 'lodash-es'
 
 import {
   DeleteReleaseSuccessMsg,
-  isNotDeleteReleaseMsg,
+  FailedToDeleteReleaseMsg,
+  MissingReleaseIdMsg,
   MissingRepoOwnerOrNameMsg,
-  NotReleaseIdMsg,
-  NotReleaseOrRepoMsg,
-  NotTagParamMsg
+  ReleaseOrRepoNotFoundMsg,
+  TagNotFoundMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
@@ -62,12 +62,12 @@ export class Release extends GitHubClient {
     options: ReleaseInfoParamType
   ): Promise<ApiResponseType<ReleaseInfoResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.release_id) throw new Error(NotReleaseIdMsg)
+    if (!options.release_id) throw new Error(MissingReleaseIdMsg)
     try {
       const { owner, repo, release_id } = options
       const res = await this.get(`/repos/${owner}/${repo}/releases/${release_id}`)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData: ReleaseInfoResponseType = {
@@ -126,7 +126,7 @@ export class Release extends GitHubClient {
       const url = `/repos/${owner}/${repo}/releases/latest`
       const res = await this.get(url)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData: ReleaseLatestResponseType = {
@@ -179,13 +179,13 @@ export class Release extends GitHubClient {
     options: ReleaseInfoByTagParamType
   ): Promise<ApiResponseType<ReleaseInfoByTagResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.tag) throw new Error(NotTagParamMsg)
+    if (!options.tag) throw new Error(TagNotFoundMsg)
     try {
       const { owner, repo, tag } = options
       const url = `/repos/${owner}/${repo}/releases/tags/${tag}`
       const res = await this.get(url)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData: ReleaseInfoByTagResponseType = {
@@ -250,7 +250,7 @@ export class Release extends GitHubClient {
       const url = `/repos/${owner}/${repo}/releases`
       const res = await this.get(url, params)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData:ReleaseListResponseType = res.data.map((
@@ -316,7 +316,7 @@ export class Release extends GitHubClient {
       const url = `/repos/${owner}/${repo}/releases`
       const res = await this.post(url, ReleaseOptions)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData: CreateReleaseResponseType = {
@@ -386,7 +386,7 @@ export class Release extends GitHubClient {
       const url = `/repos/${owner}/${repo}/releases`
       const res = await this.patch(url, null, ReleaseOptions)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData: UpdateReleaseResponseType = {
@@ -442,7 +442,7 @@ export class Release extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       const { owner, repo } = options
-      if (!options.release_id) throw new Error(NotReleaseIdMsg)
+      if (!options.release_id) throw new Error(MissingReleaseIdMsg)
       const { release_id } = options
       const url = `/repos/${owner}/${repo}/releases/${release_id}`
       const res = await this.delete(url)
@@ -450,7 +450,7 @@ export class Release extends GitHubClient {
       if (res.statusCode === 204) {
         msg = DeleteReleaseSuccessMsg
       } else {
-        msg = isNotDeleteReleaseMsg
+        msg = FailedToDeleteReleaseMsg
       }
       res.data = {
         info: msg
