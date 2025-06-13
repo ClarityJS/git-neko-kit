@@ -119,12 +119,20 @@ API 封装进度：
 ### 获取实例
 ```ts
 import Client from "@candriajs/git-neko-kit";
+// App令牌使用
 const options = {
   github: {
     Client_ID: '',
     Client_Secret: '',
     Private_Key: '',
     WebHook_Secret: '', // 可选，如果没设置密钥的话，可以不填
+    format: false  // 是否开启格式化，默认为false, 开启后对日期，提交信息等格式化拆分
+  }
+}
+// 私人令牌使用
+const options = {
+  github: {
+    access_token: '',
     format: false  // 是否开启格式化，默认为false, 开启后对日期，提交信息等格式化拆分
   }
 }
@@ -138,12 +146,22 @@ const gh = git_api.github
 或者
 ```ts
 import { GitHubClient } "@candriajs/git-neko-kit";
+// App令牌使用
 const options = {
-  Client_ID: '',
-  Client_Secret: '',
-  Private_Key: '',
-  WebHook_Secret: '', // 可选，如果没设置密钥的话，可以不填
-  format: false  // 是否开启格式化，默认为false, 开启后对日期，提交信息等格式化拆分
+  github: {
+    Client_ID: '',
+    Client_Secret: '',
+    Private_Key: '',
+    WebHook_Secret: '', // 可选，如果没设置密钥的话，可以不填
+    format: false  // 是否开启格式化，默认为false, 开启后对日期，提交信息等格式化拆分
+  }
+}
+// 私人令牌使用
+const options = {
+  github: {
+    access_token: '',
+    format: false  // 是否开启格式化，默认为false, 开启后对日期，提交信息等格式化拆分
+  }
 }
 const gh = new GitHubClient(options)
 ```

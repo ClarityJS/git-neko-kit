@@ -6,6 +6,7 @@ import {
   InvalidAccessTokenMsg,
   MissingAccessCodeMsg,
   MissingAccessTokenMsg,
+  MissingAppClientMsg,
   MissingRefreshTokenMsg,
   PermissionDeniedMsg,
   RefreshAccessTokenSuccessMsg
@@ -35,8 +36,8 @@ export class Auth extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.ApiUrl = base.ApiUrl
-    this.BaseUrl = base.BaseUrl
+    this.api_url = base.api_url
+    this.base_url = base.base_url
   }
 
   /**
@@ -53,11 +54,12 @@ export class Auth extends GitHubClient {
   public async get_token_by_code (
     options: AccessCodeType
   ): Promise<ApiResponseType<TokenResponseType>> {
+    if (!this.is_app_client) throw new Error(MissingAppClientMsg)
+    if (!options.code) throw new Error(MissingAccessCodeMsg)
     try {
-      if (!options.code) throw new Error(MissingAccessCodeMsg)
       this.setRequestConfig(
         {
-          url: this.BaseUrl
+          url: this.base_url
         })
       const res = await this.post('/login/oauth/access_token', {
         client_id: this.Client_ID,
@@ -104,11 +106,12 @@ export class Auth extends GitHubClient {
     options?: AccessTokenType
   ): Promise<ApiResponseType<CheckTokenResponseType>> {
     try {
+      if (!this.is_app_client) throw new Error(MissingAppClientMsg)
       const access_token = options?.access_token ?? this.userToken
       if (!access_token) throw new Error(InvalidAccessTokenMsg)
       if (!access_token.startsWith('ghu_')) throw new Error(MissingAccessTokenMsg)
       this.setRequestConfig({
-        url: this.ApiUrl,
+        url: this.api_url,
         tokenType: 'Basic',
         token: `${this.Client_ID}:${this.Client_Secret}`
       })
@@ -143,11 +146,12 @@ export class Auth extends GitHubClient {
     options: RefreshTokenType
   ): Promise<ApiResponseType<RefreshTokenResponseType>> {
     try {
+      if (!this.is_app_client) throw new Error(MissingAppClientMsg)
       if (!options.refresh_token) throw new Error(MissingAccessCodeMsg)
       if (!options.refresh_token.startsWith('ghr_')) throw new Error(MissingRefreshTokenMsg)
       this.setRequestConfig(
         {
-          url: this.BaseUrl
+          url: this.base_url
         })
       const res = await this.post('/login/oauth/access_token', {
         client_id: this.Client_ID,
@@ -203,9 +207,10 @@ export class Auth extends GitHubClient {
    */
   public async create_auth_link (state_id?: string): Promise<string> {
     try {
-      const url = new URL('/login/oauth/authorize', this.BaseUrl)
+      if (!this.is_app_client) throw new Error(MissingAppClientMsg)
+      const url = new URL('/login/oauth/authorize', this.base_url)
       url.search = new URLSearchParams({
-        client_id: this.Client_ID,
+        client_id: this.Client_ID!,
         ...(state_id && { state: state_id })
       }).toString()
 

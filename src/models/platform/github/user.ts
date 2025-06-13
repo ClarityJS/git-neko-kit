@@ -34,8 +34,8 @@ export class User extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.ApiUrl = base.ApiUrl
-    this.BaseUrl = base.BaseUrl
+    this.api_url = base.api_url
+    this.base_url = base.base_url
   }
 
   /**
@@ -150,23 +150,20 @@ export class User extends GitHubClient {
   /**
    * 通过访问令牌获取用户信息
    * 权限：无需任何权限
-   * @param options - 访问令牌配置参数对象
-   * - access_token - 访问令牌
    * @example
    * ```ts
-   * const userInfo = await user.get_user_info_by_token({ access_token: 'access_token' })
+   * const userInfo = await user.get_user_info_by_token()
    * console.log(userInfo)
    * ```
    */
-  public async get_user_info_by_auth (options?: UserInfoByAuthParamType):
+  public async get_user_info_by_auth ():
   Promise<ApiResponseType<UserInfoResponseType>> {
-    const token = options?.access_token ?? this.userToken
-    if (!token) {
+    if (!this.userToken) {
       throw new Error(MissingAccessTokenMsg)
     }
     try {
       this.setRequestConfig({
-        token
+        token: this.userToken
       })
       const res = await this.get('/user')
       switch (res.statusCode) {
@@ -201,19 +198,17 @@ export class User extends GitHubClient {
   /**
    * 通过访问令牌获取用户信息
    * 权限：无需任何权限
-   * @deprecated 该方法已过时，请使用get_user_info_by_auth方法
-   * @param options - 访问令牌配置参数对象
-   * - access_token - 访问令牌
+   * @deprecated 该方法已过时，请使用get_user_info_by_auth方法牌
    * @example
    * ```ts
-   * const userInfo = await user.get_user_info_by_token({ access_token: 'access_token' })
+   * const userInfo = await user.get_user_info_by_token()
    * console.log(userInfo)
    * ```
    */
 
-  public async get_user_info_by_token (options?: UserInfoByAuthParamType):
+  public async get_user_info_by_token ():
   Promise<ApiResponseType<UserInfoResponseType>> {
-    return this.get_user_info_by_auth(options)
+    return this.get_user_info_by_auth()
   }
 
   /**
@@ -239,7 +234,7 @@ export class User extends GitHubClient {
         throw new Error(`${OrgNotSupportedMsg}获取贡献日历`)
       }
       this.setRequestConfig({
-        url: this.BaseUrl
+        url: this.base_url
       })
       const res = await this.get(`/${options.username}`, {
         action: 'show',

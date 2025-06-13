@@ -3,6 +3,7 @@ import { capitalize } from 'lodash-es'
 import {
   formatDate,
   MissingAccessTokenMsg,
+  MissingAppClientMsg,
   MissingAppSlugMsg,
   MissingRepoOwnerOrNameMsg,
   RepoMovedMsg,
@@ -14,6 +15,7 @@ import type {
   AppInfoParamType,
   AppInfoResponseType,
   AppRepoInfoResponseType,
+  RepoBaseParamType,
   RepoInfoParamType
 } from '@/types'
 
@@ -30,11 +32,19 @@ export class App extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.ApiUrl = base.ApiUrl
-    this.BaseUrl = base.BaseUrl
+    this.api_url = base.api_url
+    this.base_url = base.base_url
   }
 
+  /**
+   * 获取应用基本信息
+   * 权限：
+   * - `none` 此节点仅App Client可用
+   * @param options - 应用标识符
+   * @returns 应用基本信息
+   */
   public async get_app_info (options: AppInfoParamType): Promise<ApiResponseType<AppInfoResponseType>> {
+    if (!this.is_app_client) throw new Error(MissingAppClientMsg)
     const token = options.access_token ?? this.userToken
     if (!options.app_slug) throw new Error(MissingAppSlugMsg)
     if (!token) throw new Error(MissingAccessTokenMsg)
@@ -77,6 +87,8 @@ export class App extends GitHubClient {
 
   /**
    * 获取当前 Github App 信息
+   * 权限：
+   * - `none` 此节点仅App Client可用
    * @returns 返回 Github App 信息
    * @example
    * ```ts
@@ -85,10 +97,11 @@ export class App extends GitHubClient {
    * ```
    */
   private async get_app_info_by_auth (): Promise<ApiResponseType<AppInfoResponseType>> {
+    if (!this.is_app_client) throw new Error(MissingAppClientMsg)
     try {
       this.setRequestConfig(
         {
-          url: this.ApiUrl,
+          url: this.api_url,
           token: this.jwtToken
         })
       const res = await this.get('/app')
@@ -125,6 +138,8 @@ export class App extends GitHubClient {
 
   /**
    * 获取仓库的应用安装信息
+   * 权限：
+   * - `none` 此节点仅App Client可用
    * @param options - 仓库安装应用参数对象
    * - owner 拥有者
    * - repo 仓库名
@@ -141,6 +156,7 @@ export class App extends GitHubClient {
   public async get_app_installation_by_repo (
     options: RepoInfoParamType
   ): Promise<ApiResponseType<AppRepoInfoResponseType>> {
+    if (!this.is_app_client) throw new Error(MissingAppClientMsg)
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig(
@@ -197,7 +213,8 @@ export class App extends GitHubClient {
    */
   public async create_install_link (state_id?: string): Promise<string> {
     try {
-      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.BaseUrl)
+      if (!this.is_app_client) throw new Error(MissingAppClientMsg)
+      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.base_url)
       url.search = new URLSearchParams({
         ...(state_id && { state: state_id })
       }).toString()
@@ -220,7 +237,8 @@ export class App extends GitHubClient {
     */
   public async create_config_install_link (state_id?: string): Promise<string> {
     try {
-      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.BaseUrl)
+      if (!this.is_app_client) throw new Error(MissingAppClientMsg)
+      const url = new URL(`apps/${await this.get_app_name()}/installations/new`, this.base_url)
       url.search = new URLSearchParams({
         ...(state_id && { state: state_id })
       }).toString()
@@ -241,5 +259,26 @@ export class App extends GitHubClient {
    */
   public async get_app_name (): Promise<string> {
     return (await this.get_app_info_by_auth()).data.name
+  }
+
+  /**
+   * 快速判断指定仓库是否安装了当前App 应用
+   * @param options - 仓库安装应用参数对象
+   * - owner 拥有者
+   * - repo 仓库名
+   * @returns 是否安装
+   * @example
+   * ```ts
+   * const isInstalled = await app.is_app_inttalled_in_repo({ owner: 'owner', repo: 'repo' })
+   * console.log(isInstalled) // 输出是否安装
+   * ·
+   */
+  public async is_app_installed_in_repo (
+    options: RepoBaseParamType
+  ): Promise<boolean> {
+    return !!await this.get_app_installation_by_repo({
+      owner: options.owner,
+      repo: options.repo
+    })
   }
 }
