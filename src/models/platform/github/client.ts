@@ -112,6 +112,7 @@ export class GitHubClient {
   }
 
   private validateAppClient (): void {
+    if (!this.is_app_client) return
     const { Private_Key, Client_ID, Client_Secret } = this
     const hasPrivateKey = Private_Key !== null && Private_Key !== ''
     const hasClientId = Client_ID !== null && Client_ID !== ''
@@ -125,15 +126,13 @@ export class GitHubClient {
     if (missingFields.length === 0) return
 
     if (missingFields.length > 0 && missingFields.length < 3) {
-      for (const field of missingFields) {
-        switch (field) {
-          case 'Client_ID':
-            throw new Error(MissingClientIDMsg)
-          case 'Client_Secret':
-            throw new Error(MissingClientSecretMsg)
-          case 'Private_Key':
-            throw new Error(MissingPrivateKeyMsg)
-        }
+      const field = missingFields[0]
+      if (field === 'Client_ID') {
+        throw new Error(MissingClientIDMsg)
+      } else if (field === 'Client_Secret') {
+        throw new Error(MissingClientSecretMsg)
+      } else if (field === 'Private_Key') {
+        throw new Error(MissingPrivateKeyMsg)
       }
     }
 
