@@ -69,7 +69,6 @@ export class Commit extends GitHubClient {
       }
       if (!options.sha) {
         const repoInfo = await this.get_repo()
-        console.log('获取仓库默认分支中')
         const default_branch = await repoInfo.get_repo_default_branch({ owner, repo })
         sha = default_branch
       } else {
@@ -121,7 +120,7 @@ export class Commit extends GitHubClient {
             message: res.data.commit.message,
             ...(this.format && {
               title,
-              body: bodyParts < 0 ? bodyParts.join('\n') : null
+              body: bodyParts.length > 0 ? bodyParts.join('\n') : null
             }),
             tree: {
               url: res.data.commit.tree.url,
