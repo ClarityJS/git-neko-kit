@@ -58,8 +58,8 @@ export class Pull_Request extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.ApiUrl = base.ApiUrl
-    this.BaseUrl = base.BaseUrl
+    this.api_url = base.api_url
+    this.base_url = base.base_url
   }
 
   /**

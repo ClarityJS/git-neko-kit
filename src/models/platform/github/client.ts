@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken'
 import {
   InvalidProxyAddressMsg,
   MissingAccessTokenMsg,
+  MissingAppClientCredentialsMsg,
+  MissingAppClientMsg,
   MissingClientIDMsg,
   MissingClientSecretMsg,
   MissingPrivateKeyMsg,
@@ -24,6 +26,7 @@ import type { User } from '@/models/platform/github/user'
 import type { WebHook } from '@/models/platform/github/webhook'
 import type {
   ApiResponseType,
+  AppClientType,
   GitHubClientType,
   GitType,
   ProxyParamsType,
@@ -63,32 +66,30 @@ export class GitHubClient {
   declare issue: Issue
   declare org: Org
   declare pull_request: Pull_Request
-  public BaseUrl: string
-  public ApiUrl: string
+  public base_url: string
+  public api_url: string
   public jwtToken: string
-  public userToken: string | null
+  public userToken?: string | null
+  public readonly Private_Key?: string | null
+  public readonly Client_ID?: string | null
+  public readonly Client_Secret?: string | null
+  public readonly WebHook_Secret?: string | null
   public readonly format: boolean
-  public readonly Private_Key: string
-  public readonly Client_ID: string
-  public readonly Client_Secret: string
-  public readonly WebHook_Secret?: string
   private currentRequestConfig: RequestConfigType
   private proxy?: ProxyParamsType | null
 
   constructor (options: GitHubClientType) {
-    if (!options.Private_Key) throw new Error(MissingPrivateKeyMsg)
-    if (!options.Client_ID) throw new Error(MissingClientIDMsg)
-    if (!options.Client_Secret) throw new Error(MissingClientSecretMsg)
-    this.Private_Key = options.Private_Key
-    this.Client_ID = options.Client_ID
-    this.Client_Secret = options.Client_Secret
-    this.WebHook_Secret = options.WebHook_Secret
+    this.Private_Key = 'Private_Key' in options ? options.Private_Key : null
+    this.Client_ID = 'Client_ID' in options ? options.Client_ID : null
+    this.Client_Secret = 'Client_Secret' in options ? options.Client_Secret : null
+    this.WebHook_Secret = 'WebHook_Secret' in options ? options.WebHook_Secret : null
+    this.validateAppClient()
     this.jwtToken = this.generate_jwt()
-    this.BaseUrl = get_base_url(type)
-    this.ApiUrl = get_api_base_url(type)
-    this.userToken = null
+    this.base_url = get_base_url(type)
+    this.api_url = get_api_base_url(type)
+    this.userToken = 'access_token' in options ? options.access_token : null
     this.currentRequestConfig = {
-      url: this.ApiUrl,
+      url: this.api_url,
       token: null,
       tokenType: 'Bearer'
     }
@@ -101,6 +102,44 @@ export class GitHubClient {
    */
   public get type (): GitType {
     return type
+  }
+
+  /**
+   * 是否是App客户端
+   */
+  public get is_app_client (): boolean {
+    return Boolean((this.Client_ID && this.Client_Secret && this.Private_Key))
+  }
+
+  private validateAppClient (): void {
+    const { Private_Key, Client_ID, Client_Secret } = this
+    const hasPrivateKey = Private_Key !== null && Private_Key !== ''
+    const hasClientId = Client_ID !== null && Client_ID !== ''
+    const hasClientSecret = Client_Secret !== null && Client_Secret !== ''
+
+    const missingFields: string[] = []
+
+    if (!hasClientId) missingFields.push('Client_ID')
+    if (!hasClientSecret) missingFields.push('Client_Secret')
+    if (!hasPrivateKey) missingFields.push('Private_Key')
+    if (missingFields.length === 0) return
+
+    if (missingFields.length > 0 && missingFields.length < 3) {
+      for (const field of missingFields) {
+        switch (field) {
+          case 'Client_ID':
+            throw new Error(MissingClientIDMsg)
+          case 'Client_Secret':
+            throw new Error(MissingClientSecretMsg)
+          case 'Private_Key':
+            throw new Error(MissingPrivateKeyMsg)
+        }
+      }
+    }
+
+    if (missingFields.length === 3) {
+      throw new Error(MissingAppClientCredentialsMsg)
+    }
   }
 
   /**
@@ -262,8 +301,8 @@ export class GitHubClient {
       switch (proxy?.type) {
         case 'common':
         case 'reverse':
-          this.BaseUrl = get_base_url(type, proxy.address, proxy.type)
-          this.ApiUrl = get_api_base_url(type, proxy.address, proxy.type)
+          this.base_url = get_base_url(type, proxy.address, proxy.type)
+          this.api_url = get_api_base_url(type, proxy.address, proxy.type)
           break
       }
 
@@ -276,7 +315,7 @@ export class GitHubClient {
 
   /**
    * 设置 token
-   * 传入的 token 必须以 ghu_ 开头，否则会抛出错误
+   * 传入的 token 必须以 ghu_ 或ghp_开头，否则会抛出错误
    * @param token 传入的 token
    * @example
    * ```ts
@@ -284,7 +323,7 @@ export class GitHubClient {
    * ```
    */
   public setToken (token: string): this {
-    if (!token.startsWith('ghu_')) {
+    if (!token.startsWith('ghu_') && !token.startsWith('ghp_')) {
       this.userToken = null
       throw new Error(MissingAccessTokenMsg)
     }
@@ -299,14 +338,15 @@ export class GitHubClient {
    * @param options.Private_Key 私钥内容
    * @returns 返回生成的 JWT
    */
-  private generate_jwt (): string {
-    const Private_Key = this.Private_Key
+  private generate_jwt (Private_Key?: string): string {
+    const PrivateKey = Private_Key ?? this.Private_Key
+    if (!this.is_app_client && !PrivateKey) throw new Error(MissingAppClientMsg)
     const payload = {
       exp: Math.floor(Date.now() / 1000) + (10 * 60),
       iat: Math.floor(Date.now() / 1000),
       iss: this.Client_ID
     }
-    return jwt.sign(payload, Private_Key, { algorithm: 'RS256' })
+    return jwt.sign(payload, PrivateKey!, { algorithm: 'RS256' })
   }
 
   /**
@@ -334,7 +374,7 @@ export class GitHubClient {
       'X-GitHub-Api-Version': '2022-11-28',
       Accept: 'application/vnd.github+json'
     }
-    return new Request(url ?? this.ApiUrl, tokenType, token, proxyConfig, customHeaders)
+    return new Request(url ?? this.api_url, tokenType, token, proxyConfig, customHeaders)
   }
 
   /**

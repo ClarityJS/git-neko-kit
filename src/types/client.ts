@@ -1,9 +1,10 @@
-import type { AppClientType, formatParamType } from '@/types/platform/base'
+import type { AccessTokenClentTYpe, AppClientType, formatParamType } from '@/types/platform/base'
 
 /** GitHub客户端类型 */
-export interface GitHubClientType extends AppClientType {
+export type GitHubBaseClient = AppClientType | AccessTokenClentTYpe
+export type GitHubClientType = GitHubBaseClient & {
   /** 是否格式化 */
-  format?: formatParamType['format']
+  readonly format?: formatParamType['format']
 }
 
 /** 客户端类型 */

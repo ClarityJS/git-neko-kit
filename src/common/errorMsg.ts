@@ -1,4 +1,6 @@
 /** 通用参数验证 */
+export const MissingAppClientMsg = '喵呜~ 当前客户端类型不是App类型, 不支持此操作哦'
+export const MissingAppClientCredentialsMsg = '喵呜~ 应用客户端配置不完整'
 export const MissingRequestPathMsg = '喵呜~ 请求路径不能为空'
 export const MissingClientIDMsg = '喵呜~ 应用客户端ID不能为空'
 export const MissingClientSecretMsg = '喵呜~ 应用客户端ID不能为空'

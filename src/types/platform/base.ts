@@ -85,14 +85,20 @@ export interface CommentIdParamType {
   comment_id: number | string;
 }
 
-/** App 基础入口类型 */
+/** App 客户端类型 */
 export interface AppClientType {
   /** App Client ID */
-  Client_ID: string
+  Client_ID?: string | null
   /** App Client Secret */
-  Client_Secret: string
+  Client_Secret?: string | null
   /** 私钥内容 */
-  Private_Key: string
+  Private_Key?: string | null
   /** WebHook Secret */
-  WebHook_Secret?: string
+  WebHook_Secret?: string | null
+}
+
+/** 访问令牌客户端类型 */
+export interface AccessTokenClentTYpe {
+  /** 访问令牌 */
+  access_token?: string | null
 }
