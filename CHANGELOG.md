@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.8.2](https://github.com/CandriaJS/git-neko-kit/compare/v0.8.1...v0.8.2) (2025-06-13)
+
+
+### 🐛 错误修复
+
+* **models:** 修复 GitHub 提交信息格式问题 ([f446de0](https://github.com/CandriaJS/git-neko-kit/commit/f446de07c3f3a625fe75744b0701e5d6f1df2423))
+
 ## [0.8.1](https://github.com/CandriaJS/git-neko-kit/compare/v0.8.0...v0.8.1) (2025-06-13)
 
 
