@@ -1,6 +1,6 @@
 {
   "name": "@candriajs/git-neko-kit",
-  "version": "0.7.7",
+  "version": "0.8.0",
   "description": "Github, Gitee, GitCode API封装库",
   "keywords": [
     "git",
@@ -27,17 +27,17 @@
       "import": "./dist/exports/axios.mjs",
       "require": "./dist/exports/axios.cjs"
     },
-     "./simple-git": {
+    "./simple-git": {
       "types": "./dist/exports/simple-git.d.ts",
       "import": "./dist/exports/simple-git.mjs",
       "require": "./dist/exports/simple-git.cjs"
     },
-     "./dayjs": {
+    "./dayjs": {
       "types": "./dist/exports/dayjs.d.ts",
       "import": "./dist/exports/dayjs.mjs",
       "require": "./dist/exports/dayjs.cjs"
     },
-     "./lodash": {
+    "./lodash": {
       "types": "./dist/exports/lodash.d.ts",
       "import": "./dist/exports/lodash.mjs",
       "require": "./dist/exports/lodash.cjs"

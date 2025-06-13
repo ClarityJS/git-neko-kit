@@ -1,5 +1,52 @@
 # 变更日志
 
+## [0.8.0](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.7...v0.8.0) (2025-06-13)
+
+
+### ✨ 新功能
+
+* **github:** 支持个人令牌和 App 令牌两种登录方式 ([#64](https://github.com/CandriaJS/git-neko-kit/issues/64)) ([8170ff0](https://github.com/CandriaJS/git-neko-kit/commit/8170ff003564f8c67cdf55d186c1cf13ac4c5708))
+* **github:** 添加组织成员功能 ([b122f5c](https://github.com/CandriaJS/git-neko-kit/commit/b122f5cfdee66cb90e746bc6014e4dbea06d0261))
+* **models:** 添加 GitHub pull_request 管理类 ([ebb71bd](https://github.com/CandriaJS/git-neko-kit/commit/ebb71bd366c57b123bd0127b7eaf6b9102692125))
+
+
+### 🐛 错误修复
+
+* 类型修复 ([dcc59aa](https://github.com/CandriaJS/git-neko-kit/commit/dcc59aa779689a9c556c97cbe7ae197e9bcb92d0))
+* 类型修复 ([7d0f0d7](https://github.com/CandriaJS/git-neko-kit/commit/7d0f0d73c865d7096280aad1ca9d768b1536714c))
+
+
+### ⚡️ 性能优化
+
+* **github:** 优化获取仓库默认分支功能并添加远程仓库支持 ([78f2443](https://github.com/CandriaJS/git-neko-kit/commit/78f2443bb1adac8a5de262eca38d882cd9f5ff2b))
+* **repo:** 添加创建用户仓库功能 ([7eb8ab0](https://github.com/CandriaJS/git-neko-kit/commit/7eb8ab0858df0e3ef398bbc769fbc7759bdc0c38))
+* 优化完善拉取请求类 ([#60](https://github.com/CandriaJS/git-neko-kit/issues/60)) ([6404cdd](https://github.com/CandriaJS/git-neko-kit/commit/6404cddb8c769b939b15fad2090068cc7e1f5a6e))
+
+
+### ♻️ 代码重构
+
+* **errorMsg:** 重构错误信息模块并优化错误消息 ([#63](https://github.com/CandriaJS/git-neko-kit/issues/63)) ([46c0081](https://github.com/CandriaJS/git-neko-kit/commit/46c00815e59abe4a8d953c67e0852411438514a1))
+* **github:** 优化 Commit 类中的代码结构 ([11caec2](https://github.com/CandriaJS/git-neko-kit/commit/11caec2e57979ff36e8f057e6d836c88926230f0))
+* **github:** 移除日期格式化相关代码 ([#61](https://github.com/CandriaJS/git-neko-kit/issues/61)) ([aec0eb8](https://github.com/CandriaJS/git-neko-kit/commit/aec0eb8962f029eba615a05e9f5cd5392c30cc77))
+* **github:** 重构组织相关接口和类型定义 ([1de887f](https://github.com/CandriaJS/git-neko-kit/commit/1de887f72a2a429245c27d54f279c3d046f69b4f))
+* **models:** 优化 GitHub 应用客户端验证逻辑 ([74ef31a](https://github.com/CandriaJS/git-neko-kit/commit/74ef31a1820981a77687a4fdd91de03f267258bc))
+* **models:** 优化请求类和 GitHub 客户端的配置处理 ([7315b31](https://github.com/CandriaJS/git-neko-kit/commit/7315b315d30f77e11f487dafb7baf5c8e5b5b055))
+* **models:** 重命名 API 基础 URL 函数 ([4fa4850](https://github.com/CandriaJS/git-neko-kit/commit/4fa4850c9af352cd3383041495b462b06191cb92))
+* **models:** 重构 GitHub 相关模块 ([df30562](https://github.com/CandriaJS/git-neko-kit/commit/df305626abb9e58f1e8af8980ac76f4ebf191178))
+* **types:** 重构客户端类型定义 ([a8bce2a](https://github.com/CandriaJS/git-neko-kit/commit/a8bce2a3ffa1eb25bc2bd285cbab60a71a0b190b))
+
+
+### 📦️ 构建系统
+
+* 添加 dayjs、lodash 和 simple-git 的类型导出 ([2da49d6](https://github.com/CandriaJS/git-neko-kit/commit/2da49d6cf4cd96913a3dd406023ef416aecbc8a2))
+
+
+### 🎡 持续集成
+
+* **deploy:** 优化 Cloudflare Pages 部署 ([e91d32a](https://github.com/CandriaJS/git-neko-kit/commit/e91d32a30b2f640d6f53f4422a56d9121bc7fc2b))
+* **deploy:** 优化 GitHub Actions 部署流程 ([586a348](https://github.com/CandriaJS/git-neko-kit/commit/586a348e5150b048c432b7bc0dfd0fd35064e467))
+* 修复 PR 合并时的版本选择错误 ([7394f75](https://github.com/CandriaJS/git-neko-kit/commit/7394f75c7c3abc1c338e836255edf516ff49d88c))
+
 ## [0.7.7](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.6...v0.7.7) (2025-05-27)
 
 
