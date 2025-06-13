@@ -71,7 +71,7 @@ export class App extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取应用信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取应用信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -119,7 +119,7 @@ export class App extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取应用信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取应用信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -184,7 +184,7 @@ export class App extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取存储库安装应用信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取存储库安装应用信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -203,7 +203,7 @@ export class App extends GitHubClient {
       }).toString()
       return url.toString()
     } catch (error) {
-      throw new Error(`生成应用安装链接失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 生成应用安装链接失败: ${(error as Error).message}`)
     }
   }
 
@@ -226,7 +226,7 @@ export class App extends GitHubClient {
       }).toString()
       return url.toString()
     } catch (error) {
-      throw new Error(`生成应用配置链接失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 生成应用配置链接失败: ${(error as Error).message}`)
     }
   }
 

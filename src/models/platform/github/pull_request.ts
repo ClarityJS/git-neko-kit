@@ -63,7 +63,7 @@ export class Pull_Request extends GitHubClient {
   }
 
   /**
-   * 获取pull_request详情
+   * 获取拉取请求详情
    * 权限:
    * - Pull requests: Read-And-Wirte
    * - Contents: Read-And-Wirte
@@ -196,12 +196,12 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取拉取请求信息失败： ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取拉取请求信息失败： ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取pull_request列表
+   * 获取拉取请求列表
    * 权限:
    * - Pull requests: Read-Only
    * @param options 请求参数列表
@@ -348,7 +348,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取拉取请求列表失败： ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取拉取请求列表失败： ${(error as Error).message}`)
     }
   }
 
@@ -512,7 +512,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`创建拉取请求失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 创建拉取请求失败: ${(error as Error).message}`)
     }
   }
 
@@ -656,7 +656,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`更新拉取请求失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 更新拉取请求失败: ${(error as Error).message}`)
     }
   }
 
@@ -722,7 +722,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`合并拉取请求失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 合并拉取请求失败: ${(error as Error).message}`)
     }
   }
 
@@ -782,7 +782,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取拉取请求文件列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取拉取请求文件列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -837,7 +837,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取拉取请求评论评论信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取拉取请求评论评论信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -901,7 +901,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取拉取请求评论列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取拉取请求评论列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -949,7 +949,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`创建拉取请求评论失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 创建拉取请求评论失败: ${(error as Error).message}`)
     }
   }
 
@@ -995,7 +995,7 @@ export class Pull_Request extends GitHubClient {
       res.data = { success: comment_status }
       return res
     } catch (error) {
-      throw new Error(`更新拉取请求评论失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 更新拉取请求评论失败: ${(error as Error).message}`)
     }
   }
 
@@ -1056,7 +1056,7 @@ export class Pull_Request extends GitHubClient {
       res.data = { success: comment_status }
       return res
     } catch (error) {
-      throw new Error(`删除拉取请求评论失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 删除拉取请求评论失败: ${(error as Error).message}`)
     }
   }
 }

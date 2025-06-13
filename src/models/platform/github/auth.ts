@@ -84,7 +84,7 @@ export class Auth extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`请求获取访问令牌失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取访问令牌失败: ${(error as Error).message}`)
     }
   }
 
@@ -124,7 +124,7 @@ export class Auth extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`请求获取访问令牌状态失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取访问令牌状态失败: ${(error as Error).message}`)
     }
   }
 
@@ -186,7 +186,7 @@ export class Auth extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`请求刷新访问令牌失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 刷新访问令牌失败: ${(error as Error).message}`)
     }
   }
 
@@ -211,7 +211,7 @@ export class Auth extends GitHubClient {
 
       return Promise.resolve(url.toString())
     } catch (error) {
-      throw new Error(`生成授权链接失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 生成授权链接失败: ${(error as Error).message}`)
     }
   }
 }

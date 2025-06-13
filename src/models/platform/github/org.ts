@@ -69,7 +69,7 @@ export class Org extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取组织信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取组织信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -143,7 +143,7 @@ export class Org extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`添加组织成员失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 添加组织成员失败: ${(error as Error).message}`)
     }
   }
 }

@@ -151,7 +151,7 @@ export class Commit extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取提交信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取提交信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -287,7 +287,7 @@ export class Commit extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取提交列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取提交列表失败: ${(error as Error).message}`)
     }
   }
 }

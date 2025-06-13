@@ -43,7 +43,7 @@ export class Release extends GitHubClient {
   }
 
   /**
-   * 获取一个Release信息
+   * 获取一个发行版信息
    * 权限:
    * — Contents: read-only
    * 如果请求公共仓库可无需以上权限
@@ -96,12 +96,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取Release信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取发行版信息失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取最新Release信息
+   * 获取最新发行版信息
    * 权限:
    * — Contents: read-only
    * 如果请求公共仓库可无需以上权限
@@ -155,12 +155,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取最新Release信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取最新发行版信息失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取指定标签的Release信息
+   * 获取指定标签的发行版信息
    * @param options Release参数信息
    * - release_id: Release ID
    * - owner: 拥有者
@@ -214,12 +214,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`通过Tag获取Release 信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 通过标签获取发行版信息失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取一个仓库下Release列表
+   * 获取一个仓库下发行版列表
    * 权限:
    * — Contents: read-only
    * 如果请求公共仓库可无需以上权限
@@ -280,12 +280,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取Release列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取发行版列表失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 创建一个Release
+   * 创建一个发行版
    * 权限:
    * — Contents: write
    * — Contents: write / Workflows: write
@@ -345,12 +345,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`创建Release失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 创建发行版失败: ${(error as Error).message}`)
     }
   }
 
   /**
-    * 创建Release
+    * 创建发行版
    * 权限:
    * — Contents: write
    * @param options Release信息
@@ -415,12 +415,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`更新Release失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 更新发行版失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 删除Release
+   * 删除发行版
    * 权限:
    * — Contents: write
    * @param options Release参数信息
@@ -457,7 +457,7 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`删除Release失败${(error as Error).message}`)
+      throw new Error(`[GitHub] 删除发行版失败${(error as Error).message}`)
     }
   }
 }

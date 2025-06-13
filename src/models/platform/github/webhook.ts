@@ -95,7 +95,7 @@ export class WebHook extends GitHubClient {
         }
       }
     } catch (error) {
-      throw new Error(`请求验证WebHook签名失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 验证WebHook签名失败: ${(error as Error).message}`)
     }
     return Promise.resolve(
       {

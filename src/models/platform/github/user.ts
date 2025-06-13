@@ -88,7 +88,7 @@ export class User extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取用户或组织信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取用户织信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -143,7 +143,7 @@ export class User extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`通过用户id获取用户信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 通过用户id获取用户信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -194,7 +194,7 @@ export class User extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取授权用户信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取授权用户信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -260,7 +260,7 @@ export class User extends GitHubClient {
         data: ContributionData
       }
     } catch (error) {
-      throw new Error(`获取用户贡献信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取用户贡献信息失败: ${(error as Error).message}`)
     }
   }
 

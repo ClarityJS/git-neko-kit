@@ -148,7 +148,7 @@ export class Repo extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取组织仓库列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取组织仓库列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -242,7 +242,7 @@ export class Repo extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取授权用户仓库列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取授权用户仓库列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -334,7 +334,7 @@ export class Repo extends GitHubClient {
 
       return res
     } catch (error) {
-      throw new Error(`获取用户仓库列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取用户仓库列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -409,7 +409,7 @@ export class Repo extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取仓库信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取仓库信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -459,7 +459,7 @@ export class Repo extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取仓库语言列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取仓库语言列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -537,7 +537,7 @@ export class Repo extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`创建组织仓库失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 创建组织仓库失败: ${(error as Error).message}`)
     }
   }
 
@@ -615,7 +615,7 @@ export class Repo extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`创建用户仓库失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 创建用户仓库失败: ${(error as Error).message}`)
     }
   }
 
@@ -693,7 +693,7 @@ export class Repo extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取仓库协作者列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取仓库协作者列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -755,7 +755,7 @@ export class Repo extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`添加协作者失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 添加协作者失败: ${(error as Error).message}`)
     }
   }
 
@@ -802,7 +802,7 @@ export class Repo extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`移除协作者失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 移除协作者失败: ${(error as Error).message}`)
     }
   }
 
@@ -852,7 +852,7 @@ export class Repo extends GitHubClient {
       const { owner, repo } = options
       return (await this.get_repo_info({ owner, repo })).data.visibility
     } catch (error) {
-      throw new Error(`获取仓库可见性失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取仓库可见性失败: ${(error as Error).message}`)
     }
   }
 
@@ -887,7 +887,7 @@ export class Repo extends GitHubClient {
 
       return default_branch
     } catch (error) {
-      throw new Error(`获取仓库默认分支失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取仓库默认分支失败: ${(error as Error).message}`)
     }
   }
 
@@ -914,7 +914,7 @@ export class Repo extends GitHubClient {
       const { owner, repo } = options
       return (await this.get_repo_info({ owner, repo })).data.language
     } catch (error) {
-      throw new Error(`获取仓库语言失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取仓库语言失败: ${(error as Error).message}`)
     }
   }
 }
