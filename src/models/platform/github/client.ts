@@ -5,6 +5,9 @@ import jwt from 'jsonwebtoken'
 import {
   InvalidProxyAddressMsg,
   MissingAccessTokenMsg,
+  MissingClientIDMsg,
+  MissingClientSecretMsg,
+  MissingPrivateKeyMsg,
   MissingRequestPathMsg,
   RateLimitExceededMsg
 } from '@/common'
@@ -68,11 +71,14 @@ export class GitHubClient {
   public readonly Private_Key: string
   public readonly Client_ID: string
   public readonly Client_Secret: string
-  public readonly WebHook_Secret: string
+  public readonly WebHook_Secret?: string
   private currentRequestConfig: RequestConfigType
   private proxy?: ProxyParamsType | null
 
   constructor (options: GitHubClientType) {
+    if (!options.Private_Key) throw new Error(MissingPrivateKeyMsg)
+    if (!options.Client_ID) throw new Error(MissingClientIDMsg)
+    if (!options.Client_Secret) throw new Error(MissingClientSecretMsg)
     this.Private_Key = options.Private_Key
     this.Client_ID = options.Client_ID
     this.Client_Secret = options.Client_Secret

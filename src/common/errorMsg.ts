@@ -1,5 +1,8 @@
 /** 通用参数验证 */
 export const MissingRequestPathMsg = '喵呜~ 请求路径不能为空'
+export const MissingClientIDMsg = '喵呜~ 应用客户端ID不能为空'
+export const MissingClientSecretMsg = '喵呜~ 应用客户端ID不能为空'
+export const MissingPrivateKeyMsg = '喵呜~ 应用密钥不能为空'
 export const MissingAppSlugMsg = '喵呜~ 应用标识符不能为空'
 export const MissingAccessCodeMsg = '喵呜~ 授权码不能为空'
 export const MissingAccessTokenMsg = '喵呜~ 访问令牌不能为空'
