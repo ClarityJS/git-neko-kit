@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.8.1](https://github.com/CandriaJS/git-neko-kit/compare/v0.8.0...v0.8.1) (2025-06-13)
+
+
+### ♻️ 代码重构
+
+* **common:** 重构 exec 函数并添加日志功能 ([269e424](https://github.com/CandriaJS/git-neko-kit/commit/269e4249a1a511fee58b6b393ddec5db09647892))
+
 ## [0.8.0](https://github.com/CandriaJS/git-neko-kit/compare/v0.7.7...v0.8.0) (2025-06-13)
 
 
