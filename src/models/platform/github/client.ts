@@ -321,13 +321,12 @@ export class GitHubClient {
    * setToken('ghu_xxxx')
    * ```
    */
-  public setToken (token: string): this {
+  public setToken (token: string): void {
     if (!token.startsWith('ghu_') && !token.startsWith('ghp_')) {
       this.userToken = null
       throw new Error(MissingAccessTokenMsg)
     }
     this.userToken = token
-    return this
   }
 
   /**

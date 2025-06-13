@@ -1,7 +1,6 @@
-import { execSync, type ExecSyncOptions } from 'node:child_process'
+import { exec as execCmd } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-import { promisify } from 'node:util'
 
 import convert, { type RGB } from 'color-convert'
 import dayjs from 'dayjs'
@@ -12,9 +11,75 @@ import { simpleGit } from 'simple-git'
 
 import { MissingLocalRepoPathMsg, MissingRemoteRepoUrlMsg } from '@/common/errorMsg'
 import { basePath } from '@/root'
-import { ContributionResult, RepoBaseParamType } from '@/types'
+import { ContributionResult, ExecOptions, ExecReturn, RepoBaseParamType } from '@/types'
 
-const exec = promisify(execSync) as (cmd: string, options?: ExecSyncOptions) => Promise<string | Buffer>
+/**
+ * 执行 shell 命令
+ * @param cmd 命令
+ * @param options 选项
+ * @param options.log 是否打印日志 默认不打印
+ * @param options.booleanResult 是否只返回布尔值 表示命令是否成功执行 默认返回完整的结果
+ * @example
+ * ```ts
+ * const { status, error, stdout, stderr } = await exec('ls -al')
+ * // -> { status: true, error: null, stdout: '...', stderr: '...' }
+ *
+ * const status = await exec('ls -al', { booleanResult: true })
+ * // -> true
+ *
+ * const { status, error, stdout, stderr } = await exec('ls -al', { log: true })
+ * // -> 打印执行命令和结果
+ * ```
+ */
+export function exec<T extends boolean = false> (
+  cmd: string,
+  options?: ExecOptions<T>
+): Promise<ExecReturn<T>> {
+  const logger = console
+  return new Promise((resolve) => {
+    if (options?.log) {
+      logger.info([
+        '[exec] 执行命令:',
+        `pwd: ${options?.cwd ?? process.cwd()}`,
+        `cmd: ${cmd}`,
+        `options: ${JSON.stringify(options)}`
+      ].join('\n'))
+    }
+
+    execCmd(cmd, options, (error, stdout, stderr) => {
+      if (options?.log) {
+        const info = error as Error
+        if (info.message) info.message = `\x1b[91m${info.message}\x1b[0m`
+        logger.info([
+          '[exec] 执行结果:',
+          `stderr: ${stderr.toString()}`,
+          `stdout: ${stdout.toString()}`,
+          `error: ${JSON.stringify(info, null, 2)}`
+        ].join('\n'))
+      }
+
+      if (options?.booleanResult) {
+        return resolve((!error) as ExecReturn<T>)
+      }
+
+      stdout = stdout.toString()
+      stderr = stderr.toString()
+
+      if (options?.trim) {
+        stdout = stdout.trim()
+        stderr = stderr.trim()
+      }
+
+      const value = {
+        status: !error,
+        error,
+        stdout,
+        stderr
+      } as ExecReturn<T>
+      resolve(value)
+    })
+  })
+}
 
 /**
  * 异步判断文件是否存在
@@ -97,7 +162,7 @@ export async function formatDate (
  */
 export async function get_relative_time (
   dateString: string,
-  locale:string = 'zh-cn'):
+  locale: string = 'zh-cn'):
   Promise<string> {
   await initDate(locale)
   dayjs.extend(relativeTime)
@@ -133,9 +198,9 @@ export function parse_git_url (url: string): RepoBaseParamType {
   }
 }
 
-async function getGitVersion (): Promise<string> {
-  const buffer = await exec('git --version')
-  return buffer.toString('utf-8').trim()
+async function get_git_version (): Promise<string> {
+  const { stdout } = await exec('git --version')
+  return stdout.toString().trim()
 }
 /**
  * 获取本地仓库的默认分支
@@ -150,7 +215,7 @@ export async function get_local_repo_default_branch (local_path: string): Promis
   if (!local_path) throw new Error(MissingLocalRepoPathMsg)
   try {
     try {
-      await getGitVersion()
+      await get_git_version()
     } catch (error) {
       throw new Error('喵呜~, Git 未安装或未正确配置')
     }
@@ -186,7 +251,7 @@ export async function get_remote_repo_default_branch (remote_url: string): Promi
   try {
     let gitVersion: string
     try {
-      gitVersion = await getGitVersion()
+      gitVersion = await get_git_version()
     } catch (error) {
       throw new Error('喵呜~, Git 未安装或未正确配置')
     }

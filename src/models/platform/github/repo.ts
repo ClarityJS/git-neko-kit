@@ -861,10 +861,8 @@ export class Repo extends GitHubClient {
    * 权限:
    * - Metadata: Read-only, 如果只获取公开仓库可无需此权限
    * @param options
-   * - url 仓库URL地址
    * - owner 仓库拥有者
    * - repo 仓库名称
-   * url参数和owner、repo参数传入其中的一种
    * @example
    * ```ts
    * const defaultBranch = await repo.get_repo_default_branch({owner: CandriaJS, repo: meme-plugin)}
