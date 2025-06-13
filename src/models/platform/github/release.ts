@@ -2,11 +2,11 @@ import { capitalize } from 'lodash-es'
 
 import {
   DeleteReleaseSuccessMsg,
-  isNotDeleteReleaseMsg,
+  FailedToDeleteReleaseMsg,
+  MissingReleaseIdMsg,
   MissingRepoOwnerOrNameMsg,
-  NotReleaseIdMsg,
-  NotReleaseOrRepoMsg,
-  NotTagParamMsg
+  ReleaseOrRepoNotFoundMsg,
+  TagNotFoundMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
@@ -43,7 +43,7 @@ export class Release extends GitHubClient {
   }
 
   /**
-   * 获取一个Release信息
+   * 获取一个发行版信息
    * 权限:
    * — Contents: read-only
    * 如果请求公共仓库可无需以上权限
@@ -62,12 +62,12 @@ export class Release extends GitHubClient {
     options: ReleaseInfoParamType
   ): Promise<ApiResponseType<ReleaseInfoResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.release_id) throw new Error(NotReleaseIdMsg)
+    if (!options.release_id) throw new Error(MissingReleaseIdMsg)
     try {
       const { owner, repo, release_id } = options
       const res = await this.get(`/repos/${owner}/${repo}/releases/${release_id}`)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData: ReleaseInfoResponseType = {
@@ -96,12 +96,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取Release信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取发行版信息失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取最新Release信息
+   * 获取最新发行版信息
    * 权限:
    * — Contents: read-only
    * 如果请求公共仓库可无需以上权限
@@ -126,7 +126,7 @@ export class Release extends GitHubClient {
       const url = `/repos/${owner}/${repo}/releases/latest`
       const res = await this.get(url)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData: ReleaseLatestResponseType = {
@@ -155,12 +155,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取最新Release信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取最新发行版信息失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取指定标签的Release信息
+   * 获取指定标签的发行版信息
    * @param options Release参数信息
    * - release_id: Release ID
    * - owner: 拥有者
@@ -179,13 +179,13 @@ export class Release extends GitHubClient {
     options: ReleaseInfoByTagParamType
   ): Promise<ApiResponseType<ReleaseInfoByTagResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.tag) throw new Error(NotTagParamMsg)
+    if (!options.tag) throw new Error(TagNotFoundMsg)
     try {
       const { owner, repo, tag } = options
       const url = `/repos/${owner}/${repo}/releases/tags/${tag}`
       const res = await this.get(url)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData: ReleaseInfoByTagResponseType = {
@@ -214,12 +214,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`通过Tag获取Release 信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 通过标签获取发行版信息失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取一个仓库下Release列表
+   * 获取一个仓库下发行版列表
    * 权限:
    * — Contents: read-only
    * 如果请求公共仓库可无需以上权限
@@ -250,7 +250,7 @@ export class Release extends GitHubClient {
       const url = `/repos/${owner}/${repo}/releases`
       const res = await this.get(url, params)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData:ReleaseListResponseType = res.data.map((
@@ -280,12 +280,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取Release列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取发行版列表失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 创建一个Release
+   * 创建一个发行版
    * 权限:
    * — Contents: write
    * — Contents: write / Workflows: write
@@ -316,7 +316,7 @@ export class Release extends GitHubClient {
       const url = `/repos/${owner}/${repo}/releases`
       const res = await this.post(url, ReleaseOptions)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData: CreateReleaseResponseType = {
@@ -345,12 +345,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`创建Release失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 创建发行版失败: ${(error as Error).message}`)
     }
   }
 
   /**
-    * 创建Release
+    * 创建发行版
    * 权限:
    * — Contents: write
    * @param options Release信息
@@ -386,7 +386,7 @@ export class Release extends GitHubClient {
       const url = `/repos/${owner}/${repo}/releases`
       const res = await this.patch(url, null, ReleaseOptions)
       if (res.statusCode === 404) {
-        throw new Error(NotReleaseOrRepoMsg)
+        throw new Error(ReleaseOrRepoNotFoundMsg)
       }
       if (res.data) {
         const ReleaseData: UpdateReleaseResponseType = {
@@ -415,12 +415,12 @@ export class Release extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`更新Release失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 更新发行版失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 删除Release
+   * 删除发行版
    * 权限:
    * — Contents: write
    * @param options Release参数信息
@@ -442,7 +442,7 @@ export class Release extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       const { owner, repo } = options
-      if (!options.release_id) throw new Error(NotReleaseIdMsg)
+      if (!options.release_id) throw new Error(MissingReleaseIdMsg)
       const { release_id } = options
       const url = `/repos/${owner}/${repo}/releases/${release_id}`
       const res = await this.delete(url)
@@ -450,14 +450,14 @@ export class Release extends GitHubClient {
       if (res.statusCode === 204) {
         msg = DeleteReleaseSuccessMsg
       } else {
-        msg = isNotDeleteReleaseMsg
+        msg = FailedToDeleteReleaseMsg
       }
       res.data = {
         info: msg
       }
       return res
     } catch (error) {
-      throw new Error(`删除Release失败${(error as Error).message}`)
+      throw new Error(`[GitHub] 删除发行版失败${(error as Error).message}`)
     }
   }
 }

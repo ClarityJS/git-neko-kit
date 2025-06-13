@@ -3,15 +3,14 @@ import { capitalize } from 'lodash-es'
 
 import {
   get_contribution_data,
-  isNotAccessTokeMsg,
-  isOrgMsg,
-  NotAccessTokenMsg,
-  NotOrgOrUserMsg,
-  NotOrgOrUserParamMsg,
-  NotPerrmissionMsg,
-  NotUserIdParamMsg,
-  NotUserMsg,
-  NotUserNameParamMsg
+  InvalidAccessTokenMsg,
+  MissingAccessTokenMsg,
+  MissingUserIdParamMsg,
+  MissingUserNameParamMsg,
+  OrgNotSupportedMsg,
+  OrgOrUserNotFoundMsg,
+  PermissionDeniedMsg,
+  UserNotFoundMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/client'
 import {
@@ -55,10 +54,10 @@ export class User extends GitHubClient {
   Promise<ApiResponseType<UserInfoResponseType>> {
     const token = options.access_token ?? this.userToken
     if (!options.username) {
-      throw new Error(NotOrgOrUserParamMsg)
+      throw new Error(OrgOrUserNotFoundMsg)
     }
     if (token && !token?.startsWith('ghu_')) {
-      throw new Error(isNotAccessTokeMsg)
+      throw new Error(InvalidAccessTokenMsg)
     }
     try {
       this.setRequestConfig({
@@ -66,9 +65,9 @@ export class User extends GitHubClient {
       })
       const res = await this.get(`/users/${options.username}`)
       if (res.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
+        throw new Error(PermissionDeniedMsg)
       } else if (res.statusCode === 404) {
-        throw new Error(NotOrgOrUserMsg)
+        throw new Error(OrgOrUserNotFoundMsg)
       }
       if (res.data) {
         const UserData: UserInfoResponseType = {
@@ -89,7 +88,7 @@ export class User extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取用户或组织信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取用户织信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -110,10 +109,10 @@ export class User extends GitHubClient {
   Promise<ApiResponseType<UserInfoResponseType>> {
     const token = options.access_token ?? this.userToken
     if (!options.user_id) {
-      throw new Error(NotUserIdParamMsg)
+      throw new Error(MissingUserIdParamMsg)
     }
     if (token && !token?.startsWith('ghu_')) {
-      throw new Error(isNotAccessTokeMsg)
+      throw new Error(InvalidAccessTokenMsg)
     }
     try {
       this.setRequestConfig({
@@ -121,9 +120,9 @@ export class User extends GitHubClient {
       })
       const res = await this.get(`/user/${options.user_id}`)
       if (res.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
+        throw new Error(PermissionDeniedMsg)
       } else if (res.statusCode === 404) {
-        throw new Error(NotUserMsg)
+        throw new Error(UserNotFoundMsg)
       }
       if (res.data) {
         const UserData: UserInfoResponseType = {
@@ -144,7 +143,7 @@ export class User extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`通过用户id获取用户信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 通过用户id获取用户信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -163,7 +162,7 @@ export class User extends GitHubClient {
   Promise<ApiResponseType<UserInfoResponseType>> {
     const token = options?.access_token ?? this.userToken
     if (!token) {
-      throw new Error(NotAccessTokenMsg)
+      throw new Error(MissingAccessTokenMsg)
     }
     try {
       this.setRequestConfig({
@@ -172,9 +171,9 @@ export class User extends GitHubClient {
       const res = await this.get('/user')
       switch (res.statusCode) {
         case 401:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 404:
-          throw new Error(NotUserMsg)
+          throw new Error(UserNotFoundMsg)
       }
       if (res.data) {
         const UserData: UserInfoResponseType = {
@@ -195,7 +194,7 @@ export class User extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取授权用户信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取授权用户信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -233,11 +232,11 @@ export class User extends GitHubClient {
   Promise<ApiResponseType<ContributionResult>> {
     try {
       if (!options.username) {
-        throw new Error(NotUserNameParamMsg)
+        throw new Error(MissingUserNameParamMsg)
       }
       const userInfo = await this.get_user_info({ username: options.username })
       if (userInfo.data.type === 'Organization') {
-        throw new Error(`${isOrgMsg}获取贡献日历`)
+        throw new Error(`${OrgNotSupportedMsg}获取贡献日历`)
       }
       this.setRequestConfig({
         url: this.BaseUrl
@@ -252,7 +251,7 @@ export class User extends GitHubClient {
       })
       if (!res.success) throw new Error('获取用户贡献数据失败')
       if (res.statusCode === 404) {
-        throw new Error(NotUserNameParamMsg)
+        throw new Error(MissingUserNameParamMsg)
       }
 
       const ContributionData = await get_contribution_data(res.data)
@@ -261,7 +260,7 @@ export class User extends GitHubClient {
         data: ContributionData
       }
     } catch (error) {
-      throw new Error(`获取用户贡献信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取用户贡献信息失败: ${(error as Error).message}`)
     }
   }
 

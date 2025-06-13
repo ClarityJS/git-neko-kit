@@ -94,5 +94,5 @@ export interface AppClientType {
   /** 私钥内容 */
   Private_Key: string
   /** WebHook Secret */
-  WebHook_Secret: string
+  WebHook_Secret?: string
 }

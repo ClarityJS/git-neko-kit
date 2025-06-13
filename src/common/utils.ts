@@ -10,7 +10,7 @@ import GitUrlParse from 'git-url-parse'
 import LanguageColors from 'language-colors'
 import { simpleGit } from 'simple-git'
 
-import { NotLocalRepoPathMsg, NotRemoteRepoUrlMsg } from '@/common/errorMsg'
+import { MissingLocalRepoPathMsg, MissingRemoteRepoUrlMsg } from '@/common/errorMsg'
 import { basePath } from '@/root'
 import { ContributionResult, RepoBaseParamType } from '@/types'
 
@@ -147,7 +147,7 @@ async function getGitVersion (): Promise<string> {
  * ```
  */
 export async function get_local_repo_default_branch (local_path: string): Promise<string> {
-  if (!local_path) throw new Error(NotLocalRepoPathMsg)
+  if (!local_path) throw new Error(MissingLocalRepoPathMsg)
   try {
     try {
       await getGitVersion()
@@ -182,7 +182,7 @@ export async function get_local_repo_default_branch (local_path: string): Promis
  * ```
  */
 export async function get_remote_repo_default_branch (remote_url: string): Promise<string> {
-  if (!remote_url) throw new Error(NotRemoteRepoUrlMsg)
+  if (!remote_url) throw new Error(MissingRemoteRepoUrlMsg)
   try {
     let gitVersion: string
     try {

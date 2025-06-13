@@ -1,25 +1,25 @@
 import { capitalize } from 'lodash-es'
 
 import {
+  FailedtoLockIssueMsg,
+  FailedtoRemoveIssueMsg,
+  FailedtoUnlockIssueMsg,
   formatDate,
-  isNotIssucLockMsg,
-  isNotIssueCommentCreateMsg,
-  isNotUnLockIssueMsg,
-  IssucLockSuccessMsg,
-  IssueCommentCreateSuccessMsg,
+  IssueCommentNotFoundMsg,
+  IssueCommentRemoveSuccessMsg,
   IssueMovedMsg,
+  IssueNotFoundMsg,
   IssueUnlockSuccessMsg,
+  MissingIssueCommentBodyMsg,
+  MissingIssueCommentNumberMsg,
+  MissingIssueNumberMsg,
+  MissingIssueTitleMsg,
   MissingRepoOwnerOrNameMsg,
-  NotIssueCommentBodyMsg,
-  NotIssueCommentMsg,
-  NotIssueCommentNumberMsg,
-  NotIssueMsg,
-  NotIssueNumberMsg,
-  NotIssueTitleMsg,
-  NotPerrmissionMsg,
-  NotRepoMsg,
-  NotSubIssueNumberMsg
+  MissingSubIssueNumberMsg,
+  PermissionDeniedMsg,
+  RepoNotFoundMsg
 } from '@/common'
+import { get_base_url } from '@/models/base'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
   AddSubIssueParamType,
@@ -63,7 +63,7 @@ import type {
 } from '@/types'
 
 /**
- * GitHub Issue 处理类，提供WebHook相关操作功能
+ * GitHub Issue 处理类，提供Issue相关操作功能
  *
  * 提供完整的GitHub Issue管理，包括：
  * - 获取Issue列表
@@ -84,7 +84,7 @@ export class Issue extends GitHubClient {
   }
 
   /**
-   * 获取Issue详情
+   * 获取议题详情
    * 权限:
    * - Issues: Read-only
    * @param options 请求参数列表
@@ -103,7 +103,7 @@ export class Issue extends GitHubClient {
     options: IssueInfoParamType
   ): Promise<ApiResponseType<IssueInfoResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.issue_number) throw new Error(NotIssueNumberMsg)
+    if (!options.issue_number) throw new Error(MissingIssueNumberMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -114,7 +114,7 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 301:
           throw new Error(IssueMovedMsg)
       }
@@ -179,12 +179,12 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取Issue详情失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取议题详情失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取仓库的Issue列表
+   * 获取仓库的议题列表
    * 权限:
    * - Issues:Read-only
    * @param options 请求参数列表
@@ -238,7 +238,7 @@ export class Issue extends GitHubClient {
       const apiPath = `/repos/${owner}/${repo}/issues`
       const res = await this.get(apiPath, params)
       if (res.statusCode === 401) {
-        throw new Error(NotPerrmissionMsg)
+        throw new Error(PermissionDeniedMsg)
       }
       if (res.data) {
         const IssueData: IssueListResponseType = res.data.map(
@@ -303,12 +303,12 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取仓库的Issue列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取仓库的议题列表失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 创建一个Issue
+   * 创建一个议题
    * 权限:
    * - Issues: Write
    * @param options 发送Issue的参数对象
@@ -335,7 +335,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.title) {
-      throw new Error(NotIssueTitleMsg)
+      throw new Error(MissingIssueTitleMsg)
     }
     try {
       this.setRequestConfig({
@@ -361,9 +361,9 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       if (res.data) {
         if (res.data) {
@@ -428,12 +428,12 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`创建Issue失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub]创建议题失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 更新一个Issue
+   * 更新一个议题
    * 权限:
    * - Issues: Write
    * - Pull requests: Write
@@ -463,7 +463,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -490,11 +490,11 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       if (res.data) {
         if (res.data) {
@@ -559,12 +559,12 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`更新Issue失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 更新议题失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 重新打开一个Issue
+   * 重新打开一个议题
    * 权限:
    * - Issues: Write
    * - Pull requests: Write
@@ -588,7 +588,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -604,11 +604,11 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       if (res.data) {
         if (res.data) {
@@ -673,7 +673,7 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`打开Issue失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 打开议题失败: ${(error as Error).message}`)
     }
   }
 
@@ -692,7 +692,7 @@ export class Issue extends GitHubClient {
   }
 
   /**
-   * 关闭一个Issue
+   * 关闭一个议题
    * 权限:
    * - Issues: Write
    * - Pull requests: Write
@@ -717,7 +717,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -733,11 +733,11 @@ export class Issue extends GitHubClient {
       ))
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       if (res.data) {
         if (res.data) {
@@ -802,12 +802,12 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`关闭Issue失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 关闭议题失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 锁定一个Issue
+   * 锁定一个议题
    * 仅GitHub平台可用
    * 权限:
    * - Issues: Write
@@ -833,7 +833,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -849,33 +849,31 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       let issueData
       if (res.statusCode === 204) {
         issueData = {
-          info: IssucLockSuccessMsg
+          info: IssueUnlockSuccessMsg
         }
       } else {
         issueData = {
-          info: isNotIssucLockMsg
+          info: FailedtoLockIssueMsg
         }
       }
       res.data = issueData
       return res
     } catch (error) {
-      throw new Error(
-        `锁定Issue${options.issue_number}失败: ${(error as Error).message}`
-      )
+      throw new Error(`[GitHub] 锁定议题失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 解锁一个Issue
+   * 解锁一个议题
    * 仅GitHub平台可用
    * 权限:
    * - Issues: Write
@@ -900,7 +898,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -912,11 +910,11 @@ export class Issue extends GitHubClient {
       )
       switch (res.statusCode) {
         case 404:
-          throw new Error(NotIssueMsg)
+          throw new Error(IssueNotFoundMsg)
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 301:
-          throw new Error(NotRepoMsg)
+          throw new Error(RepoNotFoundMsg)
       }
       let issueData
       if (res.statusCode === 204) {
@@ -925,18 +923,18 @@ export class Issue extends GitHubClient {
         }
       } else {
         issueData = {
-          info: isNotUnLockIssueMsg
+          info: FailedtoUnlockIssueMsg
         }
       }
       res.data = issueData
       return res
     } catch (error) {
-      throw new Error(`解锁Issue失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 解锁议题失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取一个仓库下Issue的评论列表
+   * 获取一个仓库下议题的评论列表
    * 权限:
    * - Issues: Read-only
    * - Pull requests: Read-only
@@ -985,7 +983,7 @@ export class Issue extends GitHubClient {
         params
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       if (res.data) {
         const IssueData: RepoCommentListResponseType = res.data.map(
@@ -1010,12 +1008,12 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取仓库${options.owner}/${options.repo}评论列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取仓库评论列表失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取一个Issue下的评论列表
+   * 获取一个议题下的评论列表
    * 权限:
    * - Issues: Read-only
    * - Pull requests: Read-only
@@ -1042,7 +1040,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueNumberMsg)
+      throw new Error(MissingIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1065,7 +1063,7 @@ export class Issue extends GitHubClient {
         params
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       if (res.data) {
         const IssueData: IssueCommentListResponseType = res.data.map(
@@ -1090,12 +1088,12 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取议题评论列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取议题评论列表失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取Issue评论信息
+   * 获取议题评论信息
    * 权限:
    * - Issues: Read-only
    * - Pull requests: Read-only
@@ -1119,7 +1117,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.comment_id) {
-      throw new Error(NotIssueCommentNumberMsg)
+      throw new Error(MissingIssueCommentNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1130,7 +1128,7 @@ export class Issue extends GitHubClient {
         `/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       if (res.data) {
         const IssueData: IssueCommentInfoResponseType = {
@@ -1153,12 +1151,12 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取议题评论信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取议题评论信息失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 创建一个Issue评论
+   * 创建一个议题评论
    * 权限:
    * - Issues: Write
    * - Pull requests: Write
@@ -1183,10 +1181,10 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueCommentMsg)
+      throw new Error(IssueCommentNotFoundMsg)
     }
     if (!options.body) {
-      throw new Error(NotIssueCommentBodyMsg)
+      throw new Error(MissingIssueCommentBodyMsg)
     }
     try {
       this.setRequestConfig({
@@ -1200,12 +1198,12 @@ export class Issue extends GitHubClient {
         }
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       if (res.data) {
         const IssueData: CreteIssueCommentResponseType = {
           id: res.data.id,
-          html_url: res.data.html_url,
+          html_url: `${get_base_url(this.type)}/${owner}/${repo}/issues/${issue_number}#${res.data.id}`,
           body: res.data.body,
           user: {
             id: res.data.user.id,
@@ -1223,12 +1221,12 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`创建议题评论失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 创建议题评论失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 更新Issue评论信息
+   * 更新议题评论信息
    * 权限:
    * - Issues: Write
    * - Pull requests: Write
@@ -1253,7 +1251,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.comment_id) {
-      throw new Error(NotIssueCommentNumberMsg)
+      throw new Error(MissingIssueCommentNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1266,7 +1264,7 @@ export class Issue extends GitHubClient {
         updateData
       )
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       if (res.data) {
         const IssueData: UpdateIssueCommentResponseType = {
@@ -1289,12 +1287,12 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`更新议题评论信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 更新议题评论信息失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 删除Issue评论信息
+   * 删除议题评论信息
    * 权限:
    * - Issues: Write
    * - Pull requests: Write
@@ -1318,7 +1316,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.comment_id) {
-      throw new Error(NotIssueCommentNumberMsg)
+      throw new Error(MissingIssueCommentNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1329,27 +1327,27 @@ export class Issue extends GitHubClient {
         `/repos/${owner}/${repo}/issues/comments/${Number(comment_id)}`
       )
       if (res.statusCode === 404) {
-        throw new Error(NotIssueCommentMsg)
+        throw new Error(IssueCommentNotFoundMsg)
       }
       let IssueData: RemoveCollaboratorResponseType
       if (res.statusCode === 204) {
         IssueData = {
-          info: IssueCommentCreateSuccessMsg
+          info: IssueCommentRemoveSuccessMsg
         }
       } else {
         IssueData = {
-          info: isNotIssueCommentCreateMsg
+          info: FailedtoRemoveIssueMsg
         }
       }
       res.data = IssueData
       return res
     } catch (error) {
-      throw new Error(`删除议题评论信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 删除议题评论信息失败: ${(error as Error).message}`)
     }
   }
 
   /**
-   * 删除Issue评论信息
+   * 删除议题评论信息
    * 权限:
    * - Issues: Write
    * - Pull requests: Write
@@ -1389,7 +1387,7 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueCommentMsg)
+      throw new Error(IssueCommentNotFoundMsg)
     }
     try {
       this.setRequestConfig({
@@ -1411,7 +1409,7 @@ export class Issue extends GitHubClient {
         params
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueMsg)
+        throw new Error(IssueNotFoundMsg)
       }
       if (res.data) {
         const IssueData: SubIssueListResponseType = res.data.map(
@@ -1476,7 +1474,7 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取子议题列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取子议题列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -1508,10 +1506,10 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueCommentMsg)
+      throw new Error(IssueCommentNotFoundMsg)
     }
     if (!options.sub_issue_id) {
-      throw new Error(NotSubIssueNumberMsg)
+      throw new Error(MissingSubIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1527,7 +1525,7 @@ export class Issue extends GitHubClient {
         }
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueMsg)
+        throw new Error(IssueNotFoundMsg)
       }
       if (res.data) {
         const IssueData: AddSubIssueResponseType = {
@@ -1590,7 +1588,7 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`添加子议题失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 添加子议题失败: ${(error as Error).message}`)
     }
   }
 
@@ -1620,10 +1618,10 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueCommentMsg)
+      throw new Error(IssueCommentNotFoundMsg)
     }
     if (!options.sub_issue_id) {
-      throw new Error(NotSubIssueNumberMsg)
+      throw new Error(MissingSubIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1638,7 +1636,7 @@ export class Issue extends GitHubClient {
         }
       ))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueMsg)
+        throw new Error(IssueNotFoundMsg)
       }
       if (res.data) {
         const IssueData: RemoveSubIssueResponseType = {
@@ -1701,7 +1699,7 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`删除子议题失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 删除子议题失败: ${(error as Error).message}`)
     }
   }
 
@@ -1746,10 +1744,10 @@ export class Issue extends GitHubClient {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
     if (!options.issue_number) {
-      throw new Error(NotIssueCommentMsg)
+      throw new Error(IssueCommentNotFoundMsg)
     }
     if (!options.sub_issue_id) {
-      throw new Error(NotSubIssueNumberMsg)
+      throw new Error(MissingSubIssueNumberMsg)
     }
     try {
       this.setRequestConfig({
@@ -1770,7 +1768,7 @@ export class Issue extends GitHubClient {
         sub_issue_id: String(sub_issue_id)
       }))
       if (res.statusCode === 404) {
-        throw new Error(NotIssueMsg)
+        throw new Error(IssueNotFoundMsg)
       }
       if (res.data) {
         const IssueData: ReprioritizeSubIssueResponseType = {
@@ -1833,7 +1831,7 @@ export class Issue extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`重新排序子议题失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 重新排序子议题失败: ${(error as Error).message}`)
     }
   }
 }

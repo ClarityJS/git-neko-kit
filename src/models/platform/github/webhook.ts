@@ -1,10 +1,12 @@
 import crypto from 'node:crypto'
 
 import {
-  isNotWebHookSignatureMsg,
-  NotParamMsg,
-  NotWebHookSignatureMsg,
-  WebHookSignatureSuccessMsg
+  InvalidWebHookSignatureFormatMsg,
+  MissingWebHookPayloadMsg,
+  MissingWebHookSecretMsg,
+  MissingWebHookSignatureMsg,
+  WebHookSignatureSuccessMsg,
+  WebHookSignatureVerificationFailedMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
@@ -14,7 +16,7 @@ import type {
 } from '@/types'
 
 /**
- * Base WebHook操作类
+ * GitHUb WebHook操作类
  *
  * 提供对GitHub WebHook的CRUD操作，包括：
  * - 检查webhook签名是否正确
@@ -48,13 +50,15 @@ export class WebHook extends GitHubClient {
     options: WebHookSignatureParamType
   ):Promise<ApiResponseType<WebHookSignatureResponseType>> {
     const secret = options.secret ?? this.WebHook_Secret
-    if (!secret || !options.payload || !options.signature) throw new Error(NotParamMsg)
-    if (!options.signature.startsWith('sha256=')) throw new Error(isNotWebHookSignatureMsg)
+    if (!secret) throw new Error(MissingWebHookSecretMsg)
+    if (!options.payload) throw new Error(MissingWebHookPayloadMsg)
+    if (!options.signature) throw new Error(MissingWebHookSignatureMsg)
+    if (!options.signature.startsWith('sha256=')) throw new Error(InvalidWebHookSignatureFormatMsg)
 
     let success: boolean = false
     let status: 'ok' | 'error' = 'error'
     let statusCode = 400
-    let msg = NotWebHookSignatureMsg
+    let msg = WebHookSignatureVerificationFailedMsg
     let WebHookdata: WebHookSignatureResponseType
 
     try {
@@ -87,11 +91,11 @@ export class WebHook extends GitHubClient {
         msg = '请求失败'
         WebHookdata = {
           success,
-          info: NotWebHookSignatureMsg
+          info: WebHookSignatureVerificationFailedMsg
         }
       }
     } catch (error) {
-      throw new Error(`请求验证WebHook签名失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 验证WebHook签名失败: ${(error as Error).message}`)
     }
     return Promise.resolve(
       {

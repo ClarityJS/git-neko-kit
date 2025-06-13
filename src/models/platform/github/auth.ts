@@ -1,13 +1,13 @@
 import {
-  AccessTokenSuccessMsg,
-  isNotAccessTokenMsg,
-  isNotRefreshTokenMsg,
-  isNotSuccessAccessTokenMsg,
-  NotAccessCodeMsg,
-  NotAccessTokenMsg,
-  NotAccessTokenSuccessMsg,
-  NotPerrmissionMsg,
-  NotRefreshTokenSuccessMsg,
+  AccessTokenValidMsg,
+  ExpiredAccessTokenMsg,
+  FailedToFetchAccessTokenMsg,
+  FailedToRefreshAccessTokenMsg,
+  InvalidAccessTokenMsg,
+  MissingAccessCodeMsg,
+  MissingAccessTokenMsg,
+  MissingRefreshTokenMsg,
+  PermissionDeniedMsg,
   RefreshAccessTokenSuccessMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/client'
@@ -54,7 +54,7 @@ export class Auth extends GitHubClient {
     options: AccessCodeType
   ): Promise<ApiResponseType<TokenResponseType>> {
     try {
-      if (!options.code) throw new Error(NotAccessCodeMsg)
+      if (!options.code) throw new Error(MissingAccessCodeMsg)
       this.setRequestConfig(
         {
           url: this.BaseUrl
@@ -68,11 +68,11 @@ export class Auth extends GitHubClient {
 
       if (res.data) {
         if (!isSuccess) {
-          throw new Error(NotAccessTokenSuccessMsg)
+          throw new Error(FailedToFetchAccessTokenMsg)
         }
         const AuthData: TokenResponseType = {
           success: isSuccess,
-          info: AccessTokenSuccessMsg,
+          info: AccessTokenValidMsg,
           access_token: res.data.access_token,
           expires_in: res.data.expires_in ?? null,
           refresh_token: res.data.refresh_token ?? null,
@@ -84,7 +84,7 @@ export class Auth extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`请求获取访问令牌失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取访问令牌失败: ${(error as Error).message}`)
     }
   }
 
@@ -105,8 +105,8 @@ export class Auth extends GitHubClient {
   ): Promise<ApiResponseType<CheckTokenResponseType>> {
     try {
       const access_token = options?.access_token ?? this.userToken
-      if (!access_token) throw new Error(NotAccessTokenMsg)
-      if (!access_token.startsWith('ghu_')) throw new Error(isNotAccessTokenMsg)
+      if (!access_token) throw new Error(InvalidAccessTokenMsg)
+      if (!access_token.startsWith('ghu_')) throw new Error(MissingAccessTokenMsg)
       this.setRequestConfig({
         url: this.ApiUrl,
         tokenType: 'Basic',
@@ -119,12 +119,12 @@ export class Auth extends GitHubClient {
         const status = !((res.status === 'ok' && (res.statusCode === 404 || res.statusCode === 422)))
         res.data = {
           success: status,
-          info: status ? AccessTokenSuccessMsg : isNotSuccessAccessTokenMsg
+          info: status ? AccessTokenValidMsg : ExpiredAccessTokenMsg
         }
       }
       return res
     } catch (error) {
-      throw new Error(`请求获取访问令牌状态失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取访问令牌状态失败: ${(error as Error).message}`)
     }
   }
 
@@ -143,8 +143,8 @@ export class Auth extends GitHubClient {
     options: RefreshTokenType
   ): Promise<ApiResponseType<RefreshTokenResponseType>> {
     try {
-      if (!options.refresh_token) throw new Error(NotAccessCodeMsg)
-      if (!options.refresh_token.startsWith('ghr_')) throw new Error(isNotRefreshTokenMsg)
+      if (!options.refresh_token) throw new Error(MissingAccessCodeMsg)
+      if (!options.refresh_token.startsWith('ghr_')) throw new Error(MissingRefreshTokenMsg)
       this.setRequestConfig(
         {
           url: this.BaseUrl
@@ -158,13 +158,13 @@ export class Auth extends GitHubClient {
 
       const isSuccess = res.status === 'ok' && res.statusCode === 200 && !(res.data).error
 
-      let errorMsg = NotRefreshTokenSuccessMsg
+      let errorMsg = FailedToRefreshAccessTokenMsg
       switch ((res.data as unknown as { error: string }).error) {
         case 'bad_refresh_token':
-          errorMsg = isNotRefreshTokenMsg
+          errorMsg = MissingRefreshTokenMsg
           break
         case 'unauthorized':
-          errorMsg = NotPerrmissionMsg
+          errorMsg = PermissionDeniedMsg
           break
       }
 
@@ -186,7 +186,7 @@ export class Auth extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`请求刷新访问令牌失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 刷新访问令牌失败: ${(error as Error).message}`)
     }
   }
 
@@ -211,7 +211,7 @@ export class Auth extends GitHubClient {
 
       return Promise.resolve(url.toString())
     } catch (error) {
-      throw new Error(`生成授权链接失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 生成授权链接失败: ${(error as Error).message}`)
     }
   }
 }

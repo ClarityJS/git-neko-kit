@@ -1,18 +1,18 @@
 import {
-  ConflictPrShaMsg,
-  isNotPrMergeMethodMsg,
-  MissingBaseMsg,
-  MissingHeadMsg,
-  MissingissueMsg,
-  MissingissueOrTitleMsg,
+  ConflictPullRequestShaValueMsg,
+  MissingBaseBranchMsg,
+  MissingHeadBranchMsg,
+  MissingLinkedIssueIdentifierMsg,
+  MissingLinkedIssueMsg,
+  MissingPullRequestCommentBodyMsg,
+  MissingPullRequestCommentNumberMsg,
+  MissingPullRequestNumberMsg,
   MissingRepoOwnerOrNameMsg,
   MissingTitleMsg,
-  NotCommentBodyMsg,
-  NotCommentNumberMsg,
-  NotPerrmissionMsg,
-  NotPrNumberMsg,
-  NotRepoOrCommentNumber,
-  NotRepoOrPrNumber
+  PermissionDeniedMsg,
+  PullRequestCommentOrRepoNotFoundMsg,
+  PullRequestMergeMethodNotSupportedMsg,
+  PullRequestOrRepoNotFoundMsg
 } from '@/common'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
@@ -63,7 +63,7 @@ export class Pull_Request extends GitHubClient {
   }
 
   /**
-   * 获取pull_request详情
+   * 获取拉取请求详情
    * 权限:
    * - Pull requests: Read-And-Wirte
    * - Contents: Read-And-Wirte
@@ -83,7 +83,7 @@ export class Pull_Request extends GitHubClient {
     options: PullRequestInfoParamType
   ): Promise<ApiResponseType<PullRequestInfoResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.pr_number) throw new Error(NotPrNumberMsg)
+    if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -196,12 +196,12 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取拉取请求信息失败： ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取拉取请求信息失败： ${(error as Error).message}`)
     }
   }
 
   /**
-   * 获取pull_request列表
+   * 获取拉取请求列表
    * 权限:
    * - Pull requests: Read-Only
    * @param options 请求参数列表
@@ -348,7 +348,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取拉取请求列表失败： ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取拉取请求列表失败： ${(error as Error).message}`)
     }
   }
 
@@ -378,10 +378,10 @@ export class Pull_Request extends GitHubClient {
     options: CreatePullRequestParamType
   ): Promise<ApiResponseType<CreatePullRequestResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.head) throw new Error(MissingHeadMsg)
-    if (!options.base) throw new Error(MissingBaseMsg)
+    if (!options.head) throw new Error(MissingHeadBranchMsg)
+    if (!options.base) throw new Error(MissingBaseBranchMsg)
     if (!('issue' in options) && !('title' in options)) {
-      throw new Error(MissingissueOrTitleMsg)
+      throw new Error(MissingLinkedIssueIdentifierMsg)
     }
     try {
       this.setRequestConfig({
@@ -389,7 +389,7 @@ export class Pull_Request extends GitHubClient {
       })
       const body: Record<string, string | number | boolean> = {}
       if ('issue' in options) {
-        if (!options.issue) throw new Error(MissingissueMsg)
+        if (!options.issue) throw new Error(MissingLinkedIssueMsg)
         body.issue = options.issue
       } else if ('title' in options) {
         if (!options.title) throw new Error(MissingTitleMsg)
@@ -404,7 +404,7 @@ export class Pull_Request extends GitHubClient {
       const res = await this.post(`/repos/${owner}/${repo}/pulls`,
         body
       )
-      if (res.statusCode === 403) throw new Error(NotPerrmissionMsg)
+      if (res.statusCode === 403) throw new Error(PermissionDeniedMsg)
       if (res.data) {
         const PrData: CreatePullRequestResponseType = {
           id: res.data.id,
@@ -512,7 +512,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`创建拉取请求失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 创建拉取请求失败: ${(error as Error).message}`)
     }
   }
 
@@ -537,7 +537,7 @@ export class Pull_Request extends GitHubClient {
     options: UpdatePullRequestParamType
   ): Promise<ApiResponseType<UpdatePullRequestResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.pr_number) throw new Error(NotPrNumberMsg)
+    if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -548,7 +548,7 @@ export class Pull_Request extends GitHubClient {
       if (options.state) body.state = options.state
       const { owner, repo, pr_number } = options
       const res = await this.patch(`/repos/${owner}/${repo}/pulls/${pr_number}`, null, body)
-      if (res.statusCode === 403) throw new Error(NotPerrmissionMsg)
+      if (res.statusCode === 403) throw new Error(PermissionDeniedMsg)
       if (res.data) {
         const PrData: UpdatePullRequestResponseType = {
           id: res.data.id,
@@ -656,7 +656,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`更新拉取请求失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 更新拉取请求失败: ${(error as Error).message}`)
     }
   }
 
@@ -685,7 +685,7 @@ export class Pull_Request extends GitHubClient {
     options: MergePullRequestParamType
   ): Promise<ApiResponseType<MergePullRequestResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.pr_number) throw new Error(NotPrNumberMsg)
+    if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -704,13 +704,13 @@ export class Pull_Request extends GitHubClient {
       const res = await this.put(`/repos/${owner}/${repo}/pulls/${pr_number}/merge`, body)
       switch (res.statusCode) {
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 404:
-          throw new Error(NotRepoOrPrNumber)
+          throw new Error(PullRequestOrRepoNotFoundMsg)
         case 405:
-          throw new Error(isNotPrMergeMethodMsg)
+          throw new Error(PullRequestMergeMethodNotSupportedMsg)
         case 409:
-          throw new Error(ConflictPrShaMsg)
+          throw new Error(ConflictPullRequestShaValueMsg)
       }
       if (res.statusCode === 200 && res.data) {
         const PrData: MergePullRequestResponseType = {
@@ -722,7 +722,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`合并拉取请求失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 合并拉取请求失败: ${(error as Error).message}`)
     }
   }
 
@@ -748,7 +748,7 @@ export class Pull_Request extends GitHubClient {
     options: GetPullRequestFilesListParamType
   ): Promise<ApiResponseType<GetPullRequestFilesListResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.pr_number) throw new Error(NotPrNumberMsg)
+    if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -762,9 +762,9 @@ export class Pull_Request extends GitHubClient {
       )
       switch (res.statusCode) {
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 404:
-          throw new Error(NotRepoOrPrNumber)
+          throw new Error(PullRequestOrRepoNotFoundMsg)
       }
       if (res.data) {
         const PrData: GetPullRequestFilesListResponseType = res.data.map((file: Record<string, any>): PullRequestFilesListType => ({
@@ -782,7 +782,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取拉取请求文件列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取拉取请求文件列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -806,7 +806,7 @@ export class Pull_Request extends GitHubClient {
     options: GetPullRequestCommentInfoParamType
   ): Promise<ApiResponseType<GetPullRequestCommentInfoResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.comment_id) throw new Error(NotCommentNumberMsg)
+    if (!options.comment_id) throw new Error(MissingPullRequestCommentNumberMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -815,9 +815,9 @@ export class Pull_Request extends GitHubClient {
       const res = await this.get(`/repos/${owner}/${repo}/pulls/comments/${comment_id}`)
       switch (res.statusCode) {
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 404:
-          throw new Error(NotRepoOrCommentNumber)
+          throw new Error(PullRequestCommentOrRepoNotFoundMsg)
       }
       if (res.data) {
         const PrData: GetPullRequestCommentInfoResponseType = {
@@ -837,7 +837,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取拉取请求评论评论信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取拉取请求评论评论信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -864,7 +864,7 @@ export class Pull_Request extends GitHubClient {
     options: GetPullRequestCommentsListParamType
   ): Promise<ApiResponseType<GetPullRequestCommentsListResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.pr_number) throw new Error(NotPrNumberMsg)
+    if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -877,9 +877,9 @@ export class Pull_Request extends GitHubClient {
       const res = await this.get(`/repos/${owner}/${repo}/pulls/${pr_number}/comments`, params)
       switch (res.statusCode) {
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 404:
-          throw new Error(NotRepoOrCommentNumber)
+          throw new Error(PullRequestCommentOrRepoNotFoundMsg)
       }
       if (res.data) {
         const PrData: GetPullRequestCommentsListResponseType = res.data.map((comment: Record<string, any>): GetPullRequestCommentInfoResponseType => {
@@ -901,7 +901,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取拉取请求评论列表失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取拉取请求评论列表失败: ${(error as Error).message}`)
     }
   }
 
@@ -926,8 +926,8 @@ export class Pull_Request extends GitHubClient {
     options: CreatePullRequestCommentParamType
   ): Promise<ApiResponseType<CreatePullRequestCommentResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.pr_number) throw new Error(NotPrNumberMsg)
-    if (!options.body) throw new Error(NotCommentBodyMsg)
+    if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
+    if (!options.body) throw new Error(MissingPullRequestCommentBodyMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -936,9 +936,9 @@ export class Pull_Request extends GitHubClient {
       const res = await this.post(`/repos/${owner}/${repo}/pulls/${pr_number}/comments`, { body })
       switch (res.statusCode) {
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 404:
-          throw new Error(NotRepoOrPrNumber)
+          throw new Error(PullRequestOrRepoNotFoundMsg)
       }
       if (res.data) {
         const PrData: CreatePullRequestCommentResponseType = {
@@ -949,7 +949,7 @@ export class Pull_Request extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`创建拉取请求评论失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 创建拉取请求评论失败: ${(error as Error).message}`)
     }
   }
 
@@ -974,8 +974,8 @@ export class Pull_Request extends GitHubClient {
     options: UpdatePullRequestCommentParamType
   ): Promise<ApiResponseType<UpdatePullRequestCommentResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.comment_id) throw new Error(NotCommentNumberMsg)
-    if (!options.body) throw new Error(NotCommentBodyMsg)
+    if (!options.comment_id) throw new Error(MissingPullRequestCommentNumberMsg)
+    if (!options.body) throw new Error(MissingPullRequestCommentBodyMsg)
     try {
       this.setRequestConfig({
         token: this.userToken
@@ -984,9 +984,9 @@ export class Pull_Request extends GitHubClient {
       const res = await this.patch(`/repos/${owner}/${repo}/issues/comments/${comment_id}`, null, { body })
       switch (res.statusCode) {
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 404:
-          throw new Error(NotRepoOrCommentNumber)
+          throw new Error(PullRequestCommentOrRepoNotFoundMsg)
       }
       let comment_status: boolean = false
       if (res.statusCode === 200) {
@@ -995,7 +995,7 @@ export class Pull_Request extends GitHubClient {
       res.data = { success: comment_status }
       return res
     } catch (error) {
-      throw new Error(`更新拉取请求评论失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 更新拉取请求评论失败: ${(error as Error).message}`)
     }
   }
 
@@ -1040,14 +1040,14 @@ export class Pull_Request extends GitHubClient {
     options: DeletePullRequestCommentParamType
   ):Promise<ApiResponseType<DeletePullRequestCommentResponseType>> {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
-    if (!options.comment_id) throw new Error(NotCommentNumberMsg)
+    if (!options.comment_id) throw new Error(MissingPullRequestCommentNumberMsg)
     try {
       const res = await this.delete(`/repos/${options.owner}/${options.repo}/pulls/comments/${options.comment_id}`)
       switch (res.statusCode) {
         case 403:
-          throw new Error(NotPerrmissionMsg)
+          throw new Error(PermissionDeniedMsg)
         case 404:
-          throw new Error(NotRepoOrCommentNumber)
+          throw new Error(PullRequestCommentOrRepoNotFoundMsg)
       }
       let comment_status: boolean = false
       if (res.statusCode === 204) {
@@ -1056,7 +1056,7 @@ export class Pull_Request extends GitHubClient {
       res.data = { success: comment_status }
       return res
     } catch (error) {
-      throw new Error(`删除拉取请求评论失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 删除拉取请求评论失败: ${(error as Error).message}`)
     }
   }
 }

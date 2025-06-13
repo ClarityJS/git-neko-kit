@@ -1,9 +1,9 @@
 import {
-  isNotPerrmissionMsg,
-  NotOrgMsg,
-  NotOrgParamMsg,
-  NotRepoOrPerrmissionMsg,
-  NotUserNameParamMsg
+  MissingOrgParamMsg,
+  MissingUserNameParamMsg,
+  OrgNotFoundMsg,
+  PermissionDeniedMsg,
+  RepoOrPermissionDeniedMsg
 } from '@/common'
 import { get_base_url } from '@/models/base/common'
 import { GitHubClient } from '@/models/platform/github/client'
@@ -45,7 +45,7 @@ export class Org extends GitHubClient {
     options: OrgInfoParamType
   ): Promise<ApiResponseType<OrgInfoResponseType>> {
     if (!options.org) {
-      throw new Error(NotOrgParamMsg)
+      throw new Error(MissingOrgParamMsg)
     }
     const { org } = options
     try {
@@ -54,7 +54,7 @@ export class Org extends GitHubClient {
       })
       const res = await this.get(`/orgs/${org}`)
       if (res.statusCode === 404) {
-        throw new Error(NotOrgMsg)
+        throw new Error(OrgNotFoundMsg)
       }
       if (res.data) {
         const OrgData: OrgInfoResponseType = {
@@ -69,7 +69,7 @@ export class Org extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`获取组织信息失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 获取组织信息失败: ${(error as Error).message}`)
     }
   }
 
@@ -91,10 +91,10 @@ export class Org extends GitHubClient {
     options: AddMemberParamType
   ): Promise<ApiResponseType<AddMemberResponseType>> {
     if (!options.org) {
-      throw new Error(NotOrgParamMsg)
+      throw new Error(MissingOrgParamMsg)
     }
     if (!options.username) {
-      throw new Error(NotUserNameParamMsg)
+      throw new Error(MissingUserNameParamMsg)
     }
     try {
       this.setRequestConfig({
@@ -124,11 +124,11 @@ export class Org extends GitHubClient {
         body.role = 'direct_member'
       }
       const res = await this.post(`/orgs/${org}/invitations`, body)
-      if (res.statusCode === 404) throw new Error(NotRepoOrPerrmissionMsg)
+      if (res.statusCode === 404) throw new Error(RepoOrPermissionDeniedMsg)
       if (res.statusCode === 422) {
         const msg = (res.data as unknown as { message: string }).message
         if (msg) {
-          if (msg.includes('is not a valid permission')) throw new Error(isNotPerrmissionMsg)
+          if (msg.includes('is not a valid permission')) throw new Error(PermissionDeniedMsg)
         }
       }
       if (res.data) {
@@ -143,7 +143,7 @@ export class Org extends GitHubClient {
       }
       return res
     } catch (error) {
-      throw new Error(`添加组织成员失败: ${(error as Error).message}`)
+      throw new Error(`[GitHub] 添加组织成员失败: ${(error as Error).message}`)
     }
   }
 }
