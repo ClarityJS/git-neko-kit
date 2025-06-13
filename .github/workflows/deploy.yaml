@@ -13,13 +13,16 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
-  deploy:
+  build:
     if: "!startsWith(github.head_ref, 'release-please')"
     runs-on: ubuntu-22.04
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
+    outputs:
+      app_token: ${{ steps.app_token.outputs.token }}
     steps:
       - name: 检出仓库
         uses: actions/checkout@v4
@@ -50,6 +53,29 @@ jobs:
         run: |
           pnpm build:docs
 
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: git-neko-kit
+          path: docs/.vuepress/dist
+
+  deploy-to-cloudflare-pages:
+    runs-on: ubuntu-22.04
+    needs: [build]
+    steps:
+      - name: 导入构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: git-neko-kit
+          path: ./
+
+      - name: 获取token
+        uses: actions/create-github-app-token@v2
+        id: app-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: 部署到 Cloudflare Pages
         id: deploy-cloudflare-pages
         uses: AdrianGonz97/refined-cf-pages-action@v1
@@ -58,8 +84,23 @@ jobs:
           accountId: ${{ secrets.CF_ID  }}
           githubToken: ${{ steps.app-token.outputs.token }}
           projectName: 'git-neko-kit'
-          directory: 'docs/.vuepress/dist'
+          directory: '.'
           deploymentName: cloudflare-pages
           wranglerVersion: '3.114.9'
-            
 
+  deploy-to-deno-pages:
+    runs-on: ubuntu-22.04
+    needs: [build]
+    steps:
+      - name: 导入构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: git-neko-kit
+          path: ./
+
+      - name: 部署到 Deno Pages
+        uses: denoland/deployctl@v1
+        with:
+          project: git-neko-kit
+          entrypoint: jsr:@std/http/file-server
+            

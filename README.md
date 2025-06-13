@@ -1,5 +1,19 @@
-# git-neko-kit
-Github，Gitee, GitCode API封装库
+# <h1 align="center">git-neko-kit</h1>
+
+<div align="center">
+<img src="https://socialify.git.ci/CandriaJS/git-neko-kit/image?description=1&forks=1&issues=1&language=1&name=1&owner=1&pulls=1&stargazers=1&theme=Light" alt="emojimix-plugin" width="640" height="320" />
+<!-- <img src="https://count.kjchmc.cn/get/@git-neko-kit?theme=moebooru" alt="git-neko-kit"> -->
+
+
+
+<img alt="Tag Version" src="https://badgen.net/github/tag/CandriaJS/git-neko-kit"><img alt="Release" src="https://badgen.net/github/release/CandriaJS/git-neko-kit/stable"><img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/CandriaJS/git-neko-kit">
+
+<img src="https://badgen.net/npm/v/@candriajs/git-neko-kit?label=git-neko-kit" alt="npm Version">
+<a href="https://pkg-size.dev/@candriajs/git-neko-kit@beta"><img src="https://pkg-size.dev/badge/bundle/1606131" title="Bundle size for git-neko-kit"></a>
+</div>
+
+## 介绍 📝
+`git-neko-kit` 是一个 Github，Gitee, GitCode API封装库
 
 > [!Tip]
 > 开发中
