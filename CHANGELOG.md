@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.8.3](https://github.com/CandriaJS/git-neko-kit/compare/v0.8.2...v0.8.3) (2025-06-14)
+
+
+### ⚡️ 性能优化
+
+* **common:** 优化日期格式化功能并缓存语言设置 ([8361aea](https://github.com/CandriaJS/git-neko-kit/commit/8361aea63e75025ac3ad59f6b5640b3a11090813))
+
 ## [0.8.2](https://github.com/CandriaJS/git-neko-kit/compare/v0.8.1...v0.8.2) (2025-06-13)
 
 
