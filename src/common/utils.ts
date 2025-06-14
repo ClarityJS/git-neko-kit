@@ -13,6 +13,7 @@ import { MissingLocalRepoPathMsg, MissingRemoteRepoUrlMsg } from '@/common/error
 import { basePath } from '@/root'
 import { ContributionResult, ExecOptions, ExecReturn, RepoBaseParamType } from '@/types'
 
+const localeCache = new Set<string>(['en'])
 /**
  * 执行 shell 命令
  * @param cmd 命令
@@ -126,7 +127,12 @@ export function readJSON (file: string = '', root: string = ''): any {
  */
 async function initDate (locale: string = 'zh-cn') {
   const normalizedLocale = String(locale).toLowerCase()
+  if (localeCache.has(normalizedLocale)) {
+    dayjs.locale(normalizedLocale)
+    return
+  }
   await import(`dayjs/locale/${normalizedLocale}.js`)
+  dayjs.locale(locale)
 }
 
 /**
@@ -157,7 +163,8 @@ export async function formatDate (
  * @returns 相对时间
  * @example
  * ```ta
- * console.log(await get_relative_time('2023-04-01 12:00:00')) // 输出 "1 小时前"
+ * console.log(await get_relative_time('2023-04-01 12:00:00'))
+ * ->  1 小时前
  * ```
  */
 export async function get_relative_time (
@@ -166,6 +173,7 @@ export async function get_relative_time (
   Promise<string> {
   await initDate(locale)
   dayjs.extend(relativeTime)
+  console.log(dayjs.locale())
   return dayjs(dateString).fromNow()
 }
 
@@ -249,9 +257,8 @@ export async function get_local_repo_default_branch (local_path: string): Promis
 export async function get_remote_repo_default_branch (remote_url: string): Promise<string> {
   if (!remote_url) throw new Error(MissingRemoteRepoUrlMsg)
   try {
-    let gitVersion: string
     try {
-      gitVersion = await get_git_version()
+      await get_git_version()
     } catch (error) {
       throw new Error('喵呜~, Git 未安装或未正确配置')
     }

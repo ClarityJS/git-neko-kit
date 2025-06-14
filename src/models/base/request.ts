@@ -231,9 +231,12 @@ export class Request {
    * @returns 包含基础头信息和认证信息的请求头对象
    */
   private createHeaders (customHeaders?: Record<string, string>) {
+    const pkgName = pkg.name.includes('/')
+      ? pkg.name.split('/').pop()
+      : pkg.name
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'User-Agent': `${pkg.name}/v${pkg.version}`,
+      'User-Agent': `${pkgName}/v${pkg.version}`,
       ...(this.defaultHeaders ?? {})
     }
 
