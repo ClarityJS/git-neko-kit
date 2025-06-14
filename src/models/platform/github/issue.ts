@@ -39,6 +39,7 @@ import type {
   IssueInfoResponseType,
   IssueLabelType,
   IssueListResponseType,
+  IssueUser,
   LockIssueParamType,
   LockIssueResponseType,
   OpenIssueParamType,
@@ -134,8 +135,7 @@ export class Issue extends GitHubClient {
             name: res.data.user.name,
             email: res.data.user.email,
             html_url: res.data.user.html_url,
-            avatar_url: res.data.user.avatar_url,
-            type: capitalize(res.data.user.type.toLowerCase())
+            avatar_url: res.data.user.avatar_url
           },
           labels: res.data.labels
             ? res.data.labels.map((label: IssueLabelType) => ({
@@ -151,9 +151,17 @@ export class Issue extends GitHubClient {
                 name: res.data.assignee.name,
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
-                avatar_url: res.data.assignee.avatar_url,
-                type: capitalize(res.data.assignee.type.toLowerCase())
+                avatar_url: res.data.assignee.avatar_url
               }
+            : null,
+          assignees: res.data.assignees
+            ? res.data.assignees.map((assignee: IssueUser) => ({
+              login: assignee.login,
+              name: assignee.name,
+              email: assignee.email,
+              html_url: assignee.html_url,
+              avatar_url: assignee.avatar_url
+            }))
             : null,
           milestone: res.data.milestone
             ? {
@@ -257,8 +265,7 @@ export class Issue extends GitHubClient {
               name: issue.user.name,
               email: issue.user.email,
               html_url: issue.user.html_url,
-              avatar_url: issue.user.avatar_url,
-              type: capitalize(issue.user.type.toLowerCase())
+              avatar_url: issue.user.avatar_url
             },
             labels: issue.labels
               ? issue.labels.map((label: IssueLabelType) => ({
@@ -274,9 +281,18 @@ export class Issue extends GitHubClient {
                   name: issue.assignee.name,
                   email: issue.assignee.email,
                   html_url: issue.assignee.html_url,
-                  avatar_url: issue.assignee.avatar_url,
-                  type: capitalize(issue.assignee.type.toLowerCase())
+                  avatar_url: issue.assignee.avatar_url
                 }
+              : null,
+            assignees: issue.assignees
+              ? issue.assignees.map((assignee: IssueUser) => ({
+                id: assignee.id,
+                login: assignee.login,
+                name: assignee.name,
+                email: assignee.email,
+                html_url: assignee.html_url,
+                avatar_url: assignee.avatar_url
+              }))
               : null,
             milestone: issue.milestone
               ? {
@@ -382,8 +398,7 @@ export class Issue extends GitHubClient {
               name: res.data.user.name,
               email: res.data.user.email,
               html_url: res.data.user.html_url,
-              avatar_url: res.data.user.avatar_url,
-              type: capitalize(res.data.user.type.toLowerCase())
+              avatar_url: res.data.user.avatar_url
             },
             labels: res.data.labels
               ? res.data.labels.map((label: IssueLabelType) => ({
@@ -399,9 +414,17 @@ export class Issue extends GitHubClient {
                   name: res.data.assignee.name,
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
-                  avatar_url: res.data.assignee.avatar_url,
-                  type: capitalize(res.data.assignee.type.toLowerCase())
+                  avatar_url: res.data.assignee.avatar_url
                 }
+              : null,
+            assignees: res.data.assignees
+              ? res.data.assignees.map((assignee: IssueUser) => ({
+                login: assignee.login,
+                name: assignee.name,
+                email: assignee.email,
+                html_url: assignee.html_url,
+                avatar_url: assignee.avatar_url
+              }))
               : null,
             milestone: res.data.milestone
               ? {
@@ -513,8 +536,7 @@ export class Issue extends GitHubClient {
               name: res.data.user.name,
               email: res.data.user.email,
               html_url: res.data.user.html_url,
-              avatar_url: res.data.user.avatar_url,
-              type: capitalize(res.data.user.type.toLowerCase())
+              avatar_url: res.data.user.avatar_url
             },
             labels: res.data.labels
               ? res.data.labels.map((label: IssueLabelType) => ({
@@ -530,9 +552,18 @@ export class Issue extends GitHubClient {
                   name: res.data.assignee.name,
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
-                  avatar_url: res.data.assignee.avatar_url,
-                  type: capitalize(res.data.assignee.type.toLowerCase())
+                  avatar_url: res.data.assignee.avatar_url
                 }
+              : null,
+            assignees: res.data.assignees
+              ? res.data.assignees.map((assignee: IssueUser) => ({
+                id: assignee.id,
+                login: assignee.login,
+                name: assignee.name,
+                email: assignee.email,
+                html_url: assignee.html_url,
+                avatar_url: assignee.avatar_url
+              }))
               : null,
             milestone: res.data.milestone
               ? {
@@ -627,8 +658,7 @@ export class Issue extends GitHubClient {
               name: res.data.user.name,
               email: res.data.user.email,
               html_url: res.data.user.html_url,
-              avatar_url: res.data.user.avatar_url,
-              type: capitalize(res.data.user.type.toLowerCase())
+              avatar_url: res.data.user.avatar_url
             },
             labels: res.data.labels
               ? res.data.labels.map((label: IssueLabelType) => ({
@@ -644,9 +674,17 @@ export class Issue extends GitHubClient {
                   name: res.data.assignee.name,
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
-                  avatar_url: res.data.assignee.avatar_url,
-                  type: capitalize(res.data.assignee.type.toLowerCase())
+                  avatar_url: res.data.assignee.avatar_url
                 }
+              : null,
+            assignees: res.data.assignees
+              ? res.data.assignees.map((assignee: IssueUser) => ({
+                login: assignee.login,
+                name: assignee.name,
+                email: assignee.email,
+                html_url: assignee.html_url,
+                avatar_url: assignee.avatar_url
+              }))
               : null,
             milestone: res.data.milestone
               ? {
@@ -756,8 +794,7 @@ export class Issue extends GitHubClient {
               name: res.data.user.name,
               email: res.data.user.email,
               html_url: res.data.user.html_url,
-              avatar_url: res.data.user.avatar_url,
-              type: capitalize(res.data.user.type.toLowerCase())
+              avatar_url: res.data.user.avatar_url
             },
             labels: res.data.labels
               ? res.data.labels.map((label: IssueLabelType) => ({
@@ -773,9 +810,17 @@ export class Issue extends GitHubClient {
                   name: res.data.assignee.name,
                   email: res.data.assignee.email,
                   html_url: res.data.assignee.html_url,
-                  avatar_url: res.data.assignee.avatar_url,
-                  type: capitalize(res.data.assignee.type.toLowerCase())
+                  avatar_url: res.data.assignee.avatar_url
                 }
+              : null,
+            assignees: res.data.assignees
+              ? res.data.assignees.map((assignee: IssueUser) => ({
+                login: assignee.login,
+                name: assignee.name,
+                email: assignee.email,
+                html_url: assignee.html_url,
+                avatar_url: assignee.avatar_url
+              }))
               : null,
             milestone: res.data.milestone
               ? {
@@ -997,8 +1042,7 @@ export class Issue extends GitHubClient {
               name: comment.user.name,
               email: comment.user.email,
               html_url: comment.user.html_url,
-              avatar_url: comment.user.avatar_url,
-              type: capitalize(comment.user.type.toLowerCase())
+              avatar_url: comment.user.avatar_url
             },
             created_at: comment.created_at,
             updated_at: comment.updated_at
@@ -1077,8 +1121,7 @@ export class Issue extends GitHubClient {
               name: comment.user.name,
               email: comment.user.email,
               html_url: comment.user.html_url,
-              avatar_url: comment.user.avatar_url,
-              type: capitalize(comment.user.type.toLowerCase())
+              avatar_url: comment.user.avatar_url
             },
             created_at: comment.created_at,
             updated_at: comment.updated_at
@@ -1141,8 +1184,7 @@ export class Issue extends GitHubClient {
             name: res.data.user.name,
             email: res.data.user.email,
             html_url: res.data.user.html_url,
-            avatar_url: res.data.user.avatar_url,
-            type: capitalize(res.data.user.type.toLowerCase())
+            avatar_url: res.data.user.avatar_url
           },
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
@@ -1211,8 +1253,7 @@ export class Issue extends GitHubClient {
             name: res.data.user.name,
             email: res.data.user.email,
             html_url: res.data.user.html_url,
-            avatar_url: res.data.user.avatar_url,
-            type: capitalize(res.data.user.type.toLowerCase())
+            avatar_url: res.data.user.avatar_url
           },
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
@@ -1277,8 +1318,7 @@ export class Issue extends GitHubClient {
             name: res.data.user.name,
             email: res.data.user.email,
             html_url: res.data.user.html_url,
-            avatar_url: res.data.user.avatar_url,
-            type: capitalize(res.data.user.type.toLowerCase())
+            avatar_url: res.data.user.avatar_url
           },
           created_at: res.data.created_at,
           updated_at: res.data.updated_at
@@ -1428,8 +1468,7 @@ export class Issue extends GitHubClient {
               name: issue.user.name,
               email: issue.user.email,
               html_url: issue.user.html_url,
-              avatar_url: issue.user.avatar_url,
-              type: capitalize(issue.user.type.toLowerCase())
+              avatar_url: issue.user.avatar_url
             },
             labels: issue.labels
               ? issue.labels.map((label: IssueLabelType) => ({
@@ -1445,9 +1484,18 @@ export class Issue extends GitHubClient {
                   name: issue.assignee.name,
                   email: issue.assignee.email,
                   html_url: issue.assignee.html_url,
-                  avatar_url: issue.assignee.avatar_url,
-                  type: capitalize(issue.assignee.type.toLowerCase())
+                  avatar_url: issue.assignee.avatar_url
                 }
+              : null,
+            assignees: issue.assignees
+              ? issue.assignees.map((assignee: IssueUser) => ({
+                id: assignee.id,
+                login: assignee.login,
+                name: assignee.name,
+                email: assignee.email,
+                html_url: assignee.html_url,
+                avatar_url: assignee.avatar_url
+              }))
               : null,
             milestone: issue.milestone
               ? {
@@ -1543,8 +1591,7 @@ export class Issue extends GitHubClient {
             name: res.data.user.name,
             email: res.data.user.email,
             html_url: res.data.user.html_url,
-            avatar_url: res.data.user.avatar_url,
-            type: capitalize(res.data.user.type.toLowerCase())
+            avatar_url: res.data.user.avatar_url
           },
           labels: res.data.labels
             ? res.data.labels.map((label: IssueLabelType) => ({
@@ -1560,9 +1607,17 @@ export class Issue extends GitHubClient {
                 name: res.data.assignee.name,
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
-                avatar_url: res.data.assignee.avatar_url,
-                type: capitalize(res.data.assignee.type.toLowerCase())
+                avatar_url: res.data.assignee.avatar_url
               }
+            : null,
+          assignees: res.data.assignees
+            ? res.data.assignees.map((assignee: IssueUser) => ({
+              login: assignee.login,
+              name: assignee.name,
+              email: assignee.email,
+              html_url: assignee.html_url,
+              avatar_url: assignee.avatar_url
+            }))
             : null,
           milestone: res.data.milestone
             ? {
@@ -1654,8 +1709,7 @@ export class Issue extends GitHubClient {
             name: res.data.user.name,
             email: res.data.user.email,
             html_url: res.data.user.html_url,
-            avatar_url: res.data.user.avatar_url,
-            type: capitalize(res.data.user.type.toLowerCase())
+            avatar_url: res.data.user.avatar_url
           },
           labels: res.data.labels
             ? res.data.labels.map((label: IssueLabelType) => ({
@@ -1671,9 +1725,17 @@ export class Issue extends GitHubClient {
                 name: res.data.assignee.name,
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
-                avatar_url: res.data.assignee.avatar_url,
-                type: capitalize(res.data.assignee.type.toLowerCase())
+                avatar_url: res.data.assignee.avatar_url
               }
+            : null,
+          assignees: res.data.assignees
+            ? res.data.assignees.map((assignee: IssueUser) => ({
+              login: assignee.login,
+              name: assignee.name,
+              email: assignee.email,
+              html_url: assignee.html_url,
+              avatar_url: assignee.avatar_url
+            }))
             : null,
           milestone: res.data.milestone
             ? {
@@ -1786,8 +1848,7 @@ export class Issue extends GitHubClient {
             name: res.data.user.name,
             email: res.data.user.email,
             html_url: res.data.user.html_url,
-            avatar_url: res.data.user.avatar_url,
-            type: capitalize(res.data.user.type.toLowerCase())
+            avatar_url: res.data.user.avatar_url
           },
           labels: res.data.labels
             ? res.data.labels.map((label: IssueLabelType) => ({
@@ -1803,9 +1864,17 @@ export class Issue extends GitHubClient {
                 name: res.data.assignee.name,
                 email: res.data.assignee.email,
                 html_url: res.data.assignee.html_url,
-                avatar_url: res.data.assignee.avatar_url,
-                type: capitalize(res.data.assignee.type.toLowerCase())
+                avatar_url: res.data.assignee.avatar_url
               }
+            : null,
+          assignees: res.data.assignees
+            ? res.data.assignees.map((assignee: IssueUser) => ({
+              login: assignee.login,
+              name: assignee.name,
+              email: assignee.email,
+              html_url: assignee.html_url,
+              avatar_url: assignee.avatar_url
+            }))
             : null,
           milestone: res.data.milestone
             ? {

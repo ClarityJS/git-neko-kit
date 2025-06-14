@@ -17,9 +17,9 @@ import type {
   AddCollaboratorResponseType,
   ApiResponseType,
   CollaboratorInfoResponseType,
-  CollaboratorListParamType,
-  CollaboratorListResponseType,
   CollaboratorParamType,
+  GetCollaboratorListParamType,
+  GetCollaboratorListResponseType,
   GetRepoDefaultBranchParamType,
   GetRepoDefaultBranchResponseType,
   GetRepoMainLanguageParamType,
@@ -662,8 +662,8 @@ export class Repo extends GitHubClient {
    * ```
    */
   public async get_collaborators_list (
-    options: CollaboratorListParamType
-  ): Promise<ApiResponseType<CollaboratorListResponseType>> {
+    options: GetCollaboratorListParamType
+  ): Promise<ApiResponseType<GetCollaboratorListResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
@@ -685,8 +685,9 @@ export class Repo extends GitHubClient {
             avatar_url: repo.avatar_url,
             email: repo.email,
             name: repo.name,
-            permissions: repo.permissions,
-            role_name: repo.role_name
+            permissions: repo.permissions === 'triage' || repo.permissions === 'maintain'
+              ? 'admin'
+              : repo.permissions
           }))
         )
         res.data = RepoData
@@ -728,13 +729,18 @@ export class Repo extends GitHubClient {
       this.setRequestConfig({
         token: this.userToken
       })
-      const { owner, repo, username } = options
-      const res = await this.put(
-        `/repos/${owner}/${repo}/collaborators/${username}`,
-        {
-          permission: options.permission ?? 'pull'
-        }
-      )
+      const { owner, repo, username, permission } = options
+      const body : Record<string, string> = {}
+      if (permission === 'pull') {
+        body.permission = 'pull'
+      } else if (permission === 'push') {
+        body.permission = 'push'
+      } else if (permission === 'admin') {
+        body.permission = 'admin'
+      } else {
+        body.permission = 'pull'
+      }
+      const res = await this.put(`/repos/${owner}/${repo}/collaborators/${username}`, body)
       if (res.statusCode === 404) throw new Error(RepoOrPermissionDeniedMsg)
       if (res.statusCode === 422) {
         const msg = (res.data as unknown as { message: string }).message

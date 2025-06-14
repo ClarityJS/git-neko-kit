@@ -2,7 +2,7 @@ import type { IssueNumberParamType, RepoBaseParamType } from '@/types/platform/b
 import type { UserInfoResponseType } from '@/types/platform/github/user'
 
 /** 议题用户信息响应类型 */
-export type IssueUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following' | 'public_repos'>
+export type IssueUser = Omit<UserInfoResponseType, 'bio' | 'blog' | 'followers' | 'following' | 'public_repos' | 'type'>
 
 /** 议题标签类型 */
 export interface IssueLabelType {
@@ -75,7 +75,7 @@ export interface IssueInfoResponseType {
    * 议题所有指派人列表
    * 先不处理，后面再说
    * */
-  // assignees: Array<IssueUser> | null;
+  assignees: Array<IssueUser> | null;
   /** 议题所属里程碑 */
   milestone: MilestoneType | null;
   /** 关闭时间 */
