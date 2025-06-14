@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.8.4](https://github.com/CandriaJS/git-neko-kit/compare/v0.8.3...v0.8.4) (2025-06-14)
+
+
+### ♻️ 代码重构
+
+* **github:** 重构议题和仓库相关模型 ([1ca1cb1](https://github.com/CandriaJS/git-neko-kit/commit/1ca1cb1e250e53fd42132162246b68943f7a8e85))
+
 ## [0.8.3](https://github.com/CandriaJS/git-neko-kit/compare/v0.8.2...v0.8.3) (2025-06-14)
 
 
