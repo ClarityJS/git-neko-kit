@@ -1,4 +1,5 @@
 import {
+  AccessTokenSuccessMsg,
   AccessTokenValidMsg,
   ExpiredAccessTokenMsg,
   FailedToFetchAccessTokenMsg,
@@ -37,7 +38,6 @@ export class Auth extends GitHubClient {
     super(base)
     this.userToken = base.userToken
     this.api_url = base.api_url
-    this.base_url = base.base_url
   }
 
   /**
@@ -48,7 +48,7 @@ export class Auth extends GitHubClient {
    * @example
    * ```ts
    * const token = await auth.get_token_by_code({ code: 'code' })
-   * console.log(token) // 输出token对象
+   * -> { info: '获取'access_token: 'token', refresh_token: 'refresh_token' }
    * ```
    */
   public async get_token_by_code (
@@ -74,7 +74,7 @@ export class Auth extends GitHubClient {
         }
         const AuthData: TokenResponseType = {
           success: isSuccess,
-          info: AccessTokenValidMsg,
+          info: AccessTokenSuccessMsg,
           access_token: res.data.access_token,
           expires_in: res.data.expires_in ?? null,
           refresh_token: res.data.refresh_token ?? null,

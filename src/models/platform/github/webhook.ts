@@ -25,15 +25,12 @@ export class WebHook extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.api_url = base.api_url
-    this.base_url = base.base_url
   }
 
   /**
    * 检查WebHook签名是否正确
    * 权限：无需任何权限
    * @param options - WebHook参数对象，必须包含以下参数：
-   * - secret: WebHook的密钥, 可以从Base类入口传递
    * - payload: 要验证的签名主体
    * - signature: 要验证的签名
    * @returns 验证结果
@@ -44,13 +41,22 @@ export class WebHook extends GitHubClient {
    *   payload: 'your_payload',
    *   signature: 'your_signature'
    * })
+   * ->
+   * {
+   *   success: true,
+   *   status: 'ok',
+   *   msg: '请求成功'
+   *   data: {
+   *     success: true,
+   *     info: '验证成功'
+   *   }
+   * }
    * ```
    */
   public async check_webhook_signature (
     options: WebHookSignatureParamType
   ):Promise<ApiResponseType<WebHookSignatureResponseType>> {
-    const secret = options.secret ?? this.WebHook_Secret
-    if (!secret) throw new Error(MissingWebHookSecretMsg)
+    if (!this.WebHook_Secret) throw new Error(MissingWebHookSecretMsg)
     if (!options.payload) throw new Error(MissingWebHookPayloadMsg)
     if (!options.signature) throw new Error(MissingWebHookSignatureMsg)
     if (!options.signature.startsWith('sha256=')) throw new Error(InvalidWebHookSignatureFormatMsg)
@@ -62,7 +68,7 @@ export class WebHook extends GitHubClient {
     let WebHookdata: WebHookSignatureResponseType
 
     try {
-      const hmac = crypto.createHmac('sha256', secret)
+      const hmac = crypto.createHmac('sha256', this.WebHook_Secret)
       const payloadString = typeof options.payload === 'string'
         ? options.payload
         : JSON.stringify(options.payload)

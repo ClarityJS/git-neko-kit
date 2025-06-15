@@ -16,6 +16,9 @@ export const InvalidProxyAddressMsg = '喵呜~ 代理地址格式不正确哦'
 export const MissingUrlParamMsg = '喵呜~ 仓库URL不能为空'
 export const MissingLocalRepoPathMsg = '喵呜~ 本地仓库路径不能为空'
 export const MissingRemoteRepoUrlMsg = '喵呜~ 远程仓库URL不能为空'
+export const MissingProxyUrlMsg = '喵呜~ 代理URL不能为空'
+export const GitTypeNotSupportedMsg = '喵呜~ 这个 Git 类型不支持哦'
+export const UrlProtocoleNotSupportedMsg = '喵呜~ 这个 URL 协议不支持哦'
 
 /** 授权相关 */
 export const InvalidAccessTokenMsg = '喵呜~ 这个令牌似乎不是有效的'

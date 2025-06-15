@@ -36,19 +36,30 @@ export interface PullRequestInfoResponseType {
   merged_at: string | null
   /** PR作者 */
   user: PrUser
+  /** PR的目标分支 */
   base: {
+    /** 分支标签 */
     label: string
+    /** 分支名称 */
     ref: string
+    /** 当前分支最新提交的 SHA 值 */
     sha: string
+    /** 分支的用户信息 */
     user: PrUser
+    /** 分支的仓库信息 */
     repo: PrRepo
   }
   /** PR的源分支信息 */
   head: {
+    /** 分支标签 */
     label: string
+    /** 分支名称 */
     ref: string
+    /** 当前分支最新提交的 SHA 值 */
     sha: string
+    /** 分支的用户信息 */
     user: PrUser
+    /** 分支的仓库信息 */
     repo: PrRepo
   }
   /** 指派人 */

@@ -24,8 +24,6 @@ export class Org extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.api_url = base.api_url
-    this.base_url = base.base_url
   }
 
   /**
@@ -38,7 +36,7 @@ export class Org extends GitHubClient {
    * @example
    * ```ts
    * const orgInfo = await org.get_org_info({ org: 'org' })
-   * console.log(orgInfo)
+   * -> 组织信息对象
    * ```
    */
   public async get_org_info (
@@ -50,7 +48,7 @@ export class Org extends GitHubClient {
     const { org } = options
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const res = await this.get(`/orgs/${org}`)
       if (res.statusCode === 404) {
@@ -84,7 +82,7 @@ export class Org extends GitHubClient {
    * @example
    * ```ts
    * const orgInfo = await org.add_member({ org: 'org', username: 'username' })
-   * console.log(orgInfo)
+   * -> 添加组织成员对象
    * ```
    */
   public async add_member (

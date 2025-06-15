@@ -38,8 +38,6 @@ export class Release extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.api_url = base.api_url
-    this.base_url = base.base_url
   }
 
   /**
@@ -55,7 +53,7 @@ export class Release extends GitHubClient {
    * @example
    * ```ts
    * const release = await get_release_info({ owner: 'owner', repo:'repo', release_id: 1 })
-   * console.log(release) // Release信息
+   * -> 发行版信息对象
    * ```
    */
   public async get_release_info (
@@ -64,6 +62,9 @@ export class Release extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     if (!options.release_id) throw new Error(MissingReleaseIdMsg)
     try {
+      this.setRequestConfig({
+        token: this.userToken ?? this.jwtToken
+      })
       const { owner, repo, release_id } = options
       const res = await this.get(`/repos/${owner}/${repo}/releases/${release_id}`)
       if (res.statusCode === 404) {
@@ -108,13 +109,11 @@ export class Release extends GitHubClient {
    * @param options 仓库信息
    * - owner: 拥有者
    * - repo: 仓库名
-   * - url: 仓库地址
-   * ower和repo参数与url参数传入其中一种
    * @returns Release信息
    * @example
    * ```ts
    * const release = await get_release_latest({ owner: 'owner', repo:'repo' })
-   * console.log(release) // Release信息
+   * 发行版信息对象
    * ```
    * */
   public async get_release_latest (
@@ -122,6 +121,9 @@ export class Release extends GitHubClient {
   ): Promise<ApiResponseType<ReleaseLatestResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
+      this.setRequestConfig({
+        token: this.userToken ?? this.jwtToken
+      })
       const { owner, repo } = options
       const url = `/repos/${owner}/${repo}/releases/latest`
       const res = await this.get(url)
@@ -165,14 +167,12 @@ export class Release extends GitHubClient {
    * - release_id: Release ID
    * - owner: 拥有者
    * - repo: 仓库名
-   * - url: 仓库地址
    * - tag: 标签名称
-   * ower和repo参数与url参数传入其中一种
    * @returns 获取指定标签的Release信息
    * @example
    * ```ts
    * const release = await get_release_by_tag({ owner: 'owner', repo:'repo', release_id: 1 })
-   * console.log(release) // Release信息
+   * 发行版信息对象
    * ```
    */
   public async get_release_by_tag (
@@ -181,6 +181,9 @@ export class Release extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     if (!options.tag) throw new Error(TagNotFoundMsg)
     try {
+      this.setRequestConfig({
+        token: this.userToken ?? this.jwtToken
+      })
       const { owner, repo, tag } = options
       const url = `/repos/${owner}/${repo}/releases/tags/${tag}`
       const res = await this.get(url)
@@ -226,7 +229,6 @@ export class Release extends GitHubClient {
    * @param options 仓库信息
    * - owner: 拥有者
    * - repo: 仓库名
-   * - url: 仓库地址
    * - per_page: 每页数量
    * - page: 页码
    * ower和repo参数与url参数传入其中一种
@@ -234,7 +236,7 @@ export class Release extends GitHubClient {
    * @example
    * ```ts
    * const releases = await get_releases_list({ owner: 'owner', repo: 'repo' })
-   * console.log(releases) // Release列表
+   * -> 发行版信息对象列表
    * ```
    */
   public async get_releases_list (
@@ -242,6 +244,9 @@ export class Release extends GitHubClient {
   ): Promise<ApiResponseType<ReleaseListResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
+      this.setRequestConfig({
+        token: this.userToken ?? this.jwtToken
+      })
       const { owner, repo } = options
       const { ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -302,7 +307,7 @@ export class Release extends GitHubClient {
    * @example
    * ```ts
    * const release = await create_release({ owner: 'owner', repo:'repo', tag_name: 'v1.0.0', target_commitish: 'main', name: 'v1.0.0', body: 'v1.0.0', prerelease: false })
-   * console.log(release) // Release信息
+   * -> 创建发行版信息对象
    * ```
    */
   public async create_release (
@@ -312,6 +317,9 @@ export class Release extends GitHubClient {
       if (!options.owner || !options.repo) {
         throw new Error(MissingRepoOwnerOrNameMsg)
       }
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const { owner, repo, ...ReleaseOptions } = options
       const url = `/repos/${owner}/${repo}/releases`
       const res = await this.post(url, ReleaseOptions)
@@ -350,7 +358,7 @@ export class Release extends GitHubClient {
   }
 
   /**
-    * 创建发行版
+    * 更新发行版
    * 权限:
    * — Contents: write
    * @param options Release信息
@@ -364,7 +372,6 @@ export class Release extends GitHubClient {
     * @returns 创建Release的响应对象
     * @example
     * ```ts
-    * const release = base.get_release()
     * const res = await release.create_release({
     *   tag_name: 'v1.0.0',
     *   target_commitish: 'master',
@@ -372,16 +379,19 @@ export class Release extends GitHubClient {
     *   body: 'Release v1.0.0',
     *   prerelease: false
     * })
-    * console.log(res)
+    * -> 更新发行版信息对象
     * ```
     */
   public async update_release (
     options: UpdateReleaseParamType
   ): Promise<ApiResponseType<UpdateReleaseResponseType>> {
+    if (!options.owner || !options.repo) {
+      throw new Error(MissingRepoOwnerOrNameMsg)
+    }
     try {
-      if (!options.owner || !options.repo) {
-        throw new Error(MissingRepoOwnerOrNameMsg)
-      }
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const { owner, repo, ...ReleaseOptions } = options
       const url = `/repos/${owner}/${repo}/releases`
       const res = await this.patch(url, null, ReleaseOptions)
@@ -433,7 +443,7 @@ export class Release extends GitHubClient {
    * @example
    * ```ts
    * const release = await delete_release({ owner: 'owner', repo:'repo', release_id: 1 })
-   * console.log(release) // 删除结果
+   * -> 删除发行版信息对象
    * ```
    */
   public async delete_release (
@@ -441,6 +451,9 @@ export class Release extends GitHubClient {
   ): Promise<ApiResponseType<DeleteReleaseResponseType>> {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
+      this.setRequestConfig({
+        token: this.userToken
+      })
       const { owner, repo } = options
       if (!options.release_id) throw new Error(MissingReleaseIdMsg)
       const { release_id } = options

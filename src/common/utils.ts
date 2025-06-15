@@ -14,6 +14,7 @@ import { basePath } from '@/root'
 import { ContributionResult, ExecOptions, ExecReturn, RepoBaseParamType } from '@/types'
 
 const localeCache = new Set<string>(['en'])
+
 /**
  * 执行 shell 命令
  * @param cmd 命令
@@ -88,8 +89,10 @@ export function exec<T extends boolean = false> (
  * @returns 是否存在
  * @example
  * ```ts
- * console.log(await exists('package.json')) // 输出 true
- * console.log(await exists('not-exists.json')) // 输出 false
+ * console.log(await exists('package.json'))
+ * -> true
+ * console.log(await exists('not-exists.json'))
+ * -> false
  * ```
  */
 export async function exists (path: string) {
@@ -105,6 +108,11 @@ export async function exists (path: string) {
  * @param file - 文件名
  * @param root - 根目录
  * @returns JSON 对象
+ * @example
+ * ```ts
+ * console.log(readJSON('package.json'))
+ * -> { name: 'package-name', version: '1.0.0' }
+ * ```
  */
 export function readJSON (file: string = '', root: string = ''): any {
   root = root || basePath
@@ -143,10 +151,11 @@ async function initDate (locale: string = 'zh-cn') {
  * @returns 格式化后的日期字符串
  * @example
  * ```ts
- * console.log(await formatDate('2025-04-16T10:00:00') // 输出 "2025-04-16 10:00:00"
+ * console.log(await format_date('2025-04-16T10:00:00')
+ * -> '2025-04-16 10:00:00'
  * ```
  */
-export async function formatDate (
+export async function format_date (
   dateString: string,
   locale: string = 'zh-cn',
   format: string = 'YYYY-MM-DD HH:mm:ss'
@@ -173,21 +182,22 @@ export async function get_relative_time (
   Promise<string> {
   await initDate(locale)
   dayjs.extend(relativeTime)
-  console.log(dayjs.locale())
   return dayjs(dateString).fromNow()
 }
 
 /**
  * 解析 Git 仓库地址
+ * @description 解析 Git 仓库地址，返回仓库拥有者、仓库名称、仓库类型等信息, 如果是代理地址，则只支持http协议
  * @param url - Git 仓库地址
  * @returns Git 仓库信息
  * @example
  * ```ts
- * console.log(parse_git_url('https://github.com/user/repo.git')) // 输出 { owner: 'user', repo: 'repo' }
- * // 其他原始git地址也支持解析
- * console.log(parse_git_url('https://ghproxy.com/github.com/user/repo.git')) // 输出 { owner: 'user', repo: 'repo' }
- * console.log(parse_git_url('https://ghproxy.com/https://github.com/user/repo.git')) // 输出 { owner: 'user', repo: 'repo' }
- * // 代理地址解析只支持https协议
+ * console.log(parse_git_url('https://github.com/user/repo.git'))
+ * -> { owner: 'user', repo: 'repo' }
+ * console.log(parse_git_url('https://ghproxy.com/github.com/user/repo.git'))
+ * -> { owner: 'user', repo: 'repo' }
+ * console.log(parse_git_url('https://ghproxy.com/https://github.com/user/repo.git'))
+ * -> { owner: 'user', repo: 'repo' }
  * ```
  */
 export function parse_git_url (url: string): RepoBaseParamType {
@@ -216,7 +226,8 @@ async function get_git_version (): Promise<string> {
  * @returns 默认分支名称
  * @example
  * ```ts
- * console.log(await get_local_repo_default_branch('/path/to/repo')) // 输出 'main'
+ * console.log(await get_local_repo_default_branch('/path/to/repo'))
+ * -> 'main'
  * ```
  */
 export async function get_local_repo_default_branch (local_path: string): Promise<string> {
@@ -251,7 +262,8 @@ export async function get_local_repo_default_branch (local_path: string): Promis
  * @returns 默认分支名称
  * @example
  * ```ts
- * console.log(await get_remote_repo_default_branch('https://github.com/CandriaJS/git-neko-kit')) // 输出 'main'
+ * console.log(await get_remote_repo_default_branch('https://github.com/CandriaJS/git-neko-kit'))
+ * -> 'main'
  * ```
  */
 export async function get_remote_repo_default_branch (remote_url: string): Promise<string> {
@@ -286,7 +298,8 @@ export async function get_remote_repo_default_branch (remote_url: string): Promi
  * @returns 十六进制颜色代码
  * @example
  * ```ts
- * console.log(RgbToHex([255, 128, 0])) // 输出 "#ff8000"
+ * console.log(RgbToHex([255, 128, 0]))
+ * -> '#ff8000'
  * ```
  */
 export function RgbToHex (rgb: RGB): string {
@@ -310,7 +323,8 @@ export function RgbToHex (rgb: RGB): string {
  * @returns 颜色值的十六进制字符串
  * @example
  * ```ts
- * console.log(get_langage_color('JavaScript')) // 输出 "#f1e05a"
+ * console.log(get_langage_color('JavaScript'))
+ * -> '#f1e05a'
  * ```
  */
 export function get_langage_color (language: string): string {
@@ -322,6 +336,12 @@ export function get_langage_color (language: string): string {
  * @param items - 要分割的数组
  * @param n - 每个子数组的大小
  * @returns 分割后的二维数组
+ * @example
+ * ```ts
+ * const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+ * const result = await listSplit(arr, 3)
+ * -> [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]
+ * ```
  */
 async function listSplit<T> (items: T[], n: number): Promise<T[][]> {
   return Promise.resolve(Array.from({ length: Math.ceil(items.length / n) }, (_, i) =>
@@ -334,6 +354,12 @@ async function listSplit<T> (items: T[], n: number): Promise<T[][]> {
  * 从HTML中解析贡献数据
  * @param html - 包含贡献数据的HTML字符串
  * @returns 解析后的贡献数据，包括总贡献数和按周分组的贡献数据
+ * @throws 如果解析过程中发生错误，将抛出异常
+ * @example
+ * ```ts
+ * const result = await get_contribution_data(html)
+ * -> { total: 5, contributions: [[{ date: '2023-04-16', count: 5 }]] }
+ * ```
  */
 export async function get_contribution_data (html: string): Promise<ContributionResult> {
   try {
@@ -359,6 +385,6 @@ export async function get_contribution_data (html: string): Promise<Contribution
       contributions
     }
   } catch (error) {
-    throw new Error(`解析贡献数据失败: ${error}`)
+    throw new Error(`解析贡献数据失败: ${(error as Error).message}`)
   }
 }

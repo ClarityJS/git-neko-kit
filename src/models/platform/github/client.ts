@@ -26,7 +26,6 @@ import type { User } from '@/models/platform/github/user'
 import type { WebHook } from '@/models/platform/github/webhook'
 import type {
   ApiResponseType,
-  AppClientType,
   GitHubClientType,
   GitType,
   ProxyParamsType,
@@ -85,8 +84,8 @@ export class GitHubClient {
     this.WebHook_Secret = 'WebHook_Secret' in options ? options.WebHook_Secret : null
     this.validateAppClient()
     this.jwtToken = this.generate_jwt()
-    this.base_url = get_base_url(type)
-    this.api_url = get_api_base_url(type)
+    this.base_url = get_base_url(type, { proxyType: 'original' })
+    this.api_url = get_api_base_url(type, { proxyType: 'original' })
     this.userToken = 'access_token' in options ? options.access_token : null
     this.currentRequestConfig = {
       url: this.api_url,
@@ -300,8 +299,8 @@ export class GitHubClient {
       switch (proxy?.type) {
         case 'common':
         case 'reverse':
-          this.base_url = get_base_url(type, proxy.address, proxy.type)
-          this.api_url = get_api_base_url(type, proxy.address, proxy.type)
+          this.base_url = get_base_url(type, { proxyUrl: proxy.address, proxyType: proxy.type })
+          this.api_url = get_api_base_url(type, { proxyUrl: proxy.address, proxyType: proxy.type })
           break
       }
 

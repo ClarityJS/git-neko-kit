@@ -3,7 +3,6 @@ import { capitalize } from 'lodash-es'
 
 import {
   get_contribution_data,
-  InvalidAccessTokenMsg,
   MissingAccessTokenMsg,
   MissingUserIdParamMsg,
   MissingUserNameParamMsg,
@@ -12,11 +11,11 @@ import {
   PermissionDeniedMsg,
   UserNotFoundMsg
 } from '@/common'
+import { get_base_url } from '@/models/base'
 import { GitHubClient } from '@/models/platform/github/client'
 import {
   ApiResponseType,
   ContributionResult,
-  UserInfoByAuthParamType,
   UserInfoByIdParamType,
   UserInfoParamType,
   UserInfoResponseType,
@@ -34,8 +33,7 @@ export class User extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.api_url = base.api_url
-    this.base_url = base.base_url
+    this.base_url = get_base_url(this.type, { proxyType: 'original' })
   }
 
   /**
@@ -47,21 +45,18 @@ export class User extends GitHubClient {
    * @example
    * ```ts
    * const userInfo = await user.get_user_info({ username: 'username' })
-   * console.log(userInfo)
+   * -> 用户信息对象
    * ```
    */
-  public async get_user_info (options: UserInfoParamType):
-  Promise<ApiResponseType<UserInfoResponseType>> {
-    const token = options.access_token ?? this.userToken
+  public async get_user_info (
+    options: UserInfoParamType
+  ):Promise<ApiResponseType<UserInfoResponseType>> {
     if (!options.username) {
       throw new Error(OrgOrUserNotFoundMsg)
     }
-    if (token && !token?.startsWith('ghu_')) {
-      throw new Error(InvalidAccessTokenMsg)
-    }
     try {
       this.setRequestConfig({
-        token
+        token: this.userToken ?? this.jwtToken
       })
       const res = await this.get(`/users/${options.username}`)
       if (res.statusCode === 401) {
@@ -102,21 +97,18 @@ export class User extends GitHubClient {
    * @example
    * ```ts
    * const userInfo = await user.get_user_info_by_user_id({ user_id: 123456789 })
-   * console.log(userInfo)
+   * -> 用户信息对象
    * ```
    */
-  public async get_user_info_by_user_id (options: UserInfoByIdParamType):
-  Promise<ApiResponseType<UserInfoResponseType>> {
-    const token = options.access_token ?? this.userToken
+  public async get_user_info_by_user_id (
+    options: UserInfoByIdParamType
+  ):Promise<ApiResponseType<UserInfoResponseType>> {
     if (!options.user_id) {
       throw new Error(MissingUserIdParamMsg)
     }
-    if (token && !token?.startsWith('ghu_')) {
-      throw new Error(InvalidAccessTokenMsg)
-    }
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const res = await this.get(`/user/${options.user_id}`)
       if (res.statusCode === 401) {
@@ -153,7 +145,7 @@ export class User extends GitHubClient {
    * @example
    * ```ts
    * const userInfo = await user.get_user_info_by_token()
-   * console.log(userInfo)
+   * -> 用户信息对象
    * ```
    */
   public async get_user_info_by_auth ():
@@ -199,10 +191,6 @@ export class User extends GitHubClient {
    * 通过访问令牌获取用户信息
    * 权限：无需任何权限
    * @deprecated 该方法已过时，请使用get_user_info_by_auth方法牌
-   * @example
-   * ```ts
-   * const userInfo = await user.get_user_info_by_token()
-   * console.log(userInfo)
    * ```
    */
 
@@ -220,7 +208,14 @@ export class User extends GitHubClient {
    * @example
    * ```ts
    * const contribution = await user.get_user_contribution({ username: 'username' })
-   * console.log(contribution)
+   * ->
+   * {
+   * success: true,
+   * status: 'ok',
+   * statusCode: 200,
+   * msg: '请求成功',
+   * data: { total: 5, contributions: [[{ date: '2023-04-16', count: 5 }]] }
+   * }
    * ```
    */
   public async get_user_contribution (options: UserNameParamType):
@@ -267,9 +262,9 @@ export class User extends GitHubClient {
    * @example
    * ```ts
    * const userId = await user.get_user_id()
-   * console.log(userId)
+   * -> 114514
    */
-  public async get_user_id (): Promise<number | null> {
+  public async get_user_id (): Promise<number> {
     return (await this.get_user_info_by_auth()).data.id
   }
 
@@ -281,10 +276,10 @@ export class User extends GitHubClient {
    * @example
    * ```ts
    * const username = await user.get_username()
-   * console.log(username)
+   * -> 'loli'
    * ```
    */
-  public async get_username (): Promise<string | null> {
+  public async get_username (): Promise<string> {
     return (await this.get_user_info_by_auth()).data.login
   }
 
@@ -292,16 +287,15 @@ export class User extends GitHubClient {
    * 快速获取获取用户昵称
    * 该方法会自动获取当前用户的昵称，需要传入token
    * 权限：无需任何权限
-   * @remarks 用户昵称可能会为null
    * @returns 昵称
    * @example
    * ```ts
    * const nickname = await user.get_nickname()
-   * console.log(nickname)
+   * -> 'loli'
    * ```
    */
   public async get_nickname (): Promise<string | null> {
-    return (await this.get_user_info_by_auth()).data.name
+    return (await this.get_user_info_by_auth()).data.name || null
   }
 
   /**
@@ -312,11 +306,11 @@ export class User extends GitHubClient {
    * @example
    * ```ts
    * const email = await user.get_email()
-   * console.log(email)
+   * -> '114514@gmail.com'
    * ```
    */
   public async get_user_email (): Promise<string | null> {
-    return (await this.get_user_info_by_auth()).data.email
+    return (await this.get_user_info_by_auth()).data.email || null
   }
 
   /**
@@ -327,7 +321,7 @@ export class User extends GitHubClient {
    * @example
    * ```ts
    * const avatarUrl = await user.get_avatar_url()
-   * console.log(avatarUrl)
+   * -> 'https://avatars.githubusercontent.com/u/12345678?v=4'
    * ```
    */
   public async get_avatar_url (): Promise<string> {

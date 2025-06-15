@@ -1,26 +1,12 @@
 import type {
-  AccessTokenType,
   UserIdParamType,
   UserNameParamType
 } from '@/types/platform/base'
 
 /** 用户信息参数类型 */
-export interface UserInfoParamType extends UserNameParamType {
-  /** 授权token */
-  access_token?: AccessTokenType['access_token'];
-}
-
-/** 授权用户信息参数对象类型 */
-export interface UserInfoByAuthParamType {
-  /** 授权token */
-  access_token?: AccessTokenType['access_token'];
-}
+export type UserInfoParamType = UserNameParamType
 /** 通过用户ID 获取用户信息参数类型 */
-export interface UserInfoByIdParamType extends UserIdParamType {
-  /** 授权token */
-  access_token?: AccessTokenType['access_token'];
-}
-
+export type UserInfoByIdParamType = UserIdParamType
 /** 用户信息响应类型 */
 export interface UserInfoResponseType {
   /** 账号ID */

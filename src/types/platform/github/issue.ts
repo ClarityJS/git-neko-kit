@@ -394,7 +394,7 @@ export interface SubIssueListParamType extends RepoBaseParamType {
 export type SubIssueListResponseType = IssueInfoResponseType[]
 
 /** 添加子议题参数类型 */
-export interface AddSubIssueParamType extends RepoBaseParamType {
+export interface CreateSubIssueParamType extends RepoBaseParamType {
   /** 议题ID */
   issue_number: IssueNumberParamType['issue_number'];
   /** * 子议题ID */
@@ -403,7 +403,7 @@ export interface AddSubIssueParamType extends RepoBaseParamType {
   replace_parent: boolean;
 }
 /** 添加子议题响应类型 */
-export type AddSubIssueResponseType = IssueInfoResponseType
+export type CreateSubIssueResponseType = IssueInfoResponseType
 
 /** 删除子议题参数类型 */
 export interface RemoveSubIssueParamType extends RepoBaseParamType {

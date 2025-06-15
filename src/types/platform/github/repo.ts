@@ -175,6 +175,7 @@ export type CollaboratorPermissionType = 'pull' | 'push' | 'admin'
 
 /** 协作者参数类型 */
 export type CollaboratorParamType = RepoInfoParamType & UserNameParamType & {
+  /** 邀请的权限 */
   permission?: CollaboratorPermissionType
 }
 

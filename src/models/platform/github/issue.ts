@@ -1,10 +1,8 @@
-import { capitalize } from 'lodash-es'
-
 import {
   FailedtoLockIssueMsg,
   FailedtoRemoveIssueMsg,
   FailedtoUnlockIssueMsg,
-  formatDate,
+  format_date,
   IssueCommentNotFoundMsg,
   IssueCommentRemoveSuccessMsg,
   IssueMovedMsg,
@@ -22,12 +20,12 @@ import {
 import { get_base_url } from '@/models/base'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
-  AddSubIssueParamType,
-  AddSubIssueResponseType,
   ApiResponseType,
   CloseIssueParamType,
   CloseIssueResponseType,
   CreateIssueResponseType,
+  CreateSubIssueParamType,
+  CreateSubIssueResponseType,
   CreteIssueCommentParamType,
   CreteIssueCommentResponseType,
   CreteIssueParamType,
@@ -80,8 +78,6 @@ export class Issue extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.api_url = base.api_url
-    this.base_url = base.base_url
   }
 
   /**
@@ -95,9 +91,8 @@ export class Issue extends GitHubClient {
    * @returns 包含Issue信息的响应对象
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.get_issue_info({ owner: 'owner', repo:'repo', issue_number:1 })
-   * console.log(res) // { data: IssueInfoResponseType }
+   * -> 议题信息对象
    * ```
    */
   public async get_issue_info (
@@ -107,7 +102,7 @@ export class Issue extends GitHubClient {
     if (!options.issue_number) throw new Error(MissingIssueNumberMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { owner, repo, issue_number } = options
       const res = await this.get(
@@ -179,9 +174,9 @@ export class Issue extends GitHubClient {
                 due_on: res.data.milestone.due_on
               }
             : null,
-          closed_at: this.format ? await formatDate(res.data.closed_at) : res.data.closed_at,
-          created_at: this.format ? await formatDate(res.data.created_at) : res.data.created_at,
-          updated_at: this.format ? await formatDate(res.data.updated_at) : res.data.updated_at
+          closed_at: this.format ? await format_date(res.data.closed_at) : res.data.closed_at,
+          created_at: this.format ? await format_date(res.data.created_at) : res.data.created_at,
+          updated_at: this.format ? await format_date(res.data.updated_at) : res.data.updated_at
         }
         res.data = IssueData
       }
@@ -213,9 +208,8 @@ export class Issue extends GitHubClient {
    * @returns 包含Issue列表的响应对象
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.get_issue_list({ owner: 'owner', repo: 'repo' })
-   * console.log(res) // { data: IssueListResponseType[] }
+   * -> 议题信息对象列表
    * ```
    */
   public async get_issues_list (
@@ -224,7 +218,7 @@ export class Issue extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { owner, repo, ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -339,9 +333,8 @@ export class Issue extends GitHubClient {
    * @returns 包含Issue信息的响应对象
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.create_issue({ owner: 'owner', repo:'repo', title:'title', body:'body' })
-   * console.log(res) // { data: CreateIssueResponseType }
+   * -> 创建议题信息对象
    * ```
    */
   public async create_issue (
@@ -474,9 +467,8 @@ export class Issue extends GitHubClient {
    * @returns 包含Issue信息的响应对象
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.update_issue({ owner: 'owner', repo:'repo', issue_number:1, title:'title', body:'body' })
-   * console.log(res) // { data: CreateIssueResponseType }
+   * -> 更新议题信息对象
    * ```
    */
   public async update_issue (
@@ -607,9 +599,8 @@ export class Issue extends GitHubClient {
    * @returns 包含Issue信息的响应对象
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.open_issue({ owner: 'owner', repo:'repo', issue_number:1 })
-   * console.log(res) // { data: CreateIssueResponseType }
+   * -> 打开议题信息对象
    * ```
    */
   public async open_issue (
@@ -743,9 +734,8 @@ export class Issue extends GitHubClient {
    * @returns 包含Issue信息的响应对象
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.close_issue({ owner: 'owner', repo:'repo', issue_number:1, state_reason:'completed' })
-   * console.log(res) // { data: CreateIssueResponseType }
+   * -> 关闭议题信息对象
    * ```
    */
   public async close_issue (
@@ -853,6 +843,7 @@ export class Issue extends GitHubClient {
 
   /**
    * 锁定一个议题
+   * @github
    * 仅GitHub平台可用
    * 权限:
    * - Issues: Write
@@ -866,9 +857,8 @@ export class Issue extends GitHubClient {
    * @returns 锁定状态信息
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.lock_issue({ owner: 'owner', repo:'repo', issue_number:1, lock_reason:'off-topic' })
-   * console.log(res) // { data: LockIssueResponseType }
+   * -> 锁定议题信息对象
    * ```
    */
   public async lock_issue (
@@ -919,6 +909,7 @@ export class Issue extends GitHubClient {
 
   /**
    * 解锁一个议题
+   * @github
    * 仅GitHub平台可用
    * 权限:
    * - Issues: Write
@@ -931,9 +922,8 @@ export class Issue extends GitHubClient {
    * @returns 解锁状态信息
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.unlock_issue({ owner: 'owner', repo:'repo', issue_number})
-   * console.log(res) // { data: UnLockIssueResponseType }
+   * -> 解锁议题信息对象
    * ```
    */
   public async unlock_issue (
@@ -995,9 +985,8 @@ export class Issue extends GitHubClient {
    * @returns 包含Issue评论列表的响应对象
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.get_issue_comments_list({ owner: 'owner', repo:'repo', issue_number:1 })
-   * console.log(res) // { data: IssueCommentListResponseType[] }
+   * -> 议题评论对象列表
    * ```
    */
   public async get_repo_comments_list (
@@ -1008,7 +997,7 @@ export class Issue extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { owner, repo, ...queryOptions } = options
 
@@ -1072,9 +1061,8 @@ export class Issue extends GitHubClient {
    * @returns 包含Issue评论列表的响应对象
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.get_issue_comments_list({ owner: 'owner', repo:'repo', issue_number:1 })
-   * console.log(res) // { data: IssueCommentListResponseType[] }
+   * -> 议题评论对象列表
    * ```
    */
   public async get_issue_comments_list (
@@ -1088,7 +1076,7 @@ export class Issue extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { owner, repo, issue_number, ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -1148,9 +1136,8 @@ export class Issue extends GitHubClient {
    * @returns Issue评论信息
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.get_issue_comment({ owner: 'owner', repo:'repo', comment_id:1 })
-   * console.log(res) // { data: IssueCommentInfoResponseType }
+   * -> 议题评论对象
    * ```
    */
   public async get_issue_comment_info (
@@ -1164,7 +1151,7 @@ export class Issue extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { owner, repo, comment_id } = options
       const res = (await this.get(
@@ -1213,7 +1200,7 @@ export class Issue extends GitHubClient {
    * ```ts
    * const issue = get_issue() // 获取issue实例
    * const res = await issue.create_issue_comment({ owner: 'owner', repo:'repo', issue_number:1, body:'comment' })
-   * console.log(res) // { data: CreteIssueCommentResponseType }
+   * -> 创建议题评论对象
    * ```
    */
   public async create_issue_comment (
@@ -1280,9 +1267,8 @@ export class Issue extends GitHubClient {
    * @returns 更新后的Issue评论信息
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.update_issue_comment({ owner: 'owner', repo:'repo', comment_id:1, body:'body' })
-   * console.log(res) // { data: UpdateIssueCommentResponseType }
+   * -> 更新议题评论对象
    * ```
    */
   public async update_issue_comment (
@@ -1344,9 +1330,8 @@ export class Issue extends GitHubClient {
    * @returns 删除结果信息
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = awaitissue.remove_issue_comment()
-   * console.log(res) // { data: RemoveIssueCommentResponseType }
+   * -> 删除议题评论对象
    * ```
    */
   public async remove_issue_comment (
@@ -1415,9 +1400,8 @@ export class Issue extends GitHubClient {
    * @returns 子议题列表
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.get_sub_issue_list({ owner: 'owner', repo:'repo', issue_number:1 })
-   * console.log(res) // { data: SubIssueListResponseType }
+   * -> 子议题信息对象列表
    * ```
    */
   public async get_sub_issue_list (
@@ -1431,7 +1415,7 @@ export class Issue extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { owner, repo, issue_number, ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -1527,7 +1511,7 @@ export class Issue extends GitHubClient {
   }
 
   /**
-   * 添加子议题
+   * 创建子议题
    * 添加一个子议题到指定的议题中
    * @github
    * 仅GitHub 平台使用
@@ -1542,14 +1526,13 @@ export class Issue extends GitHubClient {
    * @returns 添加结果信息
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.add_sub_issue({ owner: 'owner', repo:'repo', issue_number:1, sub_issue_id:1, replace_parent:true })
-   * console.log(res) // { data: AddSubIssueResponseType }
+   * -> 创建子议题信息对象
    * ```
    */
-  public async add_sub_issue (
-    options: AddSubIssueParamType
-  ): Promise<ApiResponseType<AddSubIssueResponseType>> {
+  public async create_sub_issue (
+    options: CreateSubIssueParamType
+  ): Promise<ApiResponseType<CreateSubIssueResponseType>> {
     if (!options.owner || !options.repo) {
       throw new Error(MissingRepoOwnerOrNameMsg)
     }
@@ -1576,7 +1559,7 @@ export class Issue extends GitHubClient {
         throw new Error(IssueNotFoundMsg)
       }
       if (res.data) {
-        const IssueData: AddSubIssueResponseType = {
+        const IssueData: CreateSubIssueResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
           number: res.data.number,
@@ -1648,6 +1631,19 @@ export class Issue extends GitHubClient {
   }
 
   /**
+   * 添加子议题
+   * 添加一个子议题到指定的议题中
+   * @github
+   * 仅GitHub 平台使用
+   * @deprecated 已弃用，请使用`create_sub_issue`方法
+   */
+  public async add_sub_issue (
+    options: CreateSubIssueParamType
+  ): Promise<ApiResponseType<CreateSubIssueResponseType>> {
+    return await this.create_sub_issue(options)
+  }
+
+  /**
    * 删除子议题
    * @github
    * 仅GitHub 平台使用
@@ -1661,9 +1657,8 @@ export class Issue extends GitHubClient {
    * @returns 删除结果信息
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.remove_sub_issue({ owner: 'owner', repo:'repo', issue_number:1, sub_issue_id:1 })
-   * console.log(res) // { data: RemoveSubIssueResponseType }
+   * -> 删除子议题信息对象
    * ```
    */
   public async remove_sub_issue (
@@ -1794,9 +1789,8 @@ export class Issue extends GitHubClient {
    * - after_id 指定要在哪个子议题之后插入，传入目标子议题的编号
    * @example
    * ```ts
-   * const issue = get_issue() // 获取issue实例
    * const res = await issue.reprioritize_sub_issue({ owner: 'owner', repo:'repo', issue_number:1, sub_issue_id:1, before_id:1 })
-   * console.log(res) // { data: ReprioritizeSubIssueResponseType }
+   * -> 排序子议题信息对象
    * ```
    */
   public async reprioritize_sub_issue (

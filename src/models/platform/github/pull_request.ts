@@ -58,8 +58,6 @@ export class Pull_Request extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.api_url = base.api_url
-    this.base_url = base.base_url
   }
 
   /**
@@ -74,9 +72,8 @@ export class Pull_Request extends GitHubClient {
    * @returns 包含pull_request信息的响应对象
    * @example
    * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.get_pull_request_info({ owner: 'owner', repo:'repo', pr_number:1 })
-   * console.log(res) // { data: PullRequestInfoResponseType }
+   * -> 拉取提交信息对象
    * ```
    */
   public async get_pull_request_info (
@@ -86,7 +83,7 @@ export class Pull_Request extends GitHubClient {
     if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const res = await this.get(`/repos/${options.owner}/${options.repo}/pulls/${options.pr_number}`)
       if (res.data) {
@@ -217,9 +214,8 @@ export class Pull_Request extends GitHubClient {
    * @returns 包含pull_request信息的响应对象
    * @example
    * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.get_get_pull_request_list({ owner: 'owner', repo:'repo' })
-   * console.log(res) // { data: PullRequestListResponseType }
+   * -> 拉取提交信息对象列表
    * ```
    */
   public async get_get_pull_request_list (
@@ -228,7 +224,7 @@ export class Pull_Request extends GitHubClient {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { owner, repo, ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -370,9 +366,8 @@ export class Pull_Request extends GitHubClient {
    * @returns 包含pull_request信息的响应对象
    * @example
    * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.create_pull_requestt({ owner: 'owner', repo:'repo', issue: 1, head: 'head', base: 'base' })
-   * console.log(res) // { data: CreatePullRequestResponseType }
+   * -> 创建拉取提交信息对象
    */
   public async create_pull_request (
     options: CreatePullRequestParamType
@@ -529,9 +524,8 @@ export class Pull_Request extends GitHubClient {
    * @returns 包含pull_request信息的响应对象
    * @example
    * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.create_pull_requestt({ owner: 'owner', repo:'repo', pr_number:1, state:'open' })
-   * console.log(res) // { data: CreatePullRequestResponseType }
+   * -> 更新拉取提交信息对象
    */
   public async update_pull_request (
     options: UpdatePullRequestParamType
@@ -675,9 +669,8 @@ export class Pull_Request extends GitHubClient {
    * @returns 包含pull_request信息的响应对象
    * @example
    * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.merge_pull_request({ owner: 'owner', repo:'repo', pr_number:1 })
-   * console.log(res) // { data: CreatePullRequestResponseType }
+   * -> 合并拉取提交信息对象
    * ```
    */
 
@@ -739,9 +732,8 @@ export class Pull_Request extends GitHubClient {
    * @returns 包含拉取请求文件列表的响应对象
    * @example
    * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.get_pull_request_files_list({ owner: 'owner', repo:'repo', pr_number:1 })
-   * console.log(res) // { data: GetPullRequestFilesListResponseType }
+   * -> 拉取提交文件信息对象列表
    * ```
    */
   public async get_pull_request_files_list (
@@ -751,7 +743,7 @@ export class Pull_Request extends GitHubClient {
     if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const params: Record<string, string> = {}
       if (options.per_page) params.per_page = options.per_page
@@ -797,9 +789,8 @@ export class Pull_Request extends GitHubClient {
    * @returns 包含拉取请求指定的评论id的信息
    * @example
    * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.get_pull_request_comment_info({ owner: 'owner', repo:'repo', comment_id:1 })
-   * console.log(res) // { data: GetPullRequestCommentInfoResponseType }
+   * -> 拉取提交评论信息对象
    * ```
    */
   public async get_pull_request_comment_info (
@@ -809,7 +800,7 @@ export class Pull_Request extends GitHubClient {
     if (!options.comment_id) throw new Error(MissingPullRequestCommentNumberMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { owner, repo, comment_id } = options
       const res = await this.get(`/repos/${owner}/${repo}/pulls/comments/${comment_id}`)
@@ -855,9 +846,8 @@ export class Pull_Request extends GitHubClient {
    * @returns 包含拉取请求评论列表响应信息列表
    * @example
    * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.get_pull_request_comments_list({ owner: 'owner', repo:'repo', pr_number:1 })
-   * console.log(res) // { data: GetPullRequestCommentsListResponseType }
+   * -> 拉取提交评论信息对象
    * ```
    */
   public async get_pull_request_comments_list (
@@ -867,7 +857,7 @@ export class Pull_Request extends GitHubClient {
     if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const params: Record<string, string> = {}
       if (options.direction) params.direction = options.direction
@@ -917,9 +907,8 @@ export class Pull_Request extends GitHubClient {
    * @returns 包含创建拉取请求评论响应信息
    * @example
    * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.create_pull_request_comment({ owner: 'owner', repo:'repo', pr_number:1， body: 'loli' })
-   * console.log(res) // { data: CreatePullRequestCommentResponseType }
+   * -> 创建拉取提交评论信息对象
    * ```
    */
   public async create_pull_request_comment (
@@ -965,9 +954,8 @@ export class Pull_Request extends GitHubClient {
    * @returns 包含更新拉取请求评论响应信息
    * @example
    * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.update_pull_request_comment({ owner: 'owner', repo:'repo', comment_id:1， body: 'loli' })
-   * console.log(res) // { data: CreatePullRequestCommentResponseType }
+   * -> 更新拉取提交评论信息对象
    * ```
    */
   public async update_pull_request_comment (
@@ -1000,18 +988,12 @@ export class Pull_Request extends GitHubClient {
   }
 
   /**
-   * 删除拉取请求评论
+   * 编辑拉取请求评论
    * @deprecated  请使用update_issue_comment方法
    * 权限:
    * - Pull requests: Read-And-Write
    * @param options - 删除拉取请求评论参数对象
    * @returns 删除结果
-   * @example
-   * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
-   * const res = await pull_request.  public async edit_pull_request_comment (
-({ owner: 'owner', repo:'repo', comment_id:1， body: 'loli' })
-   * console.log(res) // { data: CreatePullRequestCommentResponseType }
    * ```
    */
   public async edit_pull_request_comment (
@@ -1031,9 +1013,8 @@ export class Pull_Request extends GitHubClient {
    * @returns 包含更新拉取请求评论响应信息
    * @example
    * ```ts
-   * const pull_request = get_pull_request() // 获取pull_request实例
    * const res = await pull_request.delete_pull_request_comment({ owner: 'owner', repo:'repo', comment_id: 1 })
-   * console.log(res) // { data: DeletePullRequestCommentResponseType }
+   * -> 更新拉取提交评论信息对象
    * ```
    */
   public async delete_pull_request_comment (

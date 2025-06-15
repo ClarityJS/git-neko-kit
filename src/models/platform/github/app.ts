@@ -1,7 +1,7 @@
 import { capitalize } from 'lodash-es'
 
 import {
-  formatDate,
+  format_date,
   MissingAccessTokenMsg,
   MissingAppClientMsg,
   MissingAppSlugMsg,
@@ -9,6 +9,7 @@ import {
   RepoMovedMsg,
   RepoNotFoundMsg
 } from '@/common'
+import { get_base_url } from '@/models/base'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
   ApiResponseType,
@@ -33,25 +34,31 @@ export class App extends GitHubClient {
     super(base)
     this.userToken = base.userToken
     this.api_url = base.api_url
-    this.base_url = base.base_url
+    this.base_url = get_base_url(this.type, { proxyType: 'original' })
   }
 
   /**
    * 获取应用基本信息
    * 权限：
-   * - `none` 此节点仅App Client可用
+   * - `none` 无
    * @param options - 应用标识符
    * @returns 应用基本信息
+   * @example
+   * ```ts
+   * const app = base.get_app()
+   * console.log(app.get_app_info({ app_slug: 'loli' }))
+   * -> app的信息
+   * ```
    */
-  public async get_app_info (options: AppInfoParamType): Promise<ApiResponseType<AppInfoResponseType>> {
-    if (!this.is_app_client) throw new Error(MissingAppClientMsg)
-    const token = options.access_token ?? this.userToken
+  public async get_app_info (
+    options: AppInfoParamType
+  ): Promise<ApiResponseType<AppInfoResponseType>> {
     if (!options.app_slug) throw new Error(MissingAppSlugMsg)
-    if (!token) throw new Error(MissingAccessTokenMsg)
+    if (!this.userToken) throw new Error(MissingAccessTokenMsg)
     try {
       this.setRequestConfig(
         {
-          token
+          token: this.userToken ?? this.jwtToken
         })
       const res = await this.get(`/apps/${options.app_slug}`)
       if (res.statusCode === 200) {
@@ -93,10 +100,12 @@ export class App extends GitHubClient {
    * @example
    * ```ts
    * const app = base.get_app()
-   * console.log(app.get_app_info_by_auth()) // 输出App信息
+   * console.log(app.get_app_info_by_auth())
+   * -> app的信息
    * ```
    */
-  private async get_app_info_by_auth (): Promise<ApiResponseType<AppInfoResponseType>> {
+  private async get_app_info_by_auth ()
+    : Promise<ApiResponseType<AppInfoResponseType>> {
     if (!this.is_app_client) throw new Error(MissingAppClientMsg)
     try {
       this.setRequestConfig(
@@ -143,8 +152,6 @@ export class App extends GitHubClient {
    * @param options - 仓库安装应用参数对象
    * - owner 拥有者
    * - repo 仓库名
-   * - url 仓库地址
-   * ownwe和repo与url只能二选一
    * @returns 返回应用安装信息
    * @example
    * ```ts
@@ -193,8 +200,8 @@ export class App extends GitHubClient {
           repositories_url: res.data.repositories_url,
           permissions: res.data.permissions,
           events: res.data.events,
-          created_at: this.format ? await formatDate(res.data.created_at) : res.data.created_at,
-          updated_at: this.format ? await formatDate(res.data.updated_at) : res.data.updated_at
+          created_at: this.format ? await format_date(res.data.created_at) : res.data.created_at,
+          updated_at: this.format ? await format_date(res.data.updated_at) : res.data.updated_at
         }
         res.data = AppData
       }
@@ -207,9 +214,12 @@ export class App extends GitHubClient {
   /**
    * 生成Github App 安装链接
    * @param state_id - 随机生成的 state_id，用于验证授权请求的状态，可选，默认不使用
-   * @returns 返回安装链接对象
-   * @returns state_id 随机生成的字符串，用于验证
    * @returns install_link 安装链接，用于跳转 Github 安装页
+   * @example
+   * ```ts
+   * const link = await app.create_install_link('state_id')
+   * -> https://github.com/apps/<app_name>/installations/new?state=<state_id>
+   * ```
    */
   public async create_install_link (state_id?: string): Promise<string> {
     try {
@@ -232,7 +242,7 @@ export class App extends GitHubClient {
     * @example
     * ```ts
     * const link = await app.create_config_install_link('state_id')
-    * console.log(link) // https://github.com/apps/<app_name>/installations/new?state=<state_id></state_id>
+    * -> // https://github.com/apps/<app_name>/installations/new?state=<state_id></state_id>
     * ```
     */
   public async create_config_install_link (state_id?: string): Promise<string> {
@@ -253,8 +263,8 @@ export class App extends GitHubClient {
    * @returns 返回 Github App 名称
    * @example
    * ```ts
-   * const app = base.get_app()
-   * console.log(app.get_app_name()) // 输出AppName
+   * console.log(app.get_app_name())
+   * ->  输出AppName
    * ```
    */
   public async get_app_name (): Promise<string> {
@@ -269,16 +279,24 @@ export class App extends GitHubClient {
    * @returns 是否安装
    * @example
    * ```ts
+   * // 当前App已安装在此仓库
    * const isInstalled = await app.is_app_inttalled_in_repo({ owner: 'owner', repo: 'repo' })
-   * console.log(isInstalled) // 输出是否安装
-   * ·
+   * -> true
+   * // 当前App未安装此仓库
+   * const isInstalled = await app.is_app_inttalled_in_repo({ owner: 'owner', repo: 'repo' })
+   * -> false
    */
   public async is_app_installed_in_repo (
     options: RepoBaseParamType
   ): Promise<boolean> {
-    return !!await this.get_app_installation_by_repo({
-      owner: options.owner,
-      repo: options.repo
-    })
+    try {
+      const res = await this.get_app_installation_by_repo({
+        owner: options.owner,
+        repo: options.repo
+      })
+      return !!res
+    } catch {
+      return false
+    }
   }
 }

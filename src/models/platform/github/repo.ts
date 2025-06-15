@@ -1,5 +1,5 @@
 import {
-  formatDate,
+  format_date,
   get_langage_color,
   get_remote_repo_default_branch,
   MissingRepoOwnerOrNameMsg,
@@ -12,6 +12,7 @@ import {
   RepoOrPermissionDeniedMsg,
   UserNotFoundMsg
 } from '@/common'
+import { get_base_url } from '@/models/base'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
   AddCollaboratorResponseType,
@@ -58,8 +59,7 @@ export class Repo extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.api_url = base.api_url
-    this.base_url = base.base_url
+    this.base_url = get_base_url(this.type, { proxyType: 'original' })
   }
 
   /**
@@ -76,7 +76,7 @@ export class Repo extends GitHubClient {
    * @example
    * ```ts
    * const repos = await repo.get_org_repos_list({ org: 'org' })
-   * console.log(repos)
+   * -> 组织仓库信息对象列表
    * ```
    */
   public async get_org_repos_list (
@@ -87,7 +87,7 @@ export class Repo extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { org, ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -134,13 +134,13 @@ export class Repo extends GitHubClient {
             open_issues_count: repo.open_issues_count,
             default_branch: repo.default_branch,
             created_at: this.format
-              ? await formatDate(repo.created_at)
+              ? await format_date(repo.created_at)
               : repo.created_at,
             updated_at: this.format
-              ? await formatDate(repo.updated_at)
+              ? await format_date(repo.updated_at)
               : repo.updated_at,
             pushed_at: this.format
-              ? await formatDate(repo.pushed_at)
+              ? await format_date(repo.pushed_at)
               : repo.pushed_at
           }))
         )
@@ -167,7 +167,7 @@ export class Repo extends GitHubClient {
    * @example
    * ```ts
    * const repos = await repo.get_repos_list({ username: 'username' })
-   * console.log(repos)
+   * -> 用户仓库信息对象列表
    * ```
    */
   public async get_user_repos_list_by_token (
@@ -175,7 +175,7 @@ export class Repo extends GitHubClient {
   ): Promise<ApiResponseType<UserRepoListType>> {
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -228,13 +228,13 @@ export class Repo extends GitHubClient {
             open_issues_count: repo.open_issues_count,
             default_branch: repo.default_branch,
             created_at: this.format
-              ? await formatDate(repo.created_at)
+              ? await format_date(repo.created_at)
               : repo.created_at,
             updated_at: this.format
-              ? await formatDate(repo.updated_at)
+              ? await format_date(repo.updated_at)
               : repo.updated_at,
             pushed_at: this.format
-              ? await formatDate(repo.pushed_at)
+              ? await format_date(repo.pushed_at)
               : repo.pushed_at
           }))
         )
@@ -259,6 +259,11 @@ export class Repo extends GitHubClient {
    * - per_page - 每页数量（1-100）, 默认值：30
    * - page - 页码 默认值：1
    * @returns 用户仓库列表
+   * @example
+   * ```ts
+   * const repos = await github.get_user_repos_list({ username: 'loli' })
+   * -> 用户仓库信息对象列表
+   * ```
    */
   public async get_user_repos_list (
     options: UserRepoListParamType
@@ -266,7 +271,7 @@ export class Repo extends GitHubClient {
     try {
       if (!options.username) throw new Error(MissingUserNameParamMsg)
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { username, ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -318,13 +323,13 @@ export class Repo extends GitHubClient {
             open_issues_count: repo.open_issues_count,
             default_branch: repo.default_branch,
             created_at: this.format
-              ? await formatDate(repo.created_at)
+              ? await format_date(repo.created_at)
               : repo.created_at,
             updated_at: this.format
-              ? await formatDate(repo.updated_at)
+              ? await format_date(repo.updated_at)
               : repo.updated_at,
             pushed_at: this.format
-              ? await formatDate(repo.pushed_at)
+              ? await format_date(repo.pushed_at)
               : repo.pushed_at
 
           }))
@@ -348,7 +353,7 @@ export class Repo extends GitHubClient {
    * @example
    * ```ts
    * const repo = await repo.get_repo_info({ owner: 'owner', repo: 'repo' })
-   * console.log(repo)
+   * -> 仓库信息对象
    * ```
    */
   public async get_repo_info (
@@ -357,7 +362,7 @@ export class Repo extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { owner, repo } = options
       const res = await this.get(`/repos/${owner}/${repo}`)
@@ -396,13 +401,13 @@ export class Repo extends GitHubClient {
           open_issues_count: res.data.open_issues_count,
           default_branch: res.data.default_branch,
           created_at: this.format
-            ? await formatDate(res.data.created_at)
+            ? await format_date(res.data.created_at)
             : res.data.created_at,
           updated_at: this.format
-            ? await formatDate(res.data.updated_at)
+            ? await format_date(res.data.updated_at)
             : res.data.updated_at,
           pushed_at: this.format
-            ? await formatDate(res.data.pushed_at)
+            ? await format_date(res.data.pushed_at)
             : res.data.pushed_at
         }
         res.data = RepoData
@@ -423,7 +428,7 @@ export class Repo extends GitHubClient {
    * @example
    * ```ts
    * const repo = await repo.get_repo_languages_list({ owner: 'owner', repo: 'repo' })
-   * console.log(repo)
+   * -> 仓库语言对象列表
    * ```
    */
   public async get_repo_languages_list (
@@ -432,7 +437,7 @@ export class Repo extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { owner, repo } = options
       const res = await this.get(`/repos/${owner}/${repo}/languages`)
@@ -477,6 +482,11 @@ export class Repo extends GitHubClient {
    * - has_wiki: 是否启用wiki功能, 默认值：true
    * - auto_init: 是否自动初始化仓库 默认值：false
    * @returns 返回创建成功的仓库信息
+   * @example
+   * ```ts
+   * const repoInfo = await org.create_org_repo({org: 'loli', repo: 'git-neko-kit'})
+   * -> 创建组织仓库信息对象
+   * ```
    */
   public async create_org_repo (
     options: OrgRepoCreateParamType
@@ -524,13 +534,13 @@ export class Repo extends GitHubClient {
           open_issues_count: res.data.open_issues_count,
           default_branch: res.data.default_branch,
           created_at: this.format
-            ? await formatDate(res.data.created_at)
+            ? await format_date(res.data.created_at)
             : res.data.created_at,
           updated_at: this.format
-            ? await formatDate(res.data.updated_at)
+            ? await format_date(res.data.updated_at)
             : res.data.updated_at,
           pushed_at: this.format
-            ? await formatDate(res.data.pushed_at)
+            ? await format_date(res.data.pushed_at)
             : res.data.pushed_at
         }
         res.data = RepoData
@@ -555,6 +565,11 @@ export class Repo extends GitHubClient {
    * - has_wiki: 是否启用wiki功能, 默认值：true
    * - auto_init: 是否自动初始化仓库 默认值：false
    * @returns 返回创建成功的仓库信息
+   * @example
+   * ```ts
+   * const repoInfo = await repo.create_user_repo({org: 'loli', repo: 'git-neko-kit'})
+   * -> 创建用户仓库信息对象
+   * ```
    */
   public async create_user_repo (
     options: UserRepoCreateParamType
@@ -602,13 +617,13 @@ export class Repo extends GitHubClient {
           open_issues_count: res.data.open_issues_count,
           default_branch: res.data.default_branch,
           created_at: this.format
-            ? await formatDate(res.data.created_at)
+            ? await format_date(res.data.created_at)
             : res.data.created_at,
           updated_at: this.format
-            ? await formatDate(res.data.updated_at)
+            ? await format_date(res.data.updated_at)
             : res.data.updated_at,
           pushed_at: this.format
-            ? await formatDate(res.data.pushed_at)
+            ? await format_date(res.data.pushed_at)
             : res.data.pushed_at
         }
         res.data = RepoData
@@ -658,7 +673,7 @@ export class Repo extends GitHubClient {
    * @example
    * ```ts
    * const result = await collaborator.get_collaborators_list(options)
-   * console.log(result)
+   * -> 仓库协作者信息对象列表
    * ```
    */
   public async get_collaborators_list (
@@ -667,7 +682,7 @@ export class Repo extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       const { owner, repo } = options
       const { ...queryOptions } = options
@@ -718,7 +733,7 @@ export class Repo extends GitHubClient {
    *  username: 'username',
    *  permission: 'pull'
    * })
-   * console.log(result)
+   * -> 邀请仓库协作者信息对象
    * ```
    */
   public async add_collaborator (
@@ -772,8 +787,6 @@ export class Repo extends GitHubClient {
    * @param options 删除协作者对象
    * - owner: 仓库拥有者
    * - repo: 仓库名称
-   * - url: 仓库地址
-   * owner和repo或者url选择一个即可
    * - username: 要删除协作者用户名
    * @returns 返回删除协作者结果
    * @example
@@ -783,7 +796,7 @@ export class Repo extends GitHubClient {
    *  repo:'repo',
    *  username: 'username'
    * })
-   * console.log(result)
+   * -> 移除仓库协作者信息对象
    * ```
    */
   public async remove_collaborator (
@@ -817,15 +830,6 @@ export class Repo extends GitHubClient {
    * @deprecated 请使用remove_collaborator方法
    * @param options 删除协作者对象
    * @returns 返回删除协作者结果
-   * @example
-   * ```ts
-   * const result = await collaborator.delete_collaborator({
-   *  owner: 'owner',
-   *  repo:'repo',
-   *  username: 'username'
-   * })
-   * console.log(result)
-  * ```
   */
   public async delete_collaborator (
     options: RemoveCollaboratorParamType
@@ -846,8 +850,12 @@ export class Repo extends GitHubClient {
    * @returns 仓库可见性，
    * @example
    * ```ts
+   * // 公开仓库
    * const visibility = await repo.get_repo_visibility({url: 'https://github.com/CandriaJS/git-neko-kit'})
-   * console.log(visibility) // 输出 public 或 private
+   * -> 'public'
+   * // 私有仓库
+   * const visibility = await repo.get_repo_visibility({url: 'https://github.com/CandriaJS/git-neko-kit'})
+   * -> 'private'
    * ```
    */
   public async get_repo_visibility (
@@ -872,7 +880,7 @@ export class Repo extends GitHubClient {
    * @example
    * ```ts
    * const defaultBranch = await repo.get_repo_default_branch({owner: CandriaJS, repo: meme-plugin)}
-   * console.log(defaultBranch) // 输出 main
+   * -> 'main'
    * ```ts
    */
   public async get_repo_default_branch (
@@ -907,7 +915,7 @@ export class Repo extends GitHubClient {
    * @example
    * ```ts
    * const language =  await repo.get_repo_language({url: 'URL_ADDRESS.com/CandriaJS/meme-plugin')}
-   * console.log(language) // 输出 JavaScript
+   * -> 'JavaScript'
    * ```ts
    */
   public async get_repo_main_language (

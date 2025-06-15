@@ -3,7 +3,7 @@ import { capitalize } from 'lodash-es'
 import {
   CommitNotFoundMsg,
   CommitOrRepoNotFoundMsg,
-  formatDate,
+  format_date,
   MissingRepoIdentifierMsg,
   parse_git_url,
   RepoOrPermissionDeniedMsg
@@ -29,8 +29,6 @@ export class Commit extends GitHubClient {
   constructor (base: GitHubClient) {
     super(base)
     this.userToken = base.userToken
-    this.api_url = base.api_url
-    this.base_url = base.base_url
   }
 
   /**
@@ -45,7 +43,7 @@ export class Commit extends GitHubClient {
    * @example
    * ```ts
    * const commitInfo = await commit.get_commit_info({ owner: 'owner', repo: 'repo' })
-   * console.log(commitInfo)
+   * -> 提交信息对象
    * ```
    */
   public async get_commit_info (
@@ -53,7 +51,7 @@ export class Commit extends GitHubClient {
   ): Promise<ApiResponseType<CommitInfoResponseType>> {
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       let owner, repo, url, sha
       if ('url' in options) {
@@ -102,7 +100,7 @@ export class Commit extends GitHubClient {
               html_url: res.data.author.html_url,
               type: capitalize(String(res.data.author.type).toLowerCase()),
               date: this.format
-                ? await formatDate(res.data.commit.author.date)
+                ? await format_date(res.data.commit.author.date)
                 : res.data.commit.author.date
             },
             committer: {
@@ -114,7 +112,7 @@ export class Commit extends GitHubClient {
               html_url: res.data.committer.html_url,
               type: capitalize(String(res.data.committer.type).toLowerCase()),
               date: this.format
-                ? await formatDate(res.data.commit.committer.date)
+                ? await format_date(res.data.commit.committer.date)
                 : res.data.commit.committer.date
             },
             message: res.data.commit.message,
@@ -173,7 +171,7 @@ export class Commit extends GitHubClient {
    * @example
    * ```ts
    * const commitList = await commit.get_commit_list({ owner: 'owner', repo:'repo' })
-   * console.log(commitList)
+   * -> 提交对象列表
    * ```
    */
   public async get_commit_list (
@@ -181,7 +179,7 @@ export class Commit extends GitHubClient {
   ): Promise<ApiResponseType<CommitListResponseType>> {
     try {
       this.setRequestConfig({
-        token: this.userToken
+        token: this.userToken ?? this.jwtToken
       })
       let owner, repo, url
       if ('url' in options) {
@@ -237,7 +235,7 @@ export class Commit extends GitHubClient {
                 html_url: commit.author.html_url,
                 type: capitalize(String(commit.author.type).toLowerCase()),
                 date: this.format
-                  ? await formatDate(commit.commit.author.date)
+                  ? await format_date(commit.commit.author.date)
                   : commit.commit.author.date
               },
               committer: {
@@ -249,7 +247,7 @@ export class Commit extends GitHubClient {
                 html_url: commit.committer.html_url,
                 type: capitalize(String(commit.committer.type).toLowerCase()),
                 date: this.format
-                  ? await formatDate(commit.commit.committer.date)
+                  ? await format_date(commit.commit.committer.date)
                   : commit.commit.committer.date
               },
               message: commit.commit.message,

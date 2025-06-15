@@ -1,7 +1,12 @@
 /** 代理地址类型 */
 export type ProxyUrlType = string
-/** 代理类型 */
-export type ProxyType = 'reverse' | 'common'
+/**
+ * 代理类型：
+ * - reverse: 反向代理
+ * - original: 原始代理
+ * - common: 通用代理
+ */
+export type ProxyType = 'reverse' | 'original' | 'common'
 /** Git类型 */
 export type GitType = 'github' | 'gitee' | 'gitcode'
 

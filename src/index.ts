@@ -1,5 +1,5 @@
 import {
-  formatDate,
+  format_date,
   get_langage_color,
   get_local_repo_default_branch,
   get_relative_time,
@@ -32,7 +32,7 @@ export * as github from '@/models/platform/github'
 /** 工具函数 */
 export {
   create_state_id,
-  formatDate,
+  format_date,
   get_langage_color,
   get_local_repo_default_branch,
   get_relative_time,
