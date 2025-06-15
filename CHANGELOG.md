@@ -1,5 +1,13 @@
 # 变更日志
 
+## [0.8.7](https://github.com/CandriaJS/git-neko-kit/compare/v0.8.6...v0.8.7) (2025-06-15)
+
+
+### ♻️ 代码重构
+
+* **github:** 优化 GitHub 客户端并更新相关模型 ([588caa0](https://github.com/CandriaJS/git-neko-kit/commit/588caa0a26b1b517799668988642fc9ede61b1a4))
+* **github:** 移除议题状态原因字段 ([fca4e16](https://github.com/CandriaJS/git-neko-kit/commit/fca4e16539f57c65caec4a7f532895203f95c1b9))
+
 ## [0.8.6](https://github.com/CandriaJS/git-neko-kit/compare/v0.8.5...v0.8.6) (2025-06-15)
 
 
