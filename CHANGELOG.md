@@ -1,5 +1,12 @@
 # 变更日志
 
+## [0.8.5](https://github.com/CandriaJS/git-neko-kit/compare/v0.8.4...v0.8.5) (2025-06-15)
+
+
+### ♻️ 代码重构
+
+* **models:** 重构 GitHub 平台相关代码 ([8b754e6](https://github.com/CandriaJS/git-neko-kit/commit/8b754e6428961971fa980321456ec3e8b1eb4a5b))
+
 ## [0.8.4](https://github.com/CandriaJS/git-neko-kit/compare/v0.8.3...v0.8.4) (2025-06-14)
 
 
