@@ -54,8 +54,6 @@ export interface IssueInfoResponseType {
   number: number;
   /** 议题状态: open/closed */
   state: string;
-  /** 状态原因: completed/reopened/not_planned/null */
-  state_reason: string | null;
   /** 议题标题 */
   title: string;
   /** 议题正文内容 */

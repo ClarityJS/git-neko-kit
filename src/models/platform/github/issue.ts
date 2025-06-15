@@ -118,7 +118,6 @@ export class Issue extends GitHubClient {
           html_url: res.data.html_url,
           number: res.data.number,
           state: res.data.state,
-          state_reason: res.data.state_reason,
           title: res.data.title,
           body: res.data.body,
           user: {
@@ -246,7 +245,6 @@ export class Issue extends GitHubClient {
             html_url: issue.html_url,
             number: issue.number,
             state: issue.state,
-            state_reason: issue.state_reason,
             title: issue.title,
             body: issue.body,
             user: {
@@ -377,7 +375,6 @@ export class Issue extends GitHubClient {
             html_url: res.data.html_url,
             number: res.data.number,
             state: res.data.state,
-            state_reason: res.data.state_reason,
             title: res.data.title,
             body: res.data.body,
             user: {
@@ -513,7 +510,6 @@ export class Issue extends GitHubClient {
             html_url: res.data.html_url,
             number: res.data.number,
             state: res.data.state,
-            state_reason: res.data.state_reason,
             title: res.data.title,
             body: res.data.body,
             user: {
@@ -633,7 +629,6 @@ export class Issue extends GitHubClient {
             html_url: res.data.html_url,
             number: res.data.number,
             state: res.data.state,
-            state_reason: res.data.state_reason,
             title: res.data.title,
             body: res.data.body,
             user: {
@@ -767,7 +762,6 @@ export class Issue extends GitHubClient {
             html_url: res.data.html_url,
             number: res.data.number,
             state: res.data.state,
-            state_reason: res.data.state_reason,
             title: res.data.title,
             body: res.data.body,
             user: {
@@ -1434,7 +1428,6 @@ export class Issue extends GitHubClient {
             html_url: issue.html_url,
             number: issue.number,
             state: issue.state,
-            state_reason: issue.state_reason,
             title: issue.title,
             body: issue.body,
             user: {
@@ -1555,7 +1548,6 @@ export class Issue extends GitHubClient {
           html_url: res.data.html_url,
           number: res.data.number,
           state: res.data.state,
-          state_reason: res.data.state_reason,
           title: res.data.title,
           body: res.data.body,
           user: {
@@ -1684,7 +1676,6 @@ export class Issue extends GitHubClient {
           html_url: res.data.html_url,
           number: res.data.number,
           state: res.data.state,
-          state_reason: res.data.state_reason,
           title: res.data.title,
           body: res.data.body,
           user: {
@@ -1821,7 +1812,6 @@ export class Issue extends GitHubClient {
           html_url: res.data.html_url,
           number: res.data.number,
           state: res.data.state,
-          state_reason: res.data.state_reason,
           title: res.data.title,
           body: res.data.body,
           user: {
