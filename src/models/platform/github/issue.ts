@@ -102,7 +102,7 @@ export class Issue extends GitHubClient {
     if (!options.issue_number) throw new Error(MissingIssueNumberMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo, issue_number } = options
       const res = await this.get(
@@ -218,7 +218,7 @@ export class Issue extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo, ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -997,7 +997,7 @@ export class Issue extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo, ...queryOptions } = options
 
@@ -1076,7 +1076,7 @@ export class Issue extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo, issue_number, ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -1151,7 +1151,7 @@ export class Issue extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo, comment_id } = options
       const res = (await this.get(
@@ -1415,7 +1415,7 @@ export class Issue extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo, issue_number, ...queryOptions } = options
       const params: Record<string, string> = {}

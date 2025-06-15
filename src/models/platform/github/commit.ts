@@ -51,7 +51,7 @@ export class Commit extends GitHubClient {
   ): Promise<ApiResponseType<CommitInfoResponseType>> {
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       let owner, repo, url, sha
       if ('url' in options) {
@@ -179,7 +179,7 @@ export class Commit extends GitHubClient {
   ): Promise<ApiResponseType<CommitListResponseType>> {
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       let owner, repo, url
       if ('url' in options) {

@@ -64,44 +64,40 @@ export class WebHook extends GitHubClient {
     let success: boolean = false
     let status: 'ok' | 'error' = 'error'
     let statusCode = 400
-    let msg = WebHookSignatureVerificationFailedMsg
+    let msg: string
     let WebHookdata: WebHookSignatureResponseType
 
-    try {
-      const hmac = crypto.createHmac('sha256', this.WebHook_Secret)
-      const payloadString = typeof options.payload === 'string'
-        ? options.payload
-        : JSON.stringify(options.payload)
-      hmac.update(payloadString, 'utf8')
-      const calculatedSignature = hmac.digest('hex')
-      const receivedSignature = options.signature.replace('sha256=', '')
+    const hmac = crypto.createHmac('sha256', this.WebHook_Secret)
+    const payloadString = typeof options.payload === 'string'
+      ? options.payload
+      : JSON.stringify(options.payload)
+    hmac.update(payloadString, 'utf8')
+    const calculatedSignature = hmac.digest('hex')
+    const receivedSignature = options.signature.replace('sha256=', '')
 
-      const isValid = crypto.timingSafeEqual(
-        Buffer.from(calculatedSignature),
-        Buffer.from(receivedSignature)
-      )
+    const isValid = crypto.timingSafeEqual(
+      Buffer.from(calculatedSignature),
+      Buffer.from(receivedSignature)
+    )
 
-      if (isValid) {
-        success = true
-        status = 'ok'
-        statusCode = 200
-        msg = '请求成功'
-        WebHookdata = {
-          success,
-          info: WebHookSignatureSuccessMsg
-        }
-      } else {
-        success = false
-        status = 'error'
-        statusCode = 403
-        msg = '请求失败'
-        WebHookdata = {
-          success,
-          info: WebHookSignatureVerificationFailedMsg
-        }
+    if (isValid) {
+      success = true
+      status = 'ok'
+      statusCode = 200
+      msg = '请求成功'
+      WebHookdata = {
+        success,
+        info: WebHookSignatureSuccessMsg
       }
-    } catch (error) {
-      throw new Error(`[GitHub] 验证WebHook签名失败: ${(error as Error).message}`)
+    } else {
+      success = false
+      status = 'error'
+      statusCode = 403
+      msg = '请求失败'
+      WebHookdata = {
+        success,
+        info: WebHookSignatureVerificationFailedMsg
+      }
     }
     return Promise.resolve(
       {

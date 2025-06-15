@@ -87,7 +87,7 @@ export class Repo extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { org, ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -175,7 +175,7 @@ export class Repo extends GitHubClient {
   ): Promise<ApiResponseType<UserRepoListType>> {
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -271,7 +271,7 @@ export class Repo extends GitHubClient {
     try {
       if (!options.username) throw new Error(MissingUserNameParamMsg)
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { username, ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -362,7 +362,7 @@ export class Repo extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo } = options
       const res = await this.get(`/repos/${owner}/${repo}`)
@@ -437,7 +437,7 @@ export class Repo extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo } = options
       const res = await this.get(`/repos/${owner}/${repo}/languages`)
@@ -682,7 +682,7 @@ export class Repo extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo } = options
       const { ...queryOptions } = options
@@ -861,7 +861,6 @@ export class Repo extends GitHubClient {
   public async get_repo_visibility (
     options: GetRepoVisibilityParamType
   ): Promise<GetRepoVisibilityResponseType> {
-    if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       const { owner, repo } = options
       return (await this.get_repo_info({ owner, repo })).data.visibility

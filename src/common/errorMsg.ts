@@ -29,6 +29,10 @@ export const FailedToFetchAccessTokenMsg = '喵呜~ 获取访问令牌失败'
 export const PermissionDeniedMsg = '喵呜~ 访问被拒绝啦，可能是令牌过期了或权限不足'
 export const InvalidPullRequestMergeMethodMsg = '喵呜~ 拉取请求合并方式不允许'
 
+/** 应用程序相关 */
+export const MissingAppInstallIdMsg = '喵呜~ 应用安装ID不能为空'
+export const FailedRevokeAppAccrssTokenMsg = '喵呜~ 撤销访问令牌失败'
+
 /** 仓库相关 */
 export const MissingRepoOwnerOrNameMsg = '喵呜~ 仓库拥有者或仓库名称不能为空'
 export const MissingRepoIdentifierMsg = '喵呜~ 请提供仓库信息(仓库拥有者/仓库名或完整URL)'

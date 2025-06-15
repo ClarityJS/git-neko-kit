@@ -334,16 +334,20 @@ export class GitHubClient {
    * @param options.APP_ID GitHub App ID
    * @param options.Private_Key 私钥内容
    * @returns 返回生成的 JWT
+   * @example
+   * ```ts
+   * const jwt = await client.generate_jwt()
+   * -> 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjYxNjEyMjAsImlhdCI6MTYyNjE2MTIyMCwiaXNzIjoiMTIzNDU2Nzg5In0.XxXxXxXxXx
+   * ```
    */
-  private generate_jwt (Private_Key?: string): string {
-    const PrivateKey = Private_Key ?? this.Private_Key
-    if (!this.is_app_client && !PrivateKey) throw new Error(MissingAppClientMsg)
+  private generate_jwt (): string {
+    if (!this.is_app_client && !this.Private_Key) throw new Error(MissingAppClientMsg)
     const payload = {
       exp: Math.floor(Date.now() / 1000) + (10 * 60),
       iat: Math.floor(Date.now() / 1000),
       iss: this.Client_ID
     }
-    return jwt.sign(payload, PrivateKey!, { algorithm: 'RS256' })
+    return jwt.sign(payload, this.Private_Key!, { algorithm: 'RS256' })
   }
 
   /**

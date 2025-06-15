@@ -1,23 +1,37 @@
 import { capitalize } from 'lodash-es'
 
 import {
+  FailedRevokeAppAccrssTokenMsg,
   format_date,
   MissingAccessTokenMsg,
   MissingAppClientMsg,
+  MissingAppInstallIdMsg,
   MissingAppSlugMsg,
+  MissingOrgParamMsg,
   MissingRepoOwnerOrNameMsg,
+  MissingUserNameParamMsg,
   RepoMovedMsg,
-  RepoNotFoundMsg
+  RepoNotFoundMsg,
+  RevokeAccessTokenSuccessMsg
 } from '@/common'
 import { get_base_url } from '@/models/base'
 import { GitHubClient } from '@/models/platform/github/client'
 import type {
+  AccessTokenPermissionsType,
   ApiResponseType,
   AppInfoParamType,
   AppInfoResponseType,
-  AppRepoInfoResponseType,
+  CreateAccessTokenForAppParamType,
+  CreateAccessTokenForAppResponseType,
+  GetAppInfoByOrgParamType,
+  GetAppInfoByOrgResponseType,
+  GetAppInfoByRepoParamType,
+  GetAppInfoByRepoResponseType,
+  GetAppInfoByUserParamType,
+  GetAppInfoByUserResponseType,
   RepoBaseParamType,
-  RepoInfoParamType
+  RepoInfoResponseType,
+  RevokeAccessTokenResponseType
 } from '@/types'
 
 /**
@@ -58,7 +72,7 @@ export class App extends GitHubClient {
     try {
       this.setRequestConfig(
         {
-          token: this.userToken ?? this.jwtToken
+          token: this.userToken
         })
       const res = await this.get(`/apps/${options.app_slug}`)
       if (res.statusCode === 200) {
@@ -104,13 +118,12 @@ export class App extends GitHubClient {
    * -> app的信息
    * ```
    */
-  private async get_app_info_by_auth ()
+  public async get_app_info_by_auth ()
     : Promise<ApiResponseType<AppInfoResponseType>> {
     if (!this.is_app_client) throw new Error(MissingAppClientMsg)
     try {
       this.setRequestConfig(
         {
-          url: this.api_url,
           token: this.jwtToken
         })
       const res = await this.get('/app')
@@ -155,14 +168,14 @@ export class App extends GitHubClient {
    * @returns 返回应用安装信息
    * @example
    * ```ts
-   * const app = base.get_app()
-   * console.log(app.get_app_installation_by_repo({owner: 'owner', repo: 'repo'})) // 输出仓库的应用信息
+   * console.log(app.get_app_installation_by_repo({owner: 'owner', repo: 'repo'}))
+   * -> 仓库安装应用信息
    * ```
    */
 
   public async get_app_installation_by_repo (
-    options: RepoInfoParamType
-  ): Promise<ApiResponseType<AppRepoInfoResponseType>> {
+    options: GetAppInfoByRepoParamType
+  ): Promise<ApiResponseType<GetAppInfoByRepoResponseType>> {
     if (!this.is_app_client) throw new Error(MissingAppClientMsg)
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
@@ -179,7 +192,7 @@ export class App extends GitHubClient {
           throw new Error(RepoMovedMsg)
       }
       if (res.data) {
-        const AppData: AppRepoInfoResponseType = {
+        const AppData: GetAppInfoByRepoResponseType = {
           id: res.data.id,
           html_url: res.data.html_url,
           app_id: res.data.app_id,
@@ -209,6 +222,256 @@ export class App extends GitHubClient {
     } catch (error) {
       throw new Error(`[GitHub] 获取存储库安装应用信息失败: ${(error as Error).message}`)
     }
+  }
+
+  /**
+   * 获取用户的应用安装信息
+   * 权限：
+   * - `none` 此节点仅App Client可用
+   * @param options - 仓库安装应用参数对象
+   * - owner 拥有者
+   * - repo 仓库名
+   * @returns 返回应用安装信息
+   * @example
+   * ```ts
+   * console.log(app.get_app_installation_by_repo({owner: 'owner', repo: 'repo'}))
+   * -> 用户安装应用信息
+   * ```
+   */
+
+  public async get_app_installation_by_user (
+    options: GetAppInfoByUserParamType
+  ): Promise<ApiResponseType<GetAppInfoByUserResponseType>> {
+    if (!this.is_app_client) throw new Error(MissingAppClientMsg)
+    if (!options.username) throw new Error(MissingUserNameParamMsg)
+    try {
+      this.setRequestConfig(
+        {
+          token: this.jwtToken
+        })
+      const { username } = options
+      const res = await this.get(`/users/${username}/installation`)
+      switch (res.statusCode) {
+        case 404:
+          throw new Error(RepoNotFoundMsg)
+        case 301:
+          throw new Error(RepoMovedMsg)
+      }
+      if (res.data) {
+        const AppData: GetAppInfoByUserResponseType = {
+          id: res.data.id,
+          html_url: res.data.html_url,
+          app_id: res.data.app_id,
+          app_slug: res.data.app_slug,
+          target_id: res.data.target_id,
+          target_type: res.data.target_type,
+          account: {
+            id: res.data.account.id,
+            login: res.data.account.login,
+            name: res.data.account.name,
+            email: res.data.account.email,
+            html_url: res.data.account.html_url,
+            avatar_url: res.data.account.avatar_url,
+            type: capitalize(res.data.account.type.toLowerCase())
+          },
+          repository_selection: res.data.repository_selection,
+          access_tokens_url: res.data.access_tokens_url,
+          repositories_url: res.data.repositories_url,
+          permissions: res.data.permissions,
+          events: res.data.events,
+          created_at: this.format ? await format_date(res.data.created_at) : res.data.created_at,
+          updated_at: this.format ? await format_date(res.data.updated_at) : res.data.updated_at
+        }
+        res.data = AppData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`[GitHub] 获取存储库安装应用信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 获取组织的应用安装信息
+   * 权限：
+   * - `none` 此节点仅App Client可用
+   * @param options - 仓库安装应用参数对象
+   * - owner 拥有者
+   * - repo 仓库名
+   * @returns 返回应用安装信息
+   * @example
+   * ```ts
+   * console.log(app.get_app_installation_by_repo({owner: 'owner', repo: 'repo'}))
+   * -> 组织安装应用信息
+   * ```
+   */
+
+  public async get_app_installation_by_org (
+    options: GetAppInfoByOrgParamType
+  ): Promise<ApiResponseType<GetAppInfoByOrgResponseType>> {
+    if (!this.is_app_client) throw new Error(MissingAppClientMsg)
+    if (!options.org) throw new Error(MissingOrgParamMsg)
+    try {
+      this.setRequestConfig(
+        {
+          token: this.jwtToken
+        })
+      const { org } = options
+      const res = await this.get(`/orgs/${org}/installation`)
+      switch (res.statusCode) {
+        case 404:
+          throw new Error(RepoNotFoundMsg)
+        case 301:
+          throw new Error(RepoMovedMsg)
+      }
+      if (res.data) {
+        const AppData: GetAppInfoByOrgResponseType = {
+          id: res.data.id,
+          html_url: res.data.html_url,
+          app_id: res.data.app_id,
+          app_slug: res.data.app_slug,
+          target_id: res.data.target_id,
+          target_type: res.data.target_type,
+          account: {
+            id: res.data.account.id,
+            login: res.data.account.login,
+            name: res.data.account.name,
+            email: res.data.account.email,
+            html_url: res.data.account.html_url,
+            avatar_url: res.data.account.avatar_url,
+            type: capitalize(res.data.account.type.toLowerCase())
+          },
+          repository_selection: res.data.repository_selection,
+          access_tokens_url: res.data.access_tokens_url,
+          repositories_url: res.data.repositories_url,
+          permissions: res.data.permissions,
+          events: res.data.events,
+          created_at: this.format ? await format_date(res.data.created_at) : res.data.created_at,
+          updated_at: this.format ? await format_date(res.data.updated_at) : res.data.updated_at
+        }
+        res.data = AppData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`[GitHub] 获取存储库安装应用信息失败: ${(error as Error).message}`)
+    }
+  }
+
+  /**
+   * 为应用程序创建访问令牌
+   * @param options
+   * - installation_id - 安装 ID
+   * @returns 创建访问令牌对象
+   * @example
+   * ```ts
+   * const accessToken = await app.create_access_token_for_app({ installation_id: 123456 })
+   * -> 创建访问令牌对象
+   * ```
+   */
+  public async create_access_token_for_app (
+    options: CreateAccessTokenForAppParamType
+  ): Promise<ApiResponseType<CreateAccessTokenForAppResponseType>> {
+    if (!options.installation_id) throw new Error(MissingAppInstallIdMsg)
+    try {
+      this.setRequestConfig({
+        token: this.jwtToken
+      })
+      const body: Record<string, string | Array<number> | Array<string> | AccessTokenPermissionsType> = {}
+      if (options.repositories) body.repositories = options.repositories
+      if (options.repository_ids) body.repository_ids = options.repository_ids
+      if (options.permissions) body.permissions = options.permissions
+      const res = await this.post(`app/installations/${options.installation_id}/access_tokens`, body)
+      if (res.statusCode === 201 && res.data) {
+        const AppData: CreateAccessTokenForAppResponseType = {
+          token: res.data.token,
+          expires_at: this.format ? await format_date(res.data.expires_at) : res.data.expires_at,
+          permissions: res.data.permissions,
+          repository_selection: res.data.repository_selection,
+          repositories: res.data.repositories.map(async (repo: Record<string, any>): Promise<RepoInfoResponseType> => ({
+            id: repo.id,
+            name: repo.name,
+            full_name: repo.full_name,
+            owner: {
+              id: repo.owner.id,
+              login: repo.owner.login,
+              name: repo.owner.name ?? null,
+              avatar_url: repo.owner.avatar_url,
+              type: repo.owner.type,
+              html_url: repo.owner.html_url,
+              email: repo.owner.email ?? null
+            },
+            public: !repo.private,
+            private: repo.private,
+            visibility: repo.private ? 'private' : 'public',
+            fork: repo.fork,
+            archived: repo.archived,
+            disabled: repo.disabled,
+            html_url: repo.html_url,
+            description: repo.description,
+            stargazers_count: repo.stargazers_count,
+            watchers_count: repo.watchers_count,
+            language: repo.language,
+            forks_count: repo.forks_count,
+            open_issues_count: repo.open_issues_count,
+            default_branch: repo.default_branch,
+            created_at: this.format
+              ? await format_date(repo.created_at)
+              : repo.created_at,
+            updated_at: this.format
+              ? await format_date(repo.updated_at)
+              : repo.updated_at,
+            pushed_at: this.format
+              ? await format_date(repo.pushed_at)
+              : repo.pushed_at
+          })
+          )
+        }
+        res.data = AppData
+      }
+      return res
+    } catch (error) {
+      throw new Error(`[GitHub] 为应用程序创建访问令牌失败: ${(error as Error).message}`)
+    }
+  }
+
+  public async revoke_access_token_for_app (
+  ): Promise<ApiResponseType<RevokeAccessTokenResponseType>> {
+    this.setRequestConfig({
+      token: this.jwtToken
+    })
+    const res = await this.delete('/installation/token')
+    let success: boolean = false
+    let status: 'ok' | 'error' = 'error'
+    let msg: string
+    let statusCode = 400
+    let RevokeAccessTokenData: RevokeAccessTokenResponseType
+    if (res.statusCode === 201) {
+      success = true
+      status = 'ok'
+      statusCode = 200
+      msg = '请求成功'
+      RevokeAccessTokenData = {
+        success,
+        info: RevokeAccessTokenSuccessMsg
+      }
+    } else {
+      success = false
+      status = 'error'
+      statusCode = 403
+      msg = '请求失败'
+      RevokeAccessTokenData = {
+        success,
+        info: FailedRevokeAppAccrssTokenMsg
+      }
+    }
+    return Promise.resolve(
+      {
+        success,
+        status,
+        statusCode,
+        msg,
+        data: RevokeAccessTokenData
+      }
+    )
   }
 
   /**

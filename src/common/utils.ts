@@ -1,15 +1,12 @@
 import { exec as execCmd } from 'node:child_process'
 import fs from 'node:fs'
-import path from 'node:path'
 
 import convert, { type RGB } from 'color-convert'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime.js'
 import GitUrlParse from 'git-url-parse'
 import LanguageColors from 'language-colors'
-import { simpleGit } from 'simple-git'
 
-import { MissingLocalRepoPathMsg, MissingRemoteRepoUrlMsg } from '@/common/errorMsg'
 import { basePath } from '@/root'
 import { ContributionResult, ExecOptions, ExecReturn, RepoBaseParamType } from '@/types'
 
@@ -213,82 +210,6 @@ export function parse_git_url (url: string): RepoBaseParamType {
   return {
     owner: info.owner,
     repo: info.name
-  }
-}
-
-async function get_git_version (): Promise<string> {
-  const { stdout } = await exec('git --version')
-  return stdout.toString().trim()
-}
-/**
- * 获取本地仓库的默认分支
- * @param local_path - 本地仓库路径
- * @returns 默认分支名称
- * @example
- * ```ts
- * console.log(await get_local_repo_default_branch('/path/to/repo'))
- * -> 'main'
- * ```
- */
-export async function get_local_repo_default_branch (local_path: string): Promise<string> {
-  if (!local_path) throw new Error(MissingLocalRepoPathMsg)
-  try {
-    try {
-      await get_git_version()
-    } catch (error) {
-      throw new Error('喵呜~, Git 未安装或未正确配置')
-    }
-    const git_path = path.join(local_path, '.git')
-    const isGitRepo = await exists(git_path)
-    if (!isGitRepo) {
-      throw new Error(`路径 ${local_path} 不是一个有效的 Git 仓库`)
-    }
-
-    const repo = simpleGit(local_path)
-    const head = await repo.revparse(['--abbrev-ref', 'HEAD'])
-    if (!head) {
-      throw new Error('无法获取仓库分支信息，请确保仓库已初始化')
-    }
-
-    return head.trim()
-  } catch (error) {
-    throw new Error(`获取本地仓库默认分支失败: ${(error as Error).message}`)
-  }
-}
-
-/**
- * 获取远程仓库的默认分支
- * @param remote_url - 远程仓库URL
- * @returns 默认分支名称
- * @example
- * ```ts
- * console.log(await get_remote_repo_default_branch('https://github.com/CandriaJS/git-neko-kit'))
- * -> 'main'
- * ```
- */
-export async function get_remote_repo_default_branch (remote_url: string): Promise<string> {
-  if (!remote_url) throw new Error(MissingRemoteRepoUrlMsg)
-  try {
-    try {
-      await get_git_version()
-    } catch (error) {
-      throw new Error('喵呜~, Git 未安装或未正确配置')
-    }
-    const git_url = new URL(remote_url)
-    if (git_url.protocol !== 'https:' && git_url.protocol !== 'http:') {
-      throw new Error('远程仓库URL必须是HTTP或HTTPS协议')
-    }
-    const { owner, repo: RepoName } = parse_git_url(git_url.href)
-    if (!(owner || RepoName)) throw new Error(`url: ${git_url.href} 不是一个有效的 Git 仓库地址`)
-    const repo = simpleGit()
-    const remoteInfo = await repo.raw(['ls-remote', '--symref', remote_url, 'HEAD'])
-    const defaultBranchMatch = remoteInfo.match(/^ref: refs\/heads\/([^\t\n]+)/m)
-    if (!defaultBranchMatch) {
-      throw new Error('无法从远程仓库获取默认分支信息')
-    }
-    return defaultBranchMatch[1]
-  } catch (error) {
-    throw new Error(`获取远程仓库默认分支失败: ${(error as Error).message}`)
   }
 }
 

@@ -48,7 +48,7 @@ export class Org extends GitHubClient {
     const { org } = options
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const res = await this.get(`/orgs/${org}`)
       if (res.statusCode === 404) {

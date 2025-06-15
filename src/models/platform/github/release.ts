@@ -63,7 +63,7 @@ export class Release extends GitHubClient {
     if (!options.release_id) throw new Error(MissingReleaseIdMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo, release_id } = options
       const res = await this.get(`/repos/${owner}/${repo}/releases/${release_id}`)
@@ -122,7 +122,7 @@ export class Release extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo } = options
       const url = `/repos/${owner}/${repo}/releases/latest`
@@ -182,7 +182,7 @@ export class Release extends GitHubClient {
     if (!options.tag) throw new Error(TagNotFoundMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo, tag } = options
       const url = `/repos/${owner}/${repo}/releases/tags/${tag}`
@@ -245,7 +245,7 @@ export class Release extends GitHubClient {
     if (!options.owner || !options.repo) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo } = options
       const { ...queryOptions } = options

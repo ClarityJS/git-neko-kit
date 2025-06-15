@@ -1,3 +1,6 @@
+/** 应用程序相关 */
+export const RevokeAccessTokenSuccessMsg = '喵呜~ 访问令牌撤销成功'
+
 /** 授权相关 */
 export const RefreshAccessTokenSuccessMsg = '喵呜~ 访问令牌刷新成功'
 export const AccessTokenSuccessMsg = '喵呜~ 访问令牌获取成功'

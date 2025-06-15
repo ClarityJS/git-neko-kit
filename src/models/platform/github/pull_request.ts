@@ -83,7 +83,7 @@ export class Pull_Request extends GitHubClient {
     if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const res = await this.get(`/repos/${options.owner}/${options.repo}/pulls/${options.pr_number}`)
       if (res.data) {
@@ -224,7 +224,7 @@ export class Pull_Request extends GitHubClient {
     if (!(options.owner || options.repo)) throw new Error(MissingRepoOwnerOrNameMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo, ...queryOptions } = options
       const params: Record<string, string> = {}
@@ -743,7 +743,7 @@ export class Pull_Request extends GitHubClient {
     if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const params: Record<string, string> = {}
       if (options.per_page) params.per_page = options.per_page
@@ -800,7 +800,7 @@ export class Pull_Request extends GitHubClient {
     if (!options.comment_id) throw new Error(MissingPullRequestCommentNumberMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const { owner, repo, comment_id } = options
       const res = await this.get(`/repos/${owner}/${repo}/pulls/comments/${comment_id}`)
@@ -857,7 +857,7 @@ export class Pull_Request extends GitHubClient {
     if (!options.pr_number) throw new Error(MissingPullRequestNumberMsg)
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const params: Record<string, string> = {}
       if (options.direction) params.direction = options.direction

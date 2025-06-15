@@ -56,7 +56,7 @@ export class User extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const res = await this.get(`/users/${options.username}`)
       if (res.statusCode === 401) {
@@ -108,7 +108,7 @@ export class User extends GitHubClient {
     }
     try {
       this.setRequestConfig({
-        token: this.userToken ?? this.jwtToken
+        token: this.userToken
       })
       const res = await this.get(`/user/${options.user_id}`)
       if (res.statusCode === 401) {
