@@ -105,9 +105,7 @@ export class Issue extends GitHubClient {
         token: this.userToken
       })
       const { owner, repo, issue_number } = options
-      const res = await this.get(
-        `/repos/${owner}/${repo}/issues/${Number(issue_number)}`
-      )
+      const res = await this.get(`/repos/${owner}/${repo}/issues/${Number(issue_number)}`)
       switch (res.statusCode) {
         case 404:
           throw new Error(IssueNotFoundMsg)
@@ -119,7 +117,6 @@ export class Issue extends GitHubClient {
           id: res.data.id,
           html_url: res.data.html_url,
           number: res.data.number,
-          comments: res.data.comments,
           state: res.data.state,
           state_reason: res.data.state_reason,
           title: res.data.title,
@@ -248,7 +245,6 @@ export class Issue extends GitHubClient {
             id: issue.id,
             html_url: issue.html_url,
             number: issue.number,
-            comments: issue.comments,
             state: issue.state,
             state_reason: issue.state_reason,
             title: issue.title,
@@ -380,7 +376,6 @@ export class Issue extends GitHubClient {
             id: res.data.id,
             html_url: res.data.html_url,
             number: res.data.number,
-            comments: res.data.comments,
             state: res.data.state,
             state_reason: res.data.state_reason,
             title: res.data.title,
@@ -517,7 +512,6 @@ export class Issue extends GitHubClient {
             id: res.data.id,
             html_url: res.data.html_url,
             number: res.data.number,
-            comments: res.data.comments,
             state: res.data.state,
             state_reason: res.data.state_reason,
             title: res.data.title,
@@ -638,7 +632,6 @@ export class Issue extends GitHubClient {
             id: res.data.id,
             html_url: res.data.html_url,
             number: res.data.number,
-            comments: res.data.comments,
             state: res.data.state,
             state_reason: res.data.state_reason,
             title: res.data.title,
@@ -773,7 +766,6 @@ export class Issue extends GitHubClient {
             id: res.data.id,
             html_url: res.data.html_url,
             number: res.data.number,
-            comments: res.data.comments,
             state: res.data.state,
             state_reason: res.data.state_reason,
             title: res.data.title,
@@ -1441,7 +1433,6 @@ export class Issue extends GitHubClient {
             id: issue.id,
             html_url: issue.html_url,
             number: issue.number,
-            comments: issue.comments,
             state: issue.state,
             state_reason: issue.state_reason,
             title: issue.title,
@@ -1563,7 +1554,6 @@ export class Issue extends GitHubClient {
           id: res.data.id,
           html_url: res.data.html_url,
           number: res.data.number,
-          comments: res.data.comments,
           state: res.data.state,
           state_reason: res.data.state_reason,
           title: res.data.title,
@@ -1693,7 +1683,6 @@ export class Issue extends GitHubClient {
           id: res.data.id,
           html_url: res.data.html_url,
           number: res.data.number,
-          comments: res.data.comments,
           state: res.data.state,
           state_reason: res.data.state_reason,
           title: res.data.title,
@@ -1831,7 +1820,6 @@ export class Issue extends GitHubClient {
           id: res.data.id,
           html_url: res.data.html_url,
           number: res.data.number,
-          comments: res.data.comments,
           state: res.data.state,
           state_reason: res.data.state_reason,
           title: res.data.title,

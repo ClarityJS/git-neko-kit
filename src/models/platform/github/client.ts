@@ -321,7 +321,7 @@ export class GitHubClient {
    * ```
    */
   public setToken (token: string): void {
-    if (!token.startsWith('ghu_') && !token.startsWith('ghp_')) {
+    if (!token.startsWith('ghu_') && !token.startsWith('ghp_') && !token.startsWith('ghs_')) {
       this.userToken = null
       throw new Error(MissingAccessTokenMsg)
     }
